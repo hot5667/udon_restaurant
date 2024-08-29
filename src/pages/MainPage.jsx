@@ -10,7 +10,7 @@ const MainPage = () => {
       우동집 Main
       <RecentPosts/>
       <button onClick={() => {navigate('/create')}}>게시글 작성하기</button>
-      <button onClick={() => {navigate(`/create?isToModify=${true}&id=${4}`)}}>게시글 수정하기</button>
+      {/* <button onClick={() => {navigate(`/create?isToModify=${true}&id=${2}`)}}>게시글 수정하기</button> */}
     </MainBody>
   )
 }

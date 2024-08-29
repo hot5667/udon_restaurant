@@ -1,19 +1,31 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
 
-const RecentPost = ({post}) => {
-  const {PostTitle:title, PostImgs:imgUrl, PostContent:content, PostCity:city} = post;
-  // console.log(title, JSON.parse(imgUrl))
+const RecentPost = ({ post }) => {
+  const navigate = useNavigate();
+  const { PostTitle: title, PostImgs: imgUrl, PostContent: content, PostCity: city } = post;
+
+  // console.log('recent Post :',post);
   return (
     <PostCard>
       <img src={JSON.parse(imgUrl)[0]} />
       <CardContent>
-      <h3>{title}</h3>
-      <Button onClick={() => {
-        alert(`Post ID : ${post.PostID}`);
-      }}>
-        게시글로 이동
-      </Button>
+        <h3>{title}</h3>
+        <Button onClick={() => {
+          alert(`Post ID : ${post.PostID}`);
+        }}>
+          게시글로 이동
+        </Button>
+        <Button2 onClick={() => {
+          const fixedPost = {...post, PostImgs:JSON.parse(post.PostImgs)};
+          // console.log('clicked Post :',post,JSON.parse(fixedPost.PostImgs));
+          // fixedPost['PostImgs'] = JSON.parse(fixedPost.PostImgs);
+          // console.log('clicked Post :',fixedPost);
+          navigate(`/create?isToModify=${true}&id=${post.PostID}`, { state:fixedPost });
+        }}>
+          게시글 수정
+        </Button2>
       </CardContent>
     </PostCard>
   )
@@ -61,6 +73,24 @@ const Button = styled.button`
 
   position: absolute;
   bottom: 30px;
+  right: 30px;
+
+  background-color: lightgray;
+
+  cursor: pointer;
+  &:hover{
+    background-color: #a5a5a5;
+  }
+`
+const Button2 = styled.button`
+  height: 30px;
+  padding-bottom: 3px;
+  
+  border: 1px solid black;
+  border-radius: 10px;
+
+  position: absolute;
+  bottom: 70px;
   right: 30px;
 
   background-color: lightgray;

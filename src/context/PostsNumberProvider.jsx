@@ -13,6 +13,7 @@ const PostsNumberProvider = ({ children }) => {
       if (error) {
         throw error;
       } else {
+        data.sort((a,b) => a.PostID - b.PostID)
         // console.log("data => ", data);
         setPostsNumber(prev => prev + data.at(-1).PostID+1);
       }
@@ -31,7 +32,7 @@ const PostsNumberProvider = ({ children }) => {
   };
 
   const deleteData = async (post) => {
-    const { data, error } = await supabase.from("Post").delete().eq('PostId', post.PostID);
+    const { data, error } = await supabase.from("Post").delete().eq("PostID", post.PostID);
     if (error) {
       throw error;
     } else {
@@ -40,8 +41,9 @@ const PostsNumberProvider = ({ children }) => {
   }
 
   const modifyData = async (post) => {
+    console.log('modyfying :',post);
     const { PostTitle, PostContent, PostCity, PostFoodType } = post;
-    const { data, error } = await supabase.from("Post").update({ PostTitle, PostContent, PostCity, PostFoodType }).eq('PostId', post.PostID);
+    const { data, error } = await supabase.from("Post").update({ PostTitle, PostContent, PostCity, PostFoodType }).eq('PostID', post.PostID);
     if (error) {
       throw error;
     } else {

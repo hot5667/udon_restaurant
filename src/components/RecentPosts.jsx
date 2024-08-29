@@ -13,6 +13,7 @@ const RecentPosts = () => {
       if (error) {
         throw error;
       } else {
+        data.sort((a,b) => a.PostID - b.PostID)
         // console.log("data => ", data);
         setRecentPosts(data.slice(-4).reverse());
       }
