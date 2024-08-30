@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import supabase from '../supaBasecClient';
-import uuid from 'react-uuid';
-// import { useSearchParams } from 'react-router-dom';
+// import uuid from 'react-uuid';
 
 const Comment = () => {
   const [comments, setComments] = useState([]);
   const [commentContent, setCommentContent] = useState('');
-  // const [searchParams] = useSearchParams();
-  // const userId = searchParams.get('id');
 
   useEffect(() => {
     async function getComment() {
@@ -17,47 +14,43 @@ const Comment = () => {
     getComment();
   }, []);
 
+  //댓글 추가 코드
   async function addComment(event) {
     event.preventDefault();
+
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('ko-CA');
+
     console.log(event);
+    console.log({
+      // CommentID: uuid(),
+      PostIDKEY: 7,
+      CommentContent: commentContent,
+      CommentDate: formattedDate,
+    });
     const { data, error } = await supabase.from('Comments').insert({
       // CommentID: uuid(),
       PostIDKEY: 7,
       CommentContent: commentContent,
-      // CommentDate: new Date().toString(), 데이터베이스에서
-    }); //id반환
-    // .select('*');
-    setComments(prev => [...prev, { CommentContent: commentContent }]);
-    //형변환 해야한다.
+      CommentDate: now,
+    });
+    setComments(prev => [...prev, { CommentContent: commentContent, CommentDate: formattedDate }]);
   }
 
-  // const handleAddComment = commentContent => {
-  //   const newAddComment = [
-  //     ...comments,
-  //     {
-  //       CommentID: uuid(),
-  //       // PostIDKEY: userId,
-  //       CommentContent: commentContent,
-  //       CommentDate: new Date().toString(),
-  //     },
-  //   ];
-  //   setComments(newAddComment);
-  //   addComment();
-  // };
-
-  const handleDeleteComment = CommentID => {
-    const deletedComment = comments.filter(c => {
-      return c.CommentID !== CommentID;
-    });
-    setComments(deletedComment);
-  };
+  //댓글 삭제 코드
+  async function deleteComment(Test) {
+    const { error } = await supabase.from('Comments').delete().eq('Test', Test);
+    console.log(Test);
+    console.log(error);
+    setComments(comments.filter(c => c.CommentID !== Test));
+  }
 
   const commentList = comments.map(comment => {
     return (
       <ul key={comment.CommentID}>
         <li>{comment.CommentDate}</li>
         <li>{comment.CommentContent}</li>
-        <button onClick={() => handleDeleteComment(comment.CommentID)}>삭제</button>
+        <button onClick={() => deleteComment(comment.Test)}>삭제</button>
         <button>수정</button>
       </ul>
     );
