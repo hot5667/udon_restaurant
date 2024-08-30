@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { PostsNumberContext } from '../context/PostsNumberProvider';
+import { PostContext } from '../context/PostContext';
 import { useNavigate } from 'react-router-dom';
+
+const STORAGE_NAME = 'images';
 
 const CreateForm = ({ Modify }) => {
   const navigate = useNavigate();
-  const { setPostsNumber, addPost, modifyPost } = useContext(PostsNumberContext);
+  const { setPostsNumber, addPost, modifyPost, uploadImgs } = useContext(PostContext);
   const { isToModify, post } = Modify;
   // console.log('createForm :',post);
 
@@ -19,11 +21,17 @@ const CreateForm = ({ Modify }) => {
   const year = today.getFullYear();
   const month = ('0' + (today.getMonth() + 1)).slice(-2);
   const date = ('0' + (today.getDate() + 1)).slice(-2);
-  const [writing, setWriting] = useState(!isToModify ? { PostUserName: '어드민', PostTitle: '', PostCity: 0, PostFoodType: 0, PostContent: '', PostDate: `${year}-${month}-${date}`, PostImgs: ['', '', '', ''], PostLike: 0 } : post)
+  const [writing, setWriting] = useState(
+    !isToModify ?
+    { PostUserName: '어드민', PostTitle: '', PostCity: 0, PostFoodType: 0, PostContent: '', PostDate: `${year}-${month}-${date}`, PostImgs: ['', '', '', ''], PostLike: 0 }
+    : post
+  );
+  
+
 
   const handlePost = (e) => {
     e.preventDefault();
-    console.log(writing.PostCity, writing.PostFoodType);
+    console.log(writing);
 
     if (!writing.PostTitle) {
       alert('제목을 입력해주세요.');
@@ -31,18 +39,25 @@ const CreateForm = ({ Modify }) => {
     } else if (writing.PostCity === '0' || writing.PostFoodType === 0) {
       alert('지역과 음식 종류를 입력했는지 확인해주세요.');
       return;
-    } else if (!content) {
+    } else if (!writing.PostContent) {
       alert('내용을 입력해주세요.');
       return;
     } else {
       if (!isToModify) {
-        setPostsNumber(prev => prev + 1)
+        const newPost = { ...writing };
+        setPostsNumber(prev => {
+          newPost.PostID = prev;
+          uploadImgs(newPost.PostID, newPost.PostImgs.filter(ele => Boolean(ele)))
+
+          return prev + 1
+        })
         // const today = new Date();
         // const year = today.getFullYear();
         // const month = ('0' + (today.getMonth() + 1)).slice(-2);
         // const date = ('0' + (today.getDate() + 1)).slice(-2);
-        const newPost = { ...writing };
-        newPost.PostImgs = JSON.stringify(newPost.PostImgs)
+        // const newPost = { ...writing };
+        newPost.PostImgs = newPost.PostImgs.map(ele => ele.name);
+
         addPost(newPost);
         alert('게시글이 등록되었습니다.');
         navigate('/');
@@ -54,10 +69,9 @@ const CreateForm = ({ Modify }) => {
         navigate('/');
       }
     }
-
   }
 
-  if (!Modify) {
+  if (!isToModify) {
     return (
       <CreateContainer>
         <section className='title_section'>
@@ -128,10 +142,9 @@ const CreateForm = ({ Modify }) => {
               });
             }} /></p>
         </section>
-        <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
         <section className='img_section'>
-          사진
-          <input placeholder='사진을 url로 변환해서 올려주세요.' onChange={(e) => {
+          <p>사진</p>
+          {/* <input placeholder='사진을 url로 변환해서 올려주세요.' onChange={(e) => {
             const img = e.target.value;
             const newImgs = [...writing.PostImgs];
             newImgs[0] = img;
@@ -174,8 +187,49 @@ const CreateForm = ({ Modify }) => {
               cur.PostImgs = newImgs;
               return cur;
             });
+          }} /> */}
+        <input type='file' onChange={(e) => {
+            const newImgs = [...writing.PostImgs];
+            newImgs[0] = e.target.files[0];
+
+            setWriting(prev => {
+              const cur = { ...prev };
+              cur.PostImgs = newImgs;
+              return cur;
+            });
+          }} />
+        <input type='file' onChange={(e) => {
+            const newImgs = [...writing.PostImgs];
+            newImgs[1] = e.target.files[0];
+
+            setWriting(prev => {
+              const cur = { ...prev };
+              cur.PostImgs = newImgs;
+              return cur;
+            });
+          }} />
+        <input type='file' onChange={(e) => {
+            const newImgs = [...writing.PostImgs];
+            newImgs[2] = e.target.files[0];
+
+            setWriting(prev => {
+              const cur = { ...prev };
+              cur.PostImgs = newImgs;
+              return cur;
+            });
+          }} />
+        <input type='file' onChange={(e) => {
+            const newImgs = [...writing.PostImgs];
+            newImgs[3] = e.target.files[0];
+
+            setWriting(prev => {
+              const cur = { ...prev };
+              cur.PostImgs = newImgs;
+              return cur;
+            });
           }} />
         </section>
+        <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
       </CreateContainer>
     )
   } else {
@@ -259,7 +313,6 @@ const CreateForm = ({ Modify }) => {
               });
             }} /></p>
         </section>
-        <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
         <section className='img_section'>
           사진
           <input placeholder='사진을 url로 변환해서 올려주세요.' defaultValue={writing.PostImgs[0]}
@@ -267,6 +320,7 @@ const CreateForm = ({ Modify }) => {
               const img = e.target.value;
               const newImgs = [...writing.PostImgs];
               newImgs[0] = img;
+              console.log('img0 :', newImgs[0]);
 
               setWriting(prev => {
                 const cur = { ...prev };
@@ -279,6 +333,7 @@ const CreateForm = ({ Modify }) => {
               const img = e.target.value;
               const newImgs = [...writing.PostImgs];
               newImgs[1] = img;
+              console.log('img1 :', newImgs[1]);
 
               setWriting(prev => {
                 const cur = { ...prev };
@@ -291,6 +346,7 @@ const CreateForm = ({ Modify }) => {
               const img = e.target.value;
               const newImgs = [...writing.PostImgs];
               newImgs[2] = img;
+              console.log('img2 :', newImgs[2]);
 
               setWriting(prev => {
                 const cur = { ...prev };
@@ -303,6 +359,7 @@ const CreateForm = ({ Modify }) => {
               const img = e.target.value;
               const newImgs = [...writing.PostImgs];
               newImgs[3] = img;
+              console.log('img3 :', writing.PostImgs[3]);
 
               setWriting(prev => {
                 const cur = { ...prev };
@@ -311,6 +368,7 @@ const CreateForm = ({ Modify }) => {
               });
             }} />
         </section>
+        <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
       </CreateContainer>
     )
   }
