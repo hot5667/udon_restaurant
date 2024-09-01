@@ -1,10 +1,19 @@
-import React from 'react';
-import RouterComponent from './Router'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import PostDetail from './pages/PostDetail';
+import TestPages from './pages/TestPages';
+import { createContext, useState } from 'react';
 
-const App = () => {
+export const PostsContext = createContext();
+
+function App() {
   return (
-    <RouterComponent /> 
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<TestPages />} />
+        <Route path="detail" element={<PostDetail />} />
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
