@@ -34,14 +34,14 @@ const PostContextProvider = ({ children }) => {
 
   };
 
-  const deleteData = async (post) => {
-    const { error } = await supabase.from("Post").delete().eq("PostID", post.PostID);
-    if (error) {
-      throw error;
-    } else {
-      console.log("delete data => ", data);
-    }
-  }
+  // const deleteData = async (post) => {
+  //   const { error } = await supabase.from("Post").delete().eq("PostID", post.PostID);
+  //   if (error) {
+  //     throw error;
+  //   } else {
+  //     console.log("delete data => ", data);
+  //   }
+  // }
 
   const modifyData = async (post) => {
     console.log('modyfying :', post);
@@ -58,21 +58,23 @@ const PostContextProvider = ({ children }) => {
     addData({ PostID: postsNumber, ...newPost });
   }
 
-  const deletePost = (curPost) => {
-    deleteData(curPost);
-  }
+  // const deletePost = (curPost) => {
+  //   deleteData(curPost);
+  // }
 
   const modifyPost = (newPost) => {
     modifyData(newPost);
+    // deleteImgs(newPost.PostID);
   }
 
-    
+
   const uploadImgs = async (PostID, files) => {
-    for (const file of files) {
+    for (let i = 0, n = files.length; i < n; i++) {
       const { data, error } = await supabase
         .storage
         .from(STORAGE_NAME)
-        .upload(`${PostID}/${file.name}`, file)
+        .upload(`${PostID}/${PostID}_${i}`, files[i])
+      // 저장시 이름을 순서에 맞춰, 사진 중복 업로드도 허용함.
       if (error) {
         throw error;
       }
@@ -88,21 +90,34 @@ const PostContextProvider = ({ children }) => {
     if (error) {
       throw error;
     } else {
-      // console.log('27 :', data)
+      console.log('27 :', data)
       // setData(data);
     }
   }
 
-  const deleteImgs = async (PostID, fileNames) => {
-    const { data, error } = await supabase
+  const deleteImgs = async (PostID) => {
+    let { data: curData, error: getError } = await supabase
       .storage
       .from(STORAGE_NAME)
-      .remove(fileNames.map(fileName => `${PostID}/${fileName}`))
-    if (error) {
+      .list(`${PostID}`)
+    if (getError) {
       throw error;
+    }
+    // else {
+    console.log('curData :', curData)
+    curData = curData.map(ele => PostID + '/' + ele.name);
+
+    // }
+
+    const { data, error: deleteError } = await supabase
+      .storage
+      .from(STORAGE_NAME)
+      .remove(curData)
+    if (deleteError) {
+      throw deleteError;
     } else {
-      console.log('40 :', data)
-      setData(data);
+      console.log('delete :', data)
+      // setData(data);
     }
   }
 
@@ -119,7 +134,7 @@ const PostContextProvider = ({ children }) => {
   }
 
   return (
-    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, getImgs }}>
+    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs }}>
       {children}
     </PostContext.Provider>
   )

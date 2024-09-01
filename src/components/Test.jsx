@@ -28,7 +28,6 @@ const Test = () => {
       console.log(data, data.map(ele => ele.name))
       setData(data);
     }
-    return data;
   }
 
   const deleteFile = async (PostID, fileNames) => {
@@ -47,6 +46,7 @@ const Test = () => {
   return (
     <div>
       <p>test</p>
+      <div>
       <input type='file' onChange={(e) => {
         console.log(e.target.files[0].name);
         e.preventDefault();
@@ -67,6 +67,7 @@ const Test = () => {
         deleteFile(3, ['main.png', 'notAdded.png']);
         console.log(data);
       }}>사진 삭제</button>
+      </div>
     </div>
   )
 }

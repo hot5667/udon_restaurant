@@ -1,7 +1,6 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
-import { PostContext } from '../context/PostContext';
 import supabase from '../supaBasecClient';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -9,11 +8,17 @@ const STORAGE_NAME = 'images';
 
 const RecentPost = ({ post }) => {
   const navigate = useNavigate();
-  const {getImgs} = useContext(PostContext);
   const { PostTitle: title, PostImgs: imgs, PostContent: content, PostCity: city } = post;
 
   // const publicUrl = supabase.storage.from(STORAGE_NAME).getPublicUrl(`${post.PostID}/${JSON.parse(imgs)[0]}`);
   // console.log('recent Post :',post);
+  console.log(`/${post.PostID}/${JSON.parse(imgs)[0]}`)
+  console.log(`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(imgs)[0]}`)
+  console.log(supabase
+    .storage
+    .from(STORAGE_NAME)
+    .getPublicUrl(`${post.PostID}/${post.PostID}_0`).data.publicUrl
+  )
   return (
     <PostCard>
       <img src={`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(imgs)[0]}`} />

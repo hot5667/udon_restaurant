@@ -13,7 +13,9 @@ const CreatePostPage = () => {
 
   return (
     <CreateBody>
-      게시글 {isToModify ? '수정' : '작성'} 중
+      <div style={{width:'100%', height:'50px', display:'flex'}}>
+        <h5 style={{margin:'auto', fontSize:'24px'}}>게시글 {isToModify ? '수정' : '작성'} 중</h5>
+      </div>
       <CreateForm Modify={{isToModify, post}}/>
     </CreateBody>
   )
