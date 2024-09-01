@@ -8,8 +8,9 @@ export const PostsContext = createContext();
 
 function App() {
   return (
-  <>
-  </>
+    <>
+      <Comment />
+    </>
   );
 }
 
