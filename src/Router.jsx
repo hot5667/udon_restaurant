@@ -16,6 +16,8 @@ const RouterComponent = () => {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/already-registered" element={<AlreadyRegistered />} />
         <Route path="/" element={<SignUp />} /> 
+        <Route path="/" element={<TestPages />} />
+        <Route path="detail" element={<PostDetail />} />
       </Routes>
     </Router>
   );
