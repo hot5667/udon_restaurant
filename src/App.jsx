@@ -1,15 +1,10 @@
-import SignUp from "./pages/signUp"
-import SignIn from "./pages/signIn"
-import UserProfile from "./pages/UserProfile"
-import UpdateProfile from "./pages/UpdateProfile"
+import React from 'react';
+import RouterComponent from './Router'
 
-function App() {
-
+const App = () => {
   return (
-    <>
-      <SignUp/>
-    </>
-  )
-}
+    <RouterComponent /> 
+  );
+};
 
-export default App
+export default App;
