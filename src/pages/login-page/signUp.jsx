@@ -3,6 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import supabase from '../../supaBasecClient';
 import { v4 as uuidv4 } from 'uuid';
 
+const insertUserData = async (userID, userCity, userName, userProfile = '') => {
+  try {
+    const { error } = await supabase.from('User').upsert([
+      {
+        UserID: userID, // UUID 또는 OAuth로 받은 사용자 ID
+        UserCity: userCity,
+        UserNickName: userName,
+        UserProfile: userProfile, // 프로필 사진 URL 기본값은 빈 문자열
+      },
+    ]);
+
+    if (error) {
+      throw new Error('사용자 정보를 저장하는 중 오류가 발생했습니다.');
+    }
+
+    return true; // 성공 시 true 반환
+  } catch (err) {
+    throw err; // 오류 발생 시 예외 던지기
+  }
+};
+
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [userPw, setUserPw] = useState('');
@@ -31,25 +52,19 @@ const SignUp = () => {
       });
 
       if (authError) {
-        throw new Error(`회원가입에 실패했습니다: ${authError.message}`);
-      }
+        // 회원가입 중 이미 존재하는 사용자의 경우에도 에러가 발생할 수 있으므로 조건 추가
+        if (authError.message.includes("already registered")) {
+          setError("이미 가입된 사용자입니다.");
+        } else {
+          throw new Error(`회원가입에 실패했습니다: ${authError.message}`);
+        }
+      } else if (user) {
+        // UUID 생성
+        const userID = uuidv4();
 
-      // UUID 생성
-      const userID = uuidv4();
+        // 사용자 정보를 데이터베이스에 삽입하는 함수 호출
+        await insertUserData(userID, userCity, userName);
 
-      // Supabase 데이터베이스에 사용자 정보 삽입
-      const { error: dbError } = await supabase.from('User').upsert([
-        {
-          UserID: userID, // UUID를 UserID로 사용
-          UserCity: userCity,
-          UserNickName: userName,
-          UserProfil: '', // 프로필 사진 URL은 빈 문자열로 초기화
-        },
-      ]);
-
-      if (dbError) {
-        throw new Error('회원가입에 실패했습니다. 다시 시도해주세요.');
-      } else {
         setSuccess('회원가입이 성공적으로 완료되었습니다!');
         navigate('/profile'); // 회원가입 성공 후 프로필 페이지로 이동
       }

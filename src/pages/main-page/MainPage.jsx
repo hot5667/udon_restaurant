@@ -18,7 +18,6 @@ const MainPage = () => {
       >
         게시글 작성하기
       </button>
-      <PostList />
     </MainBody>
   );
 };
