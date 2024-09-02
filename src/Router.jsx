@@ -13,8 +13,8 @@ const RouterComponent = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/create" element={<CreatePostPage />} />
+        <Route path={"/"} element={<MainPage />} />
+        <Route path={"/create"} element={<CreatePostPage />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-out" element={<SignOut />} />
