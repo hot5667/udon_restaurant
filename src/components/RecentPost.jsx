@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components'
+import styled from '@emotion/styled';
 import supabase from '../supaBasecClient';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;

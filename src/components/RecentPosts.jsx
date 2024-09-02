@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import supabase from '../supaBasecClient'
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import RecentPost from './RecentPost';
 
 
