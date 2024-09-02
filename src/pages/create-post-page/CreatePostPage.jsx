@@ -24,8 +24,7 @@ const CreatePostPage = () => {
 export default CreatePostPage;
 
 const CreateBody = styled.div`
-  width: 1200px;
+  width: 1080px;
   height: 100%;
-
   margin: 0 auto;
 `;

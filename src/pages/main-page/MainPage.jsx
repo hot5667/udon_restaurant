@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {useNavigate} from 'react-router-dom'
 import styled from '@emotion/styled';
 import RecentPosts from '../../components/RecentPosts';
+import PostList from '../../components/PostList';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,6 @@ const MainPage = () => {
       >
         게시글 작성하기
       </button>
-      {/* <button onClick={() => {navigate(`/create?isToModify=${true}&id=${2}`)}}>게시글 수정하기</button> */}
     </MainBody>
   );
 };
