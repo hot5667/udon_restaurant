@@ -1,19 +1,17 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import styled from "@emotion/styled";
-import supabase from "../supaBasecClient";
+import React, { useContext } from 'react'
+import { useNavigate } from 'react-router-dom';
+import styled from '@emotion/styled';
+import supabase from '../supaBasecClient';
+import { PostContext } from '../context/PostContext';
+import defaultImg from '../img/default-img.png'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const STORAGE_NAME = "images";
 
 const RecentPost = ({ post }) => {
   const navigate = useNavigate();
-  const {
-    PostTitle: title,
-    PostImgs: imgs,
-    PostContent: content,
-    PostCity: city,
-  } = post;
+  const { PostTitle: title, PostImgs: imgs, PostContent: content, PostCity: city } = post;
+  const {user} = useContext(PostContext);
 
   // const publicUrl = supabase.storage.from(STORAGE_NAME).getPublicUrl(`${post.PostID}/${JSON.parse(imgs)[0]}`);
   // console.log('recent Post :',post);
@@ -24,31 +22,44 @@ const RecentPost = ({ post }) => {
   //   .from(STORAGE_NAME)
   //   .getPublicUrl(`${post.PostID}/${post.PostID}_0`).data.publicUrl
   // )
+  let imgArray = JSON.parse(imgs);
+  if (imgArray.some(img => img.includes('https'))){
+    imgArray = [];
+  }
   return (
-    <PostCard className="embla__slide">
-      <img
-        src={`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(imgs)[0]}`}
-      />
+    <PostCard className='embla__slide'>
+      {
+      imgArray.length === 0 ?
+      <img src={defaultImg} />
+      : <img src={`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${imgArray[0]}`} />
+      }
+      
       <CardContent>
         <h3>{title}</h3>
-        <Button
-          onClick={() => {
+        <Button onClick={(e) => {
+          e.preventDefault();
+          if (user) {
             navigate(`/detail?id=${post.PostID}`);
-          }}
-        >
+          }else {
+            alert('로그인해야 확인 가능합니다. 로그인 페이지로 이동합니다.');
+            navigate('/sign-in');
+            return;
+          }
+        }}>
           게시글로 이동
         </Button>
-        <Button2
-          onClick={() => {
-            const fixedPost = { ...post, PostImgs: JSON.parse(post.PostImgs) };
-            // console.log('clicked Post :',post,JSON.parse(fixedPost.PostImgs));
-            // fixedPost['PostImgs'] = JSON.parse(fixedPost.PostImgs);
-            // console.log('clicked Post :',fixedPost);
-            navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
-              state: fixedPost,
-            });
-          }}
-        >
+        <Button2 onClick={() => {
+          const fixedPost = {...post, PostImgs:JSON.parse(post.PostImgs)};
+          if (!user) {
+            alert('로그인해야 수정할 수 있습니다. 로그인 페이지로 이동합니다.');
+            navigate('/sign-in');
+          } else if (user.UserID !== post.UserID) {
+            alert('작성자만 수정할 수 있습니다.');
+            return;
+          } else {
+            navigate(`/create?isToModify=${true}&id=${post.PostID}`, { state:fixedPost });
+          }
+        }}>
           게시글 수정
         </Button2>
       </CardContent>

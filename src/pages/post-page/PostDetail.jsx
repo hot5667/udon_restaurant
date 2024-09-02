@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-
 import { useSearchParams } from "react-router-dom";
 import supabase, { supabaseUrl } from "../../supaBasecClient";
-import styled from "styled-components";
+import styled from '@emotion/styled';
 
 const PostDetail = () => {
   const [searchParam] = useSearchParams();
