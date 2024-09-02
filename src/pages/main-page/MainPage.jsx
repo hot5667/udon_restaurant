@@ -11,6 +11,7 @@ const MainPage = () => {
     <MainBody>
       우동집 Main
       <RecentPosts />
+      <PostList/>
       <button
         onClick={() => {
           navigate('/create');

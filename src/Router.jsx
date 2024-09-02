@@ -9,6 +9,7 @@ import PostListPage from './pages/PostListPage';
 import MainPage from './pages/main-page/MainPage';
 import CreatePostPage from './pages/create-post-page/CreatePostPage';
 // import SignOut from './pages/signOut';
+import SocialSignUp from './pages/login-page/SocialSignUp';
 
 const RouterComponent = () => {
   return (
@@ -18,12 +19,12 @@ const RouterComponent = () => {
         <Route path='/create' element={<CreatePostPage />}s />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/social-sign-up" element={<SocialSignUp />} />
         {/* <Route path="/sign-out" element={<SignOut />} /> */}
         <Route path="/profile" element={<Profile />} />
         {/* <Route path="/MyPage/:id" element={<MyPage />} /> */}
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/already-registered" element={<AlreadyRegistered />} />
-        <Route path="/" element={<SignUp />} />
         <Route path="/post-list" element={<PostListPage />} />
       </Routes>
     </Router>
