@@ -10,15 +10,21 @@ const MainPage = () => {
   return (
     <MainBody>
       우동집 Main
-      <RecentPosts/>
-      <button onClick={() => {navigate('/create')}}>게시글 작성하기</button>
+      <RecentPosts />
+      <button
+        onClick={() => {
+          navigate('/create');
+        }}
+      >
+        게시글 작성하기
+      </button>
       {/* <button onClick={() => {navigate(`/create?isToModify=${true}&id=${2}`)}}>게시글 수정하기</button> */}
-      <Test/>
+      <Test />
     </MainBody>
-  )
-}
+  );
+};
 
-export default MainPage
+export default MainPage;
 
 const MainBody = styled.div`
   width: 1080px;
@@ -31,4 +37,4 @@ const MainBody = styled.div`
 
   margin: 0 auto;
   padding: 0;
-`
+`;

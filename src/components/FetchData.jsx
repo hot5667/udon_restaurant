@@ -18,12 +18,12 @@ const FetchData = () => {
   }, []);
 
   //포스트 삭제 함수
-  const deletePost = async targetId => {
-    const { error } = await supabase.from('Post').delete().eq('PostID', targetId);
-    if (error) {
-      console.log('error=>', error);
-    }
-  };
+  // const deletePost = async targetId => {
+  //   const { error } = await supabase.from('Post').delete().eq('PostID', targetId);
+  //   if (error) {
+  //     console.log('error=>', error);
+  //   }
+  // };
 
   return (
     <div>

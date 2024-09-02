@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import supabase from '../supaBasecClient';
+import supabase from '../../supaBasecClient';
 
 const SocialSignUp = () => {
   const [userCity, setUserCity] = useState('');
@@ -9,9 +9,9 @@ const SocialSignUp = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const cities = ['서울', '부산', '인천', '대구']; 
+  const cities = ['서울', '부산', '인천', '대구'];
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError(null);
 
@@ -52,9 +52,9 @@ const SocialSignUp = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>도시:</label>
-          <select value={userCity} onChange={(e) => setUserCity(e.target.value)} required>
+          <select value={userCity} onChange={e => setUserCity(e.target.value)} required>
             <option value="">도시를 선택하세요</option>
-            {cities.map((city) => (
+            {cities.map(city => (
               <option key={city} value={city}>
                 {city}
               </option>
@@ -63,21 +63,11 @@ const SocialSignUp = () => {
         </div>
         <div>
           <label>닉네임:</label>
-          <input
-            type="text"
-            value={userNickName}
-            onChange={(e) => setUserNickName(e.target.value)}
-            required
-          />
+          <input type="text" value={userNickName} onChange={e => setUserNickName(e.target.value)} required />
         </div>
         <div>
           <label>프로필 이미지 URL:</label>
-          <input
-            type="text"
-            value={userProfil}
-            onChange={(e) => setUserProfil(e.target.value)}
-            required
-          />
+          <input type="text" value={userProfil} onChange={e => setUserProfil(e.target.value)} required />
         </div>
         <button type="submit">정보 제출</button>
       </form>

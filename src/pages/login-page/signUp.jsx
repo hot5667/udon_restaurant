@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import supabase from '../supaBasecClient';
+import supabase from '../../supaBasecClient';
 import { v4 as uuidv4 } from 'uuid';
 
 const insertUserData = async (userID, userCity, userName, userProfile = '') => {
@@ -33,7 +33,7 @@ const SignUp = () => {
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
 
-  const handleSignUp = async (e) => {
+  const handleSignUp = async e => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
@@ -73,7 +73,7 @@ const SignUp = () => {
     }
   };
 
-  const handleOAuthSignUp = async (provider) => {
+  const handleOAuthSignUp = async provider => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: provider,
@@ -98,43 +98,28 @@ const SignUp = () => {
       <form onSubmit={handleSignUp}>
         <div>
           <label>이메일:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
         </div>
         <div>
           <label>비밀번호:</label>
-          <input
-            type="password"
-            value={userPw}
-            onChange={(e) => setUserPw(e.target.value)}
-            required
-          />
+          <input type="password" value={userPw} onChange={e => setUserPw(e.target.value)} required />
         </div>
         <div>
           <label>이름:</label>
-          <input
-            type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            required
-          />
+          <input type="text" value={userName} onChange={e => setUserName(e.target.value)} required />
         </div>
         <div>
           <label>도시:</label>
-          <select
-            value={userCity}
-            onChange={(e) => setUserCity(e.target.value)}
-            required
-          >
+          <select value={userCity} onChange={e => setUserCity(e.target.value)} required>
             <option value="">도시를 선택하세요</option>
-            <option value="서울">서울</option>
-            <option value="부산">부산</option>
-            <option value="인천">인천</option>
-            <option value="대구">대구</option>
+            <option value={'서울'}>서울</option>
+            <option value={'부산'}>부산</option>
+            <option value={'강원도'}>강원도</option>
+            <option value={'경기도'}>경기도</option>
+            <option value={'경상도'}>경상도</option>
+            <option value={'전라도'}>전라도</option>
+            <option value={'제주도'}>제주도</option>
+            <option value={'충청도'}>충청도</option>
           </select>
         </div>
         <button type="submit">회원가입</button>

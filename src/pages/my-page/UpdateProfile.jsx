@@ -1,5 +1,5 @@
-import React, { useState, useEffect} from 'react';
-import supabase from '../supaBasecClient';
+import React, { useState, useEffect } from 'react';
+import supabase from '../../supaBasecClient';
 
 const UpdateProfile = () => {
   const [username, setUsername] = useState('');
@@ -11,7 +11,7 @@ const UpdateProfile = () => {
     const fetchProfile = async () => {
       try {
         const { data: authData, error: authError } = await supabase.auth.getUser();
-        
+
         if (authError) throw new Error(authError.message);
 
         const userId = authData.user?.id;
@@ -36,7 +36,7 @@ const UpdateProfile = () => {
     fetchProfile();
   }, []);
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = async e => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
@@ -49,10 +49,7 @@ const UpdateProfile = () => {
       const userId = authData.user?.id;
 
       if (userId) {
-        const { error: updateError } = await supabase
-          .from('Membership')
-          .update({ username, city })
-          .eq('id', userId);
+        const { error: updateError } = await supabase.from('Membership').update({ username, city }).eq('id', userId);
 
         if (updateError) throw new Error(updateError.message);
 
@@ -71,21 +68,11 @@ const UpdateProfile = () => {
       <form onSubmit={handleUpdate}>
         <div>
           <label>사용자 이름:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+          <input type="text" value={username} onChange={e => setUsername(e.target.value)} required />
         </div>
         <div>
           <label>도시:</label>
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            required
-          />
+          <input type="text" value={city} onChange={e => setCity(e.target.value)} required />
         </div>
         <button type="submit">업데이트</button>
       </form>
