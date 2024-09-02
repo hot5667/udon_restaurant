@@ -39,7 +39,11 @@ const RecentPost = ({ post }) => {
         <Button onClick={(e) => {
           e.preventDefault();
           if (user) {
+<<<<<<< HEAD
             navigate(`/detail?id=${post.PostID}`);
+=======
+            alert(`Post ID : ${post.PostID}`);
+>>>>>>> ee25a194111a51f05affe3498bd2f62301f4c94d
           }else {
             alert('로그인해야 확인 가능합니다. 로그인 페이지로 이동합니다.');
             navigate('/sign-in');

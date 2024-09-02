@@ -137,19 +137,36 @@ const PostContextProvider = ({ children }) => {
   useEffect(() => {
     const getUserInfo = async () => {
       const { data:userData } = await supabase.auth.getSession();
-      console.log(userData.session.user.id);
+      if (userData.session) {
+        // console.log(userData);
 
-      const { data, error } = await supabase.from('User').select('UserNickName').eq('UserID', userData.session.user.id);
-      console.log(data);
-      setUser({UserID:userData.session.user.id, UserNickname:data[0].UserNickName})
+        const { data, error } = await supabase.from('User').select('UserNickName').eq('UserID', userData.session.user.id);
+        // console.log(data);
+        setUser({UserID:userData.session.user.id, UserNickname:data[0].UserNickName})
+      } else {
+        setUser(null);
+      }
     }
 
     getUserInfo();
   },[])
+
+  
+  const signOutUser = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error('로그아웃 중 오류가 발생했습니다:', error.message);
+    } else {
+      // 로그아웃 성공 시 로그인 페이지로 리디렉션
+      // navigate('/sign-in');
+      setUser(null);
+    }
+  };
   
 
   return (
-    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, user }}>
+    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, signOutUser, user }}>
       {children}
     </PostContext.Provider>
   )

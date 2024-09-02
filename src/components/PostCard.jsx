@@ -1,17 +1,40 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
+import { PostContext } from '../context/PostContext';
+import { Navigate, useNavigate } from 'react-router-dom';
+import defaultImg from '../img/default-img.png'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const STORAGE_NAME = 'images';
 
 const PostCard = ({post}) => {
   const {PostID, PostImgs, PostTitle, PostLike} = post;
+  const {user} = useContext(PostContext);
+  const navigate = useNavigate();
+  let imgArray = JSON.parse(PostImgs);
+  if (imgArray.some(img => img.includes('https'))){
+    imgArray = [];
+  }
 
+  // console.log(PostID, imgArray);
   return (
-    <Card onClick={() => {
+    <Card onClick={(e) => {
+      e.preventDefault();
+      if (user) {
       alert(`Post ID : ${PostID}`);
+
+      }else {
+        alert('로그인해야 확인 가능합니다. 로그인 페이지로 이동합니다.');
+        navigate('/sign-in');
+        return;
+      }
     }}>
-      <img src={`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(PostImgs)[0]}`} />
+      
+      {
+      imgArray.length === 0 ?
+      <img src={defaultImg} />
+      : <img src={`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${imgArray[0]}`} />
+      }
       <p className='post_title'>{PostTitle}</p>
       <div className='post_like_container'>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">

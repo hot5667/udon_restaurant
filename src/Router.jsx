@@ -1,5 +1,9 @@
 import React from "react";
+<<<<<<< HEAD
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+=======
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+>>>>>>> ee25a194111a51f05affe3498bd2f62301f4c94d
 import SignUp from "./pages/login-page/signUp";
 import SignIn from "./pages/login-page/signIn";
 import Profile from "./pages/my-page/Profile";
@@ -35,7 +39,10 @@ const RouterComponent = () => {
           {/* <Route path="/MyPage/:id" element={<MyPage />} /> */}
           {/* <Route path="/" element={<SignUp />} /> */}
           <Route path="/post-list" element={<PostListPage />} />
+<<<<<<< HEAD
           <Route path="/detail" element={<PostDetail />} />
+=======
+>>>>>>> ee25a194111a51f05affe3498bd2f62301f4c94d
         </Route>
         <Route path="/social-sign-up" element={<SocialSignUp />} />
         <Route path="/already-registered" element={<AlreadyRegistered />} />
