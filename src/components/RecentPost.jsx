@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components'
+import styled from '@emotion/styled';
 import supabase from '../supaBasecClient';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -20,7 +20,7 @@ const RecentPost = ({ post }) => {
     .getPublicUrl(`${post.PostID}/${post.PostID}_0`).data.publicUrl
   )
   return (
-    <PostCard>
+    <PostCard className='embla__slide'>
       <img src={`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(imgs)[0]}`} />
       <CardContent>
         <h3>{title}</h3>

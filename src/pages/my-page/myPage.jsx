@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import testImg from '../img/test.png';
-import supabase from '../supaBasecClient';
+import supabase from '../../supaBasecClient';
 imp
 
 const MYPAGE_CONTAINER = styled.div`

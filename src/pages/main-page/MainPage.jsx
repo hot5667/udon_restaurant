@@ -1,8 +1,8 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import RecentPosts from '../../components/RecentPosts';
-import Test from '../../components/Test';
+import React from 'react'
+import {useNavigate} from 'react-router-dom'
+import styled from '@emotion/styled';
+import RecentPosts from '../components/RecentPosts';
+import Test from '../components/Test';
 
 const MainPage = () => {
   const navigate = useNavigate();

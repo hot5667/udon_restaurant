@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, { useContext, useEffect, useState } from 'react'
+import styled from '@emotion/styled';
 import { PostContext } from '../context/PostContext';
 import { useNavigate } from 'react-router-dom';
 
