@@ -1,14 +1,13 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import { useNavigate } from 'react-router-dom';
-import logo from '../img/logo.png';
-import '../css/main.css';
+import React from "react";
+import styled from "@emotion/styled";
+import { useNavigate } from "react-router-dom";
+import logo from "../img/logo.png";
+import "../css/main.css";
 
 const SIDE_CONTAINER = styled.div`
   position: fixed;
   top:0;
   left:0;
-
   height: 100%;
   background-color: #fea100;
   width: 80px;
@@ -39,7 +38,7 @@ const SideBar = () => {
           <li
             className="sideLi"
             onClick={() => {
-              navigate('/');
+              navigate("/");
             }}
           >
             <img className="logoImg" src={logo} alt="logo" />
@@ -55,7 +54,11 @@ const SideBar = () => {
                 navigate(region.path);
               }}
             >
-              <img className="logoImg2" src={logo} alt={`${region.name} 로고`} />
+              <img
+                className="logoImg2"
+                src={logo}
+                alt={`${region.name} 로고`}
+              />
               <p>{region.name}</p>
             </li>
           ))}
