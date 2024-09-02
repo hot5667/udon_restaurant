@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import supabase from '../supaBasecClient';
+import supabase from '../../supaBasecClient';
 
 const SignOut = () => {
   const navigate = useNavigate();
