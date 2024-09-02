@@ -1,23 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import FetchData from '../../components/FetchData';
-import { useSearchParams } from 'react-router-dom';
-import supabase, { supabaseUrl } from '../../supaBasecClient';
+import React, { useEffect, useState } from "react";
+
+import { useSearchParams } from "react-router-dom";
+import supabase, { supabaseUrl } from "../../supaBasecClient";
 
 const PostDetail = () => {
   const [searchParam] = useSearchParams();
-  const postId = searchParam.get('id');
+  const postId = searchParam.get("id");
 
   const [samePost, setSamePost] = useState([
-    { PostDate: '', PostCity: '', PostTitle: '', PostContent: '', Comments: [], PostFoodType: '', UserID: '' },
+    {
+      PostDate: "",
+      PostCity: "",
+      PostTitle: "",
+      PostContent: "",
+      Comments: [],
+      PostFoodType: "",
+      UserID: "",
+    },
   ]);
 
   const [postImgs, setPostImgs] = useState([]);
 
   useEffect(() => {
     const FindSamePost = async () => {
-      const { data, error } = await supabase.from('Post').select('*, Comments (*)').eq('PostID', postId);
+      const { data, error } = await supabase
+        .from("Post")
+        .select("*, Comments (*)")
+        .eq("PostID", postId);
       if (error) {
-        console.log('error=>', error);
+        console.log("error=>", error);
       } else {
         console.log(data);
         setSamePost(data);
@@ -28,7 +39,9 @@ const PostDetail = () => {
 
   useEffect(() => {
     const FindPostImg = async () => {
-      const { data, error } = await supabase.storage.from('images').list(postId);
+      const { data, error } = await supabase.storage
+        .from("images")
+        .list(postId);
       if (error) {
         console.log(error);
       } else {
@@ -45,8 +58,13 @@ const PostDetail = () => {
   const [post] = samePost;
   return (
     <div>
-      {postImgs.map(img => {
-        return <img key={img.id} src={`${supabaseUrl}/storage/v1/object/public/images/${postId}/${img.name}`} />;
+      {postImgs.map((img) => {
+        return (
+          <img
+            key={img.id}
+            src={`${supabaseUrl}/storage/v1/object/public/images/${postId}/${img.name}`}
+          />
+        );
       })}
 
       <p> 작성날짜: {post.PostDate}</p>
@@ -56,7 +74,7 @@ const PostDetail = () => {
       <p> 제목: {post.PostTitle}</p>
       <p> 내용: {post.PostContent}</p>
 
-      {post.Comments.map(comment => {
+      {post.Comments.map((comment) => {
         return (
           <div key={comment.CommentID}>
             <p>작성날짜:{comment.CommentDate}</p>
