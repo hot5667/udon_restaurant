@@ -6,7 +6,7 @@ import { PostContext } from '../context/PostContext';
 import defaultImg from '../img/default-img.png'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const STORAGE_NAME = 'images';
+const STORAGE_NAME = "images";
 
 const RecentPost = ({ post }) => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const RecentPost = ({ post }) => {
         <Button onClick={(e) => {
           e.preventDefault();
           if (user) {
-            alert(`Post ID : ${post.PostID}`);
+            navigate(`/detail?id=${post.PostID}`);
           }else {
             alert('로그인해야 확인 가능합니다. 로그인 페이지로 이동합니다.');
             navigate('/sign-in');
@@ -64,10 +64,10 @@ const RecentPost = ({ post }) => {
         </Button2>
       </CardContent>
     </PostCard>
-  )
-}
+  );
+};
 
-export default RecentPost
+export default RecentPost;
 
 const PostCard = styled.div`
   width: 100%;
@@ -82,10 +82,10 @@ const PostCard = styled.div`
 
   img {
     width: 70%;
-    height:100%;
+    height: 100%;
     object-fit: cover;
   }
-`
+`;
 
 const CardContent = styled.div`
   width: 30%;
@@ -98,12 +98,12 @@ const CardContent = styled.div`
   padding: 20px;
 
   position: relative;
-`
+`;
 
 const Button = styled.button`
   height: 30px;
   padding-bottom: 3px;
-  
+
   border: 1px solid black;
   border-radius: 10px;
 
@@ -114,14 +114,14 @@ const Button = styled.button`
   background-color: lightgray;
 
   cursor: pointer;
-  &:hover{
+  &:hover {
     background-color: #a5a5a5;
   }
-`
+`;
 const Button2 = styled.button`
   height: 30px;
   padding-bottom: 3px;
-  
+
   border: 1px solid black;
   border-radius: 10px;
 
@@ -132,7 +132,7 @@ const Button2 = styled.button`
   background-color: lightgray;
 
   cursor: pointer;
-  &:hover{
+  &:hover {
     background-color: #a5a5a5;
   }
-`
+`;

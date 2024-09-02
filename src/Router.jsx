@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SignUp from "./pages/login-page/signUp";
 import SignIn from "./pages/login-page/signIn";
 import Profile from "./pages/my-page/Profile";
@@ -35,6 +35,7 @@ const RouterComponent = () => {
           {/* <Route path="/MyPage/:id" element={<MyPage />} /> */}
           {/* <Route path="/" element={<SignUp />} /> */}
           <Route path="/post-list" element={<PostListPage />} />
+          <Route path="/detail" element={<PostDetail />} />
         </Route>
         <Route path="/social-sign-up" element={<SocialSignUp />} />
         <Route path="/already-registered" element={<AlreadyRegistered />} />
