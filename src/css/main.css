@@ -1,0 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.sideDiv {
+    margin-top: 30px;
+}
+
+.logoImg {
+    width: 55px; 
+}
+
+.logoImg2 {
+    width: 45px; 
+}
+
+.sideLine{
+    border-bottom: 2px solid white;
+}
+
+.myPageImg {
+    border: 2px solid black;
+    border-radius: 1000px;
+    width: 120px;
+}
+
+.sideLi{
+    list-style-type: none;
+    margin: 10px 0;
+    padding: 10px 0;
+    text-align: center;
+    color: #fff;
+}
+
+hr {
+    background-color: #fff;
+}
