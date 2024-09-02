@@ -165,7 +165,6 @@ const PostContextProvider = ({ children }) => {
   };
   
 
-
   return (
     <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, signOutUser, user }}>
       {children}

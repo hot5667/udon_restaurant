@@ -11,6 +11,7 @@ import CreatePostPage from './pages/create-post-page/CreatePostPage';
 import MyPage from './pages/my-page/myPage'
 import SideBar from './components/sideBar';
 // import SignOut from './pages/signOut';
+import SocialSignUp from './pages/login-page/SocialSignUp';
 
 const SideBarLayout = () => {
   return (
@@ -31,6 +32,7 @@ const RouterComponent = () => {
           <Route path='/create' element={<CreatePostPage />}s />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/social-sign-up" element={<SocialSignUp />} />
           {/* <Route path="/sign-out" element={<SignOut />} /> */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/MyPage/:id" element={<MyPage />} />
