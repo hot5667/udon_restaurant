@@ -1,22 +1,22 @@
-import { React, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import styled from '@emotion/styled';
 import testImg from '../img/test.png';
 import supabase from '../supaBasecClient';
+imp
 
 const MYPAGE_CONTAINER = styled.div`
+  display: flex;
   margin: 30px 30px 30px 130px;
 `;
 
 const LeftMypage = styled.div`
-  float: left;
-  margin: 110px;
+  margin-right: 80px;
   padding-right: 80px;
   border-right: 2px solid #000;
 `;
 
 const RightMypage = styled.div`
-  float: left;
-  margin: 110px;
+  flex-grow: 1;
 `;
 
 const PostBox = styled.div`
@@ -24,80 +24,63 @@ const PostBox = styled.div`
   grid-template-columns: repeat(3, minmax(250px, auto));
   gap: 20px;
   border: 2px solid #000;
-  float: right;
 `;
 
-const myPage = () => {
+const UserInfo = styled.div`
+  border: 1px solid black;
+  padding: 10px;
+  margin-bottom: 20px;
+`;
+
+const MyPage = () => {
   const [users, setUsers] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      // 외부 통신(supabase)
-      // const response = await supabase.from('posts').select('*');
-      // setPosts(response.data);
-      const { data, error } = await supabase.from('User').select('*');
-      if (error) {
-        console.log(error);
-      }
-      else {
-        console.log(data);
-        setUsers(data);
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase.from('User').select('*');
+        if (error) {
+          setError('사용자 정보를 불러오는 데 실패했습니다.');
+          console.error(error);
+        } else {
+          setUsers(data || []);
+        }
+      } catch (err) {
+        setError('사용자 정보를 불러오는 중 문제가 발생했습니다.');
+        console.error(err);
       }
     };
 
-    fetchPosts();
+    fetchUsers();
   }, []);
 
   return (
     <MYPAGE_CONTAINER>
       <LeftMypage>
-        {/* <img className="myPageImg" src={testImg} alt={a} />
-        <ul>
-          <li>
-            <p>닉네임</p>
-          </li>
-          <li>
-            <p>이메일</p>
-          </li>
-          <li>
-            <p>관심동네</p>
-          </li>
-        </ul> */}
-        {users.map(user => {
-          return (
-            <div
-              key={user.id}
-              style={{
-                border: '1px solid black',
-              }}
-            >
-              <h5>아이디 : {user.PostCity}</h5>
-              <h5>이름 : {user.name}</h5>
-              <h5>나이 : {user.age}</h5>
-              <h5>주소 : {user.address}</h5>
-            </div>
-          );
-        })}
+        {error ? (
+          <p style={{ color: 'red' }}>{error}</p>
+        ) : (
+          users.map(user => (
+            <UserInfo key={user.id}>
+              <h5>아이디: {user.UserID || 'N/A'}</h5>
+              <h5>이름: {user.UserNickName || 'N/A'}</h5>
+              <h5>나이: {user.age || 'N/A'}</h5>
+              <h5>주소: {user.UserCity || 'N/A'}</h5>
+            </UserInfo>
+          ))
+        )}
       </LeftMypage>
       <RightMypage>
         <PostBox>
-          <img src={/*url들어갈자리*/ testImg} /*alt={a}*/ />
-          <img src={/*url들어갈자리*/ testImg} /*alt={a}*/ />
-          <img src={/*url들어갈자리*/ testImg} /*alt={a}*/ />
-          <img src={/*url들어갈자리*/ testImg} /*alt={a}*/ />
-          <img src={/*url들어갈자리*/ testImg} /*alt={a}*/ />
-          <img src={/*url들어갈자리*/ testImg} /*alt={a}*/ />
+          {[...Array(6)].map((_, index) => (
+            <img key={index} src={testImg} alt={`post-${index}`} />
+          ))}
         </PostBox>
-        <p>닉네임, 이메일, 관심동네, 내 댓글/게시글이라.....</p>
-        <p>닉네임, 이메일, 관심동네, 내 댓글/게시글이라.....</p>
-        <p>닉네임, 이메일, 관심동네, 내 댓글/게시글이라.....</p>
-        <p>닉네임, 이메일, 관심동네, 내 댓글/게시글이라.....</p>
-        <p>닉네임, 이메일, 관심동네, 내 댓글/게시글이라.....</p>
         <p>닉네임, 이메일, 관심동네, 내 댓글/게시글이라.....</p>
       </RightMypage>
     </MYPAGE_CONTAINER>
-    //닉네임, 이메일?, 관심 동네, 내 댓글/게시글
   );
 };
 
-export default myPage;
+export default MyPage;

@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Test from '../pages/test';
 import SideBar from '../component/sideBar';
+import MyPage from '../component/myPage';
 
 const Router = () => {
   return (
@@ -11,6 +12,7 @@ const Router = () => {
       {/* <SideBar /> */}
       <Routes>
         <Route path="/" element={<Test />} />
+        <Route path="/MyPage/:id" element={<MyPage />} />
       </Routes>
     </BrowserRouter>
   );
