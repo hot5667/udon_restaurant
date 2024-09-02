@@ -150,11 +150,24 @@ const PostContextProvider = ({ children }) => {
 
     getUserInfo();
   },[])
+
+  
+  const signOutUser = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error('로그아웃 중 오류가 발생했습니다:', error.message);
+    } else {
+      // 로그아웃 성공 시 로그인 페이지로 리디렉션
+      // navigate('/sign-in');
+      setUser(null);
+    }
+  };
   
 
 
   return (
-    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, user }}>
+    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, signOutUser, user }}>
       {children}
     </PostContext.Provider>
   )

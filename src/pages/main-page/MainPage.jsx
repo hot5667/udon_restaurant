@@ -9,7 +9,7 @@ import '../../css/font.css'
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { user } = useContext(PostContext);
+  const { user, signOutUser } = useContext(PostContext);
 
   return (
     <>
@@ -22,7 +22,14 @@ const MainPage = () => {
             }} style={{cursor:'pointer'}}>우동집</h1>
             <UlDiv>
               <li>
-                <Link to='/sign-up' style={{textDecoration:'none', color:'black'}}>로그인</Link>
+                {
+                  user ?
+                  <Link  style={{textDecoration:'none', color:'black'}} onClick={(e) => {
+                    e.preventDefault();
+                    signOutUser();
+                  }}>로그아웃</Link>
+                  : <Link to='/sign-in' style={{textDecoration:'none', color:'black'}}>로그인</Link>
+                }
               </li>
               <hr style={{height: '18px', width:'1px', backgroundColor:'black', border:'none', margin:'0 3px'}}/>
               <li>
@@ -39,11 +46,11 @@ const MainPage = () => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (!user) {
+            if (user) {
+              navigate('/create');
+            } else {
               alert('로그인해야 게시글 작성이 가능합니다.')
               return;
-            } else {
-              navigate('/create');
             }
 
           }}

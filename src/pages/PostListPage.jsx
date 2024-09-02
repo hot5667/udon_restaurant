@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import supabase from '../supaBasecClient';
 import styled from 'styled-components';
 import PostCard from '../components/PostCard';
+import { PostContext } from '../context/PostContext';
 
 const PostListPage = () => {
   const [searchParams, _] = useSearchParams();
   const city = searchParams.get('city');
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
+  const {user} = useContext(PostContext)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,9 +47,14 @@ const PostListPage = () => {
           navigate('/');
         }} style={{cursor:'pointer'}}>{city ? city : '전국'}</h1>
         <UlDiv>
-          <li>
-            <Link to='/sign-up' style={{textDecoration:'none', color:'black'}}>로그인</Link>
-          </li>
+          {
+            user ?
+            <Link  style={{textDecoration:'none', color:'black'}} onClick={(e) => {
+              e.preventDefault();
+              signOutUser();
+            }}>로그아웃</Link>
+            : <Link to='/sign-in' style={{textDecoration:'none', color:'black'}}>로그인</Link>
+          }
           <hr style={{height: '18px', width:'1px', backgroundColor:'black', border:'none', margin:'0 3px'}}/>
           <li>
             <Link to='/sign-up' style={{textDecoration:'none', color:'black'}}>회원가입</Link>
