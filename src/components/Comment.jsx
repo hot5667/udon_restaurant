@@ -5,6 +5,14 @@ import supabase from '../supaBasecClient';
 const Comment = () => {
   const [comments, setComments] = useState([]);
   const [commentContent, setCommentContent] = useState('');
+  const [changeContent, setChangeContent] = useState('');
+  const [isOpenWindow, setIsOpenWindow] = useState(false);
+  const [testID, setTestID] = useState(0);
+
+  const now = new Date();
+  const formattedDate = now.toISOString().split('T')[0];
+
+  console.log(formattedDate);
 
   useEffect(() => {
     async function getComment() {
@@ -17,17 +25,12 @@ const Comment = () => {
   //댓글 추가 코드
   async function addComment(event) {
     event.preventDefault();
-
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString('ko-CA');
-
-    console.log(event);
-    console.log({
-      // CommentID: uuid(),
-      PostIDKEY: 7,
-      CommentContent: commentContent,
-      CommentDate: formattedDate,
-    });
+    // console.log({
+    //   // CommentID: uuid(),
+    //   PostIDKEY: 7,
+    //   CommentContent: commentContent,
+    //   CommentDate: formattedDate,
+    // });
     const { data, error } = await supabase.from('Comments').insert({
       // CommentID: uuid(),
       PostIDKEY: 7,
@@ -40,22 +43,58 @@ const Comment = () => {
   //댓글 삭제 코드
   async function deleteComment(Test) {
     const { error } = await supabase.from('Comments').delete().eq('Test', Test);
-    console.log(Test);
-    console.log(error);
     setComments(comments.filter(c => c.CommentID !== Test));
   }
 
+  //댓글 수정 코드
+  async function changeComment(event) {
+    const { data, error } = await supabase
+      .from('Comments')
+      // .select()
+
+      .update({ CommentContent: changeContent, CommentDate: formattedDate })
+      .eq('CommentID', testID);
+    const filteredComment = comments.filter(c => {
+      return c.Test !== testID;
+    });
+    console.log(data);
+    console.log(filteredComment);
+
+    setComments([...filteredComment, { CommentContent: changeContent, CommentDate: formattedDate }]);
+  }
+
+  const changeWindowState = CommentID => {
+    testID === CommentID && setIsOpenWindow(!isOpenWindow);
+  };
+
+  const openChangeCommentWindow = () => {
+    return (
+      <form>
+        <input onChange={event => setChangeContent(event.target.value)} />
+        <button onClick={changeComment}>수정하기</button>
+      </form>
+    );
+  };
+
+  //댓글 리스트
   const commentList = comments.map(comment => {
     return (
       <ul key={comment.CommentID}>
         <li>{comment.CommentDate}</li>
         <li>{comment.CommentContent}</li>
         <button onClick={() => deleteComment(comment.Test)}>삭제</button>
-        <button>수정</button>
+        <button
+          onClick={() => {
+            setTestID(comment.CommentID);
+          }}
+        >
+          수정
+        </button>
+        <div>{comment.CommentID === testID && openChangeCommentWindow()}</div>
       </ul>
     );
   });
-  //form 태그 사용 , submit 액션 사용
+
   return (
     <>
       <form onSubmit={event => addComment(event)}>
