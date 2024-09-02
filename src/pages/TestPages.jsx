@@ -9,10 +9,10 @@ const TestPages = () => {
     <div>
       <button
         onClick={() => {
-          navi('/detail?id=0');
+          navi('/detail?id=7');
         }}
       >
-        1번 상세페이지로
+        상세페이지로
       </button>
 
       <FetchData />
