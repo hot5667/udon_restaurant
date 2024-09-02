@@ -11,7 +11,7 @@ const PostList = () => {
       if (error) {
         throw error;
       } else {
-        console.log("data => ", data);
+        // console.log("data => ", data);
         setPosts(data)
       }
     };
@@ -21,7 +21,6 @@ const PostList = () => {
 
   return (
     <PostListContainer>
-      <p>PostList</p>
       <PostGrids>
         {posts.map((post) => {
           return <PostCard post={post} key={`PostCard-${post.PostID}`}/>

@@ -137,11 +137,15 @@ const PostContextProvider = ({ children }) => {
   useEffect(() => {
     const getUserInfo = async () => {
       const { data:userData } = await supabase.auth.getSession();
-      console.log(userData.session.user.id);
+      if (userData.session) {
+        // console.log(userData);
 
-      const { data, error } = await supabase.from('User').select('UserNickName').eq('UserID', userData.session.user.id);
-      console.log(data);
-      setUser({UserID:userData.session.user.id, UserNickname:data[0].UserNickName})
+        const { data, error } = await supabase.from('User').select('UserNickName').eq('UserID', userData.session.user.id);
+        // console.log(data);
+        setUser({UserID:userData.session.user.id, UserNickname:data[0].UserNickName})
+      } else {
+        setUser(null);
+      }
     }
 
     getUserInfo();
