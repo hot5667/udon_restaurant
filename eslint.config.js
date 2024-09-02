@@ -36,6 +36,6 @@ export default [
       "no-unused-vars": "off",
       "react/prop-types": "off",
     },
-    "extends": ["eslint:recommended", "plugin:prettier/recommended", "prettier"]
+    "extends": ["eslint:recommended", "plugin:prettier/recommended"]
   },
 ]

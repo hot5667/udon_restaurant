@@ -1,4 +1,0 @@
-추가 정보 페이지 제작
-로그인 연동 해서 체크 
-
-UserID/UserCity/UserNickName/UserProfil
