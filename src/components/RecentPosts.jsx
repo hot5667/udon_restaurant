@@ -120,7 +120,7 @@ const Embla = styled.div`
   .embla__container {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 100%; /* Each slide covers 80% of the viewport */
+  grid-auto-columns: 100%; /* Each slide covers x % of the viewport */
   grid-gap: 0 20px;
 }
 
