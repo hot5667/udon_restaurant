@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {useNavigate} from 'react-router-dom'
 import styled from 'styled-components';
 import RecentPosts from '../components/RecentPosts';
-import Test from '../components/Test';
+import PostList from '../components/PostList';
+import supabase from '../supaBasecClient';
+// import Test from '../components/Test';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -13,7 +15,8 @@ const MainPage = () => {
       <RecentPosts/>
       <button onClick={() => {navigate('/create')}}>게시글 작성하기</button>
       {/* <button onClick={() => {navigate(`/create?isToModify=${true}&id=${2}`)}}>게시글 수정하기</button> */}
-      <Test/>
+      {/* <Test/> */}
+      <PostList />
     </MainBody>
   )
 }

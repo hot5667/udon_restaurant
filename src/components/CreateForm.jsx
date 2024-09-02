@@ -1,15 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 import { PostContext } from '../context/PostContext';
 import { useNavigate } from 'react-router-dom';
+import supabase from '../supaBasecClient';
 
 const STORAGE_NAME = 'images';
 
 const CreateForm = ({ Modify }) => {
   const navigate = useNavigate();
-  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs } = useContext(PostContext);
+  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, user } = useContext(PostContext);
   const { isToModify, post } = Modify;
   // console.log('createForm :',post);
+  console.log('user :', user);
+
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      // setUser(session?.user ?? null);
+    }
+
+    getUserInfo();
+  }, [])
 
   // const [title, setTitle] = useState('');
   // const [city, setCity] = useState(0);
@@ -23,7 +35,7 @@ const CreateForm = ({ Modify }) => {
   const date = ('0' + today.getDate()).slice(-2);
   const [writing, setWriting] = useState(
     !isToModify ?
-      { PostUserName: '어드민', PostTitle: '', PostCity: 0, PostFoodType: 0, PostContent: '', PostDate: `${year}-${month}-${date}`, PostImgs: [null, null, null, null], PostLike: 0 }
+      { PostUserName: '', PostTitle: '', PostCity: 0, PostFoodType: 0, PostContent: '', PostDate: `${year}-${month}-${date}`, PostImgs: [null, null, null, null], PostLike: 0 }
       : post
   );
 
@@ -44,7 +56,7 @@ const CreateForm = ({ Modify }) => {
       return;
     } else {
       if (!isToModify) {
-        const newPost = { ...writing };
+        const newPost = { ...writing, PostUserName:user?.UserNickname };
         setPostsNumber(prev => {
           newPost.PostID = prev;
           newPost.PostImgs = newPost.PostImgs.filter(ele => Boolean(ele));
@@ -165,19 +177,19 @@ const CreateForm = ({ Modify }) => {
         <ImgSection className='img_section'>
           <label>사진</label>
           <div className='img_input_container'>
-            {Array(4).fill().map((_,idx) => (
-                <input type='file' key={`img_input_${idx}`}
+            {Array(4).fill().map((_, idx) => (
+              <input type='file' key={`img_input_${idx}`}
                 onChange={(e) => {
                   const newImgs = [...writing.PostImgs];
                   newImgs[idx] = e.target.files[idx];
-    
+
                   setWriting(prev => {
                     const cur = { ...prev };
                     cur.PostImgs = newImgs;
                     return cur;
                   });
                 }} />
-              ))}
+            ))}
             {/* <input type='file' onChange={(e) => {
               const newImgs = [...writing.PostImgs];
               newImgs[0] = e.target.files[0];
@@ -299,18 +311,18 @@ const CreateForm = ({ Modify }) => {
         <ImgSection className='img_section'>
           <label>사진 <span>(수정 시 사진을 다시 업로드해주세요.)</span></label>
           <div className='img_input_container'>
-            {Array(4).fill().map((_,idx) => (
-                <input type='file' key={`img_input_${idx}`}
-              onChange={(e) => {
-                const newImgs = [...writing.PostImgs];
-                newImgs[idx] = e.target.files[idx];
-  
-                setWriting(prev => {
-                  const cur = { ...prev };
-                  cur.PostImgs = newImgs;
-                  return cur;
-                });
-              }} />
+            {Array(4).fill().map((_, idx) => (
+              <input type='file' key={`img_input_${idx}`}
+                onChange={(e) => {
+                  const newImgs = [...writing.PostImgs];
+                  newImgs[idx] = e.target.files[idx];
+
+                  setWriting(prev => {
+                    const cur = { ...prev };
+                    cur.PostImgs = newImgs;
+                    return cur;
+                  });
+                }} />
             ))}
             {/* <input type='file' onChange={(e) => {
               const newImgs = [...writing.PostImgs];

@@ -7,6 +7,7 @@ const STORAGE_NAME = 'images';
 
 const PostContextProvider = ({ children }) => {
   const [postsNumber, setPostsNumber] = useState(0);
+  const [user, setUser] = useState(null);
   // console.log()
 
   useEffect(() => {
@@ -130,11 +131,26 @@ const PostContextProvider = ({ children }) => {
     if (error) {
       throw error;
     }
-
   }
+  
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const { data:userData } = await supabase.auth.getSession();
+      console.log(userData.session.user.id);
+
+      const { data, error } = await supabase.from('User').select('UserNickName').eq('UserID', userData.session.user.id);
+      console.log(data);
+      setUser({UserID:userData.session.user.id, UserNickname:data[0].UserNickName})
+    }
+
+    getUserInfo();
+  },[])
+  
+
 
   return (
-    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs }}>
+    <PostContext.Provider value={{ setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, user }}>
       {children}
     </PostContext.Provider>
   )

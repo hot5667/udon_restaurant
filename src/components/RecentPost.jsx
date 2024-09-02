@@ -12,13 +12,13 @@ const RecentPost = ({ post }) => {
 
   // const publicUrl = supabase.storage.from(STORAGE_NAME).getPublicUrl(`${post.PostID}/${JSON.parse(imgs)[0]}`);
   // console.log('recent Post :',post);
-  console.log(`/${post.PostID}/${JSON.parse(imgs)[0]}`)
-  console.log(`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(imgs)[0]}`)
-  console.log(supabase
-    .storage
-    .from(STORAGE_NAME)
-    .getPublicUrl(`${post.PostID}/${post.PostID}_0`).data.publicUrl
-  )
+  // console.log(`/${post.PostID}/${JSON.parse(imgs)[0]}`)
+  // console.log(`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(imgs)[0]}`)
+  // console.log(supabase
+  //   .storage
+  //   .from(STORAGE_NAME)
+  //   .getPublicUrl(`${post.PostID}/${post.PostID}_0`).data.publicUrl
+  // )
   return (
     <PostCard className='embla__slide'>
       <img src={`${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/${post.PostID}/${JSON.parse(imgs)[0]}`} />
