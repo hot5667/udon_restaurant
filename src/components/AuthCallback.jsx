@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../supaBasecClient';
-import { v4 as uuidv4 } from 'uuid';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -36,8 +35,16 @@ const AuthCallback = () => {
         }
 
         if (existingUser.length > 0) {
-          // 사용자가 이미 존재하는 경우
-          navigate('/already-registered'); // '이미 가입된 사용자' 페이지로 리디렉션
+          const userInfo = existingUser[0];
+
+          // 사용자의 추가 정보가 있는지 확인합니다.
+          if (!userInfo.UserCity || !userInfo.UserNickName || !userInfo.UserProfil) {
+            // 추가 정보가 없으면 SocialSignUp 페이지로 리디렉션
+            navigate('/social-sign-up');
+          } else {
+           
+            navigate('/profile');
+          }
         } else {
           // 새로운 사용자일 경우, 사용자 정보를 데이터베이스에 삽입합니다.
           const { error: insertError } = await supabase.from('User').upsert([
@@ -53,9 +60,10 @@ const AuthCallback = () => {
             console.error('사용자 정보를 저장하는 중 오류가 발생했습니다:', insertError.message);
             setLoading(false);
             return;
-          } else {
-            navigate('/profile'); // 새로운 사용자의 경우 프로필 페이지로 리디렉션
           }
+
+          // 추가 정보 입력 페이지로 리디렉션
+          navigate('/social-sign-up');
         }
       }
       setLoading(false);

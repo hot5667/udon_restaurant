@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import FetchData from '../components/FetchData';
+import FetchData from '../../components/FetchData';
 import { useSearchParams } from 'react-router-dom';
-import supabase from '../supaBasecClient';
+import supabase from '../../supaBasecClient';
 
 const PostDetail = () => {
   const [searchParam] = useSearchParams();
