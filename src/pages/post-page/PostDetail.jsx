@@ -111,7 +111,7 @@ const CommentStyle = styled.div`
 
 const DetailPost = styled.div`
   max-width: 900px; // 반응형
-
+  background-color: green;
   display: flex;
   padding-bottom: 30px;
   line-height: 30px;
