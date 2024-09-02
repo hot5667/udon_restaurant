@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import supabase from '../supaBasecClient';
+import supabase from '../../supaBasecClient';
 
 const SignIn = () => {
   const [userId, setUserId] = useState('');
@@ -8,7 +8,7 @@ const SignIn = () => {
   const [success, setSuccess] = useState(null);
 
   // 이메일 및 비밀번호로 로그인
-  const handleSignIn = async (e) => {
+  const handleSignIn = async e => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
@@ -54,21 +54,11 @@ const SignIn = () => {
       <form onSubmit={handleSignIn}>
         <div>
           <label>아이디 (이메일):</label>
-          <input
-            type="email"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            required
-          />
+          <input type="email" value={userId} onChange={e => setUserId(e.target.value)} required />
         </div>
         <div>
           <label>비밀번호:</label>
-          <input
-            type="password"
-            value={userPw}
-            onChange={(e) => setUserPw(e.target.value)}
-            required
-          />
+          <input type="password" value={userPw} onChange={e => setUserPw(e.target.value)} required />
         </div>
         <button type="submit">로그인</button>
       </form>

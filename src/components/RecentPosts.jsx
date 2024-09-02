@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import supabase from '../supaBasecClient'
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import RecentPost from './RecentPost';
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'

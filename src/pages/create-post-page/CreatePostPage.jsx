@@ -1,7 +1,7 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from '@emotion/styled';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import CreateForm from '../components/CreateForm';
+import CreateForm from '../../components/CreateForm';
 
 const CreatePostPage = () => {
   const [searchParams, _] = useSearchParams();
@@ -18,14 +18,13 @@ const CreatePostPage = () => {
       </div>
       <CreateForm Modify={{ isToModify, post }} />
     </CreateBody>
-  )
-}
+  );
+};
 
-export default CreatePostPage
+export default CreatePostPage;
 
 const CreateBody = styled.div`
   width: 1080px;
   height: 100%;
-
-  margin: auto;
-`
+  margin: 0 auto;
+`;
