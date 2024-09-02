@@ -7,6 +7,7 @@ import AlreadyRegistered from './pages/AlreadyRegistered';
 import AuthCallback from './components/AuthCallback';
 import MainPage from './pages/MainPage'
 import CreatePostPage from './pages/CreatePostPage'
+import SignOut from './pages/signOut';
 
 const RouterComponent = () => {
   return (
@@ -16,6 +17,7 @@ const RouterComponent = () => {
         <Route path={'/create'} element={<CreatePostPage />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-out" element={<SignOut />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/already-registered" element={<AlreadyRegistered />} />
