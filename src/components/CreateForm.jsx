@@ -1,15 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react'
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import { PostContext } from '../context/PostContext';
 import { useNavigate } from 'react-router-dom';
+import supabase from '../supaBasecClient';
 
 const STORAGE_NAME = 'images';
 
 const CreateForm = ({ Modify }) => {
   const navigate = useNavigate();
-  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs } = useContext(PostContext);
+  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, user } = useContext(PostContext);
   const { isToModify, post } = Modify;
   // console.log('createForm :',post);
+  console.log('user :', user);
+
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      // setUser(session?.user ?? null);
+    }
+
+    getUserInfo();
+  }, [])
 
   // const [title, setTitle] = useState('');
   // const [city, setCity] = useState(0);
@@ -24,7 +36,7 @@ const CreateForm = ({ Modify }) => {
   const [writing, setWriting] = useState(
     !isToModify
       ? {
-          PostUserName: '어드민',
+          PostUserName: '',
           PostTitle: '',
           PostCity: 0,
           PostFoodType: 0,
@@ -33,7 +45,7 @@ const CreateForm = ({ Modify }) => {
           PostImgs: [null, null, null, null],
           PostLike: 0,
         }
-      : post,
+      : post
   );
 
   const handlePost = e => {
@@ -51,7 +63,7 @@ const CreateForm = ({ Modify }) => {
       return;
     } else {
       if (!isToModify) {
-        const newPost = { ...writing };
+        const newPost = { ...writing, PostUserName:user?.UserNickname };
         setPostsNumber(prev => {
           newPost.PostID = prev;
           newPost.PostImgs = newPost.PostImgs.filter(ele => Boolean(ele));
@@ -205,46 +217,6 @@ const CreateForm = ({ Modify }) => {
                   }}
                 />
               ))}
-            {/* <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[0] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
-            <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[1] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
-            <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[2] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
-            <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[3] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} /> */}
           </div>
         </ImgSection>
         <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
@@ -363,46 +335,6 @@ const CreateForm = ({ Modify }) => {
                   }}
                 />
               ))}
-            {/* <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[0] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
-            <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[1] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
-            <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[2] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
-            <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[3] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} /> */}
           </div>
         </ImgSection>
         <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
