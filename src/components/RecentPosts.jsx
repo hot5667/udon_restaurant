@@ -65,7 +65,7 @@ const RecentPosts = () => {
   return (
     <RecentDiv>
       <h1 style={{ fontSize: '24px' }}>최신글</h1>
-      <hr />
+      <hr style={{margin:'10px 0'}}/>
       <Embla className='embla' ref={emblaRef}>
         <div className='embla__container'>
           {recentPosts.map(recent => {
@@ -103,6 +103,7 @@ const RecentDiv = styled.div`
   /* height: 500px; */
 
   padding: 20px;
+  margin: 0 0 20px 0;
 
   background-color: gray;
 
