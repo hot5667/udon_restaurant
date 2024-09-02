@@ -17,6 +17,7 @@ const RouterComponent = () => {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/MyPage/:id" element={<MyPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/already-registered" element={<AlreadyRegistered />} />
       </Routes>
