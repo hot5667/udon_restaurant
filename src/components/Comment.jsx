@@ -91,13 +91,22 @@ const Comment = () => {
   console.log(profileImg);
 
   //댓글 삭제 코드
-  async function deleteComment(Test) {
-    const { error } = await supabase.from("Comments").delete().eq("Test", Test);
-    setComments(comments.filter((c) => c.CommentID !== Test));
+  async function deleteComment(id) {
+    const { data, error } = await supabase
+      .from("Comments")
+      .delete()
+      .eq("CommentID", id); //사용하는건지?
+    setComments(comments.filter((c) => c.CommentID !== id));
   }
 
   //댓글 수정 코드
   async function changeComment(event) {
+    event.preventDefault();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const { data, error } = await supabase
       .from("Comments")
       // .select()
@@ -106,24 +115,25 @@ const Comment = () => {
         CommentContent: changeContent,
         CommentLastUpdate: formattedDate,
       })
-      .eq("CommentID", testID);
-    const filteredComment = comments.filter((c) => {
-      return c.CommentID !== testID;
+      .eq("CommentID", testID)
+      .select("*");
+    const newComments = comments.map((c) => {
+      if (c.CommentID === testID) {
+        return data[0];
+      } else {
+        return c;
+      }
     });
-    console.log(data);
-    console.log(filteredComment);
+    console.log(newComments);
 
-    setComments([
-      ...filteredComment,
-      { CommentContent: changeContent, CommentLastUpdate: formattedDate },
-    ]);
+    setComments(newComments);
   }
 
   const openChangeCommentWindow = () => {
     return (
-      <form>
+      <form onSubmit={changeComment}>
         <input onChange={(event) => setChangeContent(event.target.value)} />
-        <button onClick={changeComment}>수정하기</button>
+        <button>수정하기</button>
       </form>
     );
   };
@@ -140,7 +150,7 @@ const Comment = () => {
         <div>
           <li>{comment.CommentDate}</li>
           <li>{comment.CommentContent}</li>
-          <button onClick={() => deleteComment(comment.Test)}>삭제</button>
+          <button onClick={() => deleteComment(comment.CommentID)}>삭제</button>
           <button
             onClick={() => {
               setTestID(comment.CommentID);
