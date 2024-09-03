@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import defaultProfileImg from "../../img/image.png";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import supabase from "../../supaBasecClient";
 import styled from "@emotion/styled";
 import { AuthContext } from "../../context/AuthContext";
@@ -25,6 +25,8 @@ const PostDetail = () => {
   const [searchParam] = useSearchParams();
   const postId = searchParam.get("id");
   const { user } = useContext(AuthContext);
+  const {state:PostUserID} = useLocation();
+  console.log('location :', useLocation())
 
   const [samePost, setSamePost] = useState(
     {
@@ -56,7 +58,7 @@ const PostDetail = () => {
       } else {
         // console.log(data);
         setSamePost(prev => {
-          const curPost = {...data[0]};
+          const curPost = {...prev, ...data[0]};
           curPost.PostImgs = JSON.parse(curPost.PostImgs);
           return {...curPost};
         });
@@ -81,17 +83,18 @@ const PostDetail = () => {
 
     
     const FindProfileImg = async () => {
+      console.log('post userid',  samePost)
+
       const { data, error } = await supabase
         .from("User")
         .select("UserProfile")
-        .eq("UserID", post.UserID);
+        .eq("UserID", PostUserID);
       if (error) {
         console.log("error=>", error);
       } else {
-        console.log(data);
-        setProfileImg(data);
+        console.log(data[0]);
         setSamePost(prev => {
-          return {...prev, UserProfile:data};
+          return {...prev, UserProfile:data[0].UserProfile};
         });
       }
     };
@@ -239,8 +242,8 @@ const PostDetail = () => {
         ) : null}
       </ButtonStyle>
       <PostInfoDetail>
-        {post.UserProfile?.UserProfile ? (
-          <ProfileImg src={post.UserProfile?.UserProfile} />
+        {post?.UserProfile ? (
+          <ProfileImg src={post?.UserProfile} />
         ) : (
           <ProfileImg src={defaultProfileImg} />
         )}
