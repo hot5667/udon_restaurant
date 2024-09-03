@@ -28,7 +28,7 @@ const PostList = () => {
         if (error) {
           throw error;
         } else {
-          console.log("data => ", data);
+          // console.log("data => ", data);
           setPosts(data.reverse())
         }
       }

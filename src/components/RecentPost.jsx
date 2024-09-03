@@ -48,7 +48,7 @@ const RecentPost = ({ post }) => {
         }}>
           이동
         </Button>
-        <Button2 onClick={() => {
+        {/* <Button2 onClick={() => {
           const fixedPost = {...post, PostImgs:JSON.parse(post.PostImgs)};
           if (!user) {
             alert('로그인해야 수정할 수 있습니다. 로그인 페이지로 이동합니다.');
@@ -61,7 +61,7 @@ const RecentPost = ({ post }) => {
           }
         }}>
           게시글 수정
-        </Button2>
+        </Button2> */}
       </CardContent>
     </PostCard>
   );

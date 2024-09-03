@@ -12,7 +12,7 @@ const SignUpForm = () => {
   const [userName, setUserName] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(false); // 로그인/회원가입 토글
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -26,7 +26,6 @@ const SignUpForm = () => {
     }
 
     try {
-      // Supabase Auth로 회원가입
       const { data, error: authError } = await supabase.auth.signUp({
         email: email,
         password: userPw,
@@ -102,13 +101,26 @@ const SignUpForm = () => {
         {success && <p css={successMessageStyle}>{success}</p>}
         <form onSubmit={isLogin ? handleSignIn : handleSignUp} css={formStyle}>
           {!isLogin && (
-            <FormField
-              label="이름"
-              type="text"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              required
-            />
+            <div css={socialLoginContainerStyle}>
+              <button
+                onClick={() => handleSocialSignUp("google")}
+                css={socialButtonStyle}
+              >
+                Google로 회원가입
+              </button>
+              <button
+                onClick={() => handleSocialSignUp("github")}
+                css={socialButtonStyle}
+              >
+                GitHub로 회원가입
+              </button>
+              <button
+                onClick={() => handleSocialSignUp("kakao")}
+                css={socialButtonStyle}
+              >
+                Kakao로 회원가입
+              </button>
+            </div>
           )}
           <FormField
             label="이메일"
