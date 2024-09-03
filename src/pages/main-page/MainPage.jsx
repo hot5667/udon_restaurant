@@ -1,14 +1,29 @@
-import React, { useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useContext, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import RecentPosts from '../../components/RecentPosts';
 import PostList from '../../components/PostList';
+import SideBar from '../../components/SideBar';
+import { AuthContext } from '../../context/AuthContext';
 import { PostContext } from '../../context/PostContext';
 import '../../css/font.css'
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { user, signOutUser } = useContext(PostContext);
+  const { user, signOutUser, loading: authLoading } = useContext(AuthContext);
+  const { fetchPosts, posts, loading: postsLoading } = useContext(PostContext);
+
+  useEffect(() => {
+    // Ensure to log the user state for debugging
+    console.log('User state:', user);
+  }, [user]); // Depend on user state
+
+  useEffect(() => {
+    // Fetch posts when the component mounts or when `user` changes
+    if (!posts) fetchPosts();
+  }, [fetchPosts, posts]);
+
+  if (authLoading || postsLoading) return <p>로딩 중...</p>; // Loading state handling
 
   return (
     <>
@@ -68,47 +83,86 @@ export default MainPage;
 const MainBody = styled.div`
   width: 1080px;
   height: 100%;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   margin: 0 auto;
   padding: 0;
-
-  /* position: relative; */
 `;
 
-const HeaderDiv = styled.div`
+const HeaderDiv = styled.header`
   background-color: white;
-
-  width: inherit;
+  width: 100%;
   height: fit-content;
-
   position: sticky;
-  top:0;
+  top: 0;
   z-index: 1;
-
   padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-  .header {
-    width: 100%;
-    display: flex;
+const Title = styled.h1`
+  font-size: 50px;
+  font-family: 'LOTTERIACHAB';
+  color: #fea100;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+`;
 
-    position: relative;
+const NavLinks = styled.ul`
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-top: 10px;
+`;
+
+const NavLink = styled(Link)`
+  text-decoration: none;
+  color: black;
+  margin: 0 10px;
+  &:hover {
+    text-decoration: underline;
   }
+`;
 
-  h1 {
-    font-size:50px;
-    font-family:'LOTTERIACHAB';
-    color: #fea100;
+const Separator = styled.hr`
+  height: 18px;
+  width: 1px;
+  background-color: black;
+  border: none;
+  margin: 0 10px;
+`;
 
-    z-index: 1;
-
-    margin: auto;
+const AddPostButton = styled.button`
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background-color: #fea100;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  &:hover {
+    background-color: #dc8b00;
   }
-`
+  svg {
+    width: 25px;
+  }
+`;
+
 
 const UlDiv = styled.ul`
 
@@ -123,25 +177,4 @@ const UlDiv = styled.ul`
   display: flex;
   align-items: center;
   margin-top: 3px;
-`
-
-const AddPostButton = styled.button`
-  width:50px;
-  height:50px;
-
-  border: none;
-  border-radius: 50px;
-  background-color: #fea100;
-
-  position: fixed;
-  bottom: 20px;
-  right: 30px;
-
-  &:hover {
-    background-color: #dc8b00;
-  }
-
-  svg {
-    width: 25px;
-  }
 `
