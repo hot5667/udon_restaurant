@@ -12,7 +12,6 @@ import MainPage from "./pages/main-page/MainPage";
 import CreatePostPage from "./pages/create-post-page/CreatePostPage";
 import WrapperComponent from "./components/WrapperComponent";
 import PostDetail from "./pages/post-page/PostDetail";
-// import SideBar from "./components/sideBar";
 import SocialSignUp from "./pages/login-page/SocialSignUp";
 
 const RouterComponent = () => {
