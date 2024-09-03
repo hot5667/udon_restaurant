@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import { AuthContext } from '../context/AuthContext'; // Import AuthContext
 import { PostContext } from '../context/PostContext'; // Import PostContext
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import defaultImg from '../img/default-img.png';
 import heartIcon from '../img/heart-icon.svg'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const STORAGE_NAME = 'images';
+const STORAGE_NAME = "images";
 
 const PostCard = ({ post }) => {
   const { PostID, PostImgs, PostTitle, PostLike } = post;
@@ -15,7 +15,6 @@ const PostCard = ({ post }) => {
   const { posts } = useContext(PostContext); // Use PostContext to get posts
   const navigate = useNavigate();
   let imgArray = JSON.parse(PostImgs);
-
   if (imgArray.some(img => img.includes('https'))) {
     imgArray = [];
   }
@@ -89,7 +88,7 @@ const Card = styled.div`
     align-items: center;
     justify-content: flex-start;
   }
-  
+
   .post_like_container .post_like {
     /* margin: auto; */
   }
