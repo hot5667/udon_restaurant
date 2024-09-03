@@ -30,10 +30,10 @@ const MainPage = () => {
       <MainBody>
         <HeaderDiv>
           <div className='header'>
-            <h1 onClick={(e) => {
+            <Title onClick={(e) => {
               e.preventDefault();
               navigate('/');
-            }} style={{cursor:'pointer'}}>우동집</h1>
+            }} style={{cursor:'pointer'}}>우동집</Title>
             <UlDiv>
               <li>
                 {
@@ -170,7 +170,7 @@ const UlDiv = styled.ul`
   height: fit-content;
 
   position:absolute;
-  top:0;
+  top:8px;
   right: 0;
   z-index: 1;
 
