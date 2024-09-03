@@ -55,7 +55,7 @@ const Card = styled.div`
   height: 300px;
 
   padding: 10px;
-  background-color: bisque;
+  background-color: #eaeaea;
   border: 1px solid lightgray;
   border-radius: 20px;
 
@@ -70,6 +70,7 @@ const Card = styled.div`
     height: 70%;
     object-fit: cover;
 
+    border: 1px solid lightgray;
     border-radius: 10px;
   }
 

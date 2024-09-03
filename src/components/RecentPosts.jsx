@@ -65,10 +65,12 @@ const RecentPosts = () => {
 
 
   return (
+  <div>
+  <h1 style={{ fontSize: '24px' }}>최신글</h1>
+      <hr style={{height: '1px', border:'none', backgroundColor: 'black', margin:'10px 0'}}/>
     <RecentDiv>
-      <h1 style={{ fontSize: '24px' }}>최신글</h1>
-      <hr style={{margin:'10px 0'}}/>
       <Embla className='embla' ref={emblaRef}>
+     
         <div className='embla__container'>
           {recentPosts.map(recent => {
 
@@ -95,6 +97,7 @@ const RecentPosts = () => {
         </EmblaActionButton>
       </EmblaControls>
     </RecentDiv>
+    </div>
   )
 }
 
@@ -107,7 +110,10 @@ const RecentDiv = styled.div`
   padding: 20px;
   margin: 0 0 20px 0;
 
-  background-color: gray;
+  /* background-color: gray; */
+
+  border-bottom: 1px solid black;
+  /* border-radius: 20px; */
 
   hr {
     height: 1px;

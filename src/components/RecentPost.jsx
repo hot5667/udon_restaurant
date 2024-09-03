@@ -77,6 +77,7 @@ const PostCard = styled.div`
   justify-content: space-around;
 
   background-color: white;
+  /* border: 1px solid lightgray; */
   border-radius: 30px;
   overflow: hidden;
 
@@ -91,6 +92,7 @@ const CardContent = styled.div`
   width: 30%;
   height: 100%;
 
+  background-color: #fcebce;
   /* display: flex;
   flex-direction: column;
   justify-content: space-around; */
