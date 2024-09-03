@@ -12,9 +12,9 @@ import {
 } from '../../components/EmblaCarouselArrowButtons'
 import { AuthContext } from "../../context/AuthContext";
 import DeletePost from "../../components/DeletePost";
-import Comment from "../../components/Comment"
-import UnLikeImg from '../../img/heart-empty-icon.svg'
-import LikeImg from '../../img/heart-icon.svg'
+import Comment from "../../components/Comment";
+import UnLikeImg from '../../img/heart-empty-icon.svg';
+import LikeImg from '../../img/heart-icon.svg';
 import defaultImg from '../../img/default-img.png'
 
 
@@ -32,31 +32,25 @@ const menu = {
 
 const PostDetail = () => {
   const navigate = useNavigate();
-
   const [searchParam] = useSearchParams();
   const postId = searchParam.get("id");
   const { user } = useContext(AuthContext);
-  console.log('detail page user :', user);
-
   const { state: PostUserID } = useLocation();
-  console.log('location :', PostUserID)
 
-  const [samePost, setSamePost] = useState(
-    {
-      PostDate: "",
-      PostCity: "",
-      PostTitle: "",
-      PostContent: "",
-      PostFoodType: "",
-      PostImgs: [],
-      UserID: "",
-      PostLike: '[]',
-      UserProfile: null,
-    },
-  );
+  const [post, setPost] = useState({
+    PostDate: "",
+    PostCity: "",
+    PostTitle: "",
+    PostContent: "",
+    PostFoodType: "",
+    PostImgs: [],
+    UserID: "",
+    PostLike: '[]',
+    Comments: [],
+    UserProfile: null,
+  });
 
-  // const [postImgs, setPostImgs] = useState([]);
-  // const [profileImg, setProfileImg] = useState([]);
+
   const [like, setLike] = useState(0);
 
   useEffect(() => {
@@ -65,35 +59,20 @@ const PostDetail = () => {
         .from("Post")
         .select("*")
         .eq("PostID", postId);
+
       if (error) {
         console.log("error=>", error);
       } else {
-        // console.log(data);
-        setSamePost(prev => {
+        setPost(prev => {
           const curPost = { ...prev, ...data[0] };
           curPost.PostImgs = JSON.parse(curPost.PostImgs);
-          return { ...curPost };
+          return curPost;
+
         });
-        setLike(JSON.parse(data[0].PostLike).length)
+        setLike(JSON.parse(data[0].PostLike).length);
       }
     };
     FindSamePost();
-
-    // const FindPostImg = async () => {
-    //   const { data, error } = await supabase.storage
-    //     .from("images")
-    //     .list(postId);
-    //   if (error) {
-    //     console.log(error);
-    //   } else {
-    //     data;
-    //   }
-    //   // console.log(data);
-    //   setPostImgs(data);
-    // };
-    // FindPostImg();
-
-
     const FindProfileImg = async () => {
       if (PostUserID) {
         const { data, error } = await supabase
@@ -104,7 +83,7 @@ const PostDetail = () => {
         if (error) {
           console.log("error=>", error);
         } else {
-          setSamePost(prev => ({
+          setPost(prev => ({
             ...prev,
             UserProfile: data[0]?.UserProfile || null,
           }));
@@ -113,7 +92,7 @@ const PostDetail = () => {
     };
     FindProfileImg();
   }, [like, postId, PostUserID]);
-
+  let likeArray = JSON.parse(post.PostLike) || [];
   // 캐러셀
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false })]);
   const {
@@ -138,63 +117,43 @@ const PostDetail = () => {
     [emblaApi]
   )
 
-
-
-  let likeArray = JSON.parse(samePost.PostLike)
   const handleLike = async (e) => {
     e.preventDefault();
     if (!user) return; // 사용자 로그인이 필요함
 
-    // console.log('Like Array :', like, likeArray)
     if (likeArray.includes(user.UserID)) {
       try {
         likeArray = likeArray.filter(id => id !== user.UserID);
-        console.log('remove like :', likeArray);
         const { error } = await supabase.from("Post").update({ PostLike: likeArray }).eq('PostID', post.PostID);
         if (error) throw error;
-
-        console.log("add Like:", post.PostLike);
-      setLike(prev => prev - 1);
+        setLike(prev => prev - 1);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
 
     } else {
       try {
-        // const likeArray = JSON.parse(post.PostLike);
         likeArray.push(user.UserID);
         const { error } = await supabase.from("Post").update({ PostLike: likeArray }).eq('PostID', post.PostID);
         if (error) throw error;
-
-        console.log("Like modified:", post.PostLike);
-      setLike(prev => prev + 1);
+        setLike(prev => prev + 1);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
+
     }
-  }
-
-
-
-  console.log(samePost);
-
-  const post = samePost;
+  };
 
   let tmp = post.PostContent;
-  // console.log('tmp', tmp);
-  tmp = tmp.split('\n').map((line, idx) => {
-    return (
-      <span key={`${postId}_line_${idx}`}>
-        {line}
-        <br />
-      </span>
-    );
-  });
+  tmp = tmp.split('\n').map((line, idx) => (
+    <span key={`${postId}_line_${idx}`}>
+      {line}
+      <br />
+    </span>
+  ));
 
-  // console.log(profileImg);
   return (
     <DetailPost>
-
       <HeaderDiv>
         <div className='header'>
           <Title onClick={(e) => {
@@ -252,34 +211,18 @@ const PostDetail = () => {
         </Embla>
       }
       
-
       <ButtonStyle>
         {user && user.UserID === post.UserID ? (
           <div>
             <button
               onClick={() => {
-                const fixedPost = {...post, PostImgs:post.PostImgs};
-                if (!user) {
-                  alert('로그인해야 수정할 수 있습니다. 로그인 페이지로 이동합니다.');
-                  navigate('/sign-in');
-                } else if (user.UserID !== post.UserID) {
-                  alert('작성자만 수정할 수 있습니다.');
-                  return;
-                } else {
-                  navigate(`/create?isToModify=${true}&id=${post.PostID}`,
-                    { state:{
-                      PostCity:fixedPost.PostCity,
-                      PostContent:fixedPost.PostContent,
-                      PostDate:fixedPost.PostDate,
-                      PostFoodType:fixedPost.PostFoodType,
-                      PostID:fixedPost.PostID,
-                      PostImgs:[null,null,null,null],
-                      PostLike:fixedPost.PostLike,
-                      PostTitle:fixedPost.PostTitle,
-                      PostUserName:fixedPost.PostUserName,
-                      UserID:fixedPost.UserID,
-                    }});
-                }
+                const fixedPost = {
+                  ...post,
+                  PostImgs: JSON.parse(post.PostImgs),
+                };
+                navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
+                  state: fixedPost,
+                });
               }}
             >
               게시글 수정
@@ -289,27 +232,21 @@ const PostDetail = () => {
         ) : null}
       </ButtonStyle>
       <PostInfoDetail>
-        {post?.UserProfile ? (
-          <ProfileImg src={post?.UserProfile} />
-        ) : (
-          <ProfileImg src={defaultProfileImg} />
-        )}
+        <ProfileImg src={post.UserProfile || defaultProfileImg} />
         <p> 작성자: {post.PostUserName}</p>
         <p> 도시: {post.PostCity}</p>
         <p> 음식종류: {menu[post.PostFoodType]}</p>
         <p> 작성날짜: {post.PostDate}</p>
         <LikeButton onClick={handleLike}>
-          {
-            likeArray.includes(user.UserID) ?
-              <img src={LikeImg} />
-              : <img src={UnLikeImg} />
+          {likeArray.includes(user?.UserID) ?
+            <img src={LikeImg} alt="Liked" />
+            : <img src={UnLikeImg} alt="Not Liked" />
           }
-        </LikeButton>{JSON.parse(post.PostLike).length}
+        </LikeButton>{like}
       </PostInfoDetail>
       <PostContents>
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
         <p style={{ wordWrap: "break-word" }}>
-          {" "}
           내용 <br />
           {tmp}
         </p>
@@ -319,17 +256,15 @@ const PostDetail = () => {
       </CommentStyle>
 
       {post.Comments?.length ? (
-        post.Comments.map((comment) => {
-          return (
-            <CommentStyle key={comment.CommentID}>
-              <p>작성자:{comment.commentUserID}</p>
-              <p>작성날짜:{comment.CommentDate}</p>
-              <p style={{ wordWrap: "break-word" }}>
-                내용:{comment.CommentContent}
-              </p>
-            </CommentStyle>
-          );
-        })
+        post.Comments.map((comment) => (
+          <CommentStyle key={comment.CommentID}>
+            <p>작성자:{comment.commentUserID}</p>
+            <p>작성날짜:{comment.CommentDate}</p>
+            <p style={{ wordWrap: "break-word" }}>
+              내용:{comment.CommentContent}
+            </p>
+          </CommentStyle>
+        ))
       ) : (
         <CommentStyle> 작성된 댓글이 없습니다</CommentStyle>
       )}
@@ -358,7 +293,6 @@ const CommentStyle = styled.div`
 
 const DetailPost = styled.div`
   max-width: 900px;
-
   display: flex;
   padding-bottom: 30px;
   line-height: 30px;
@@ -370,7 +304,6 @@ const DetailPost = styled.div`
 
 const ButtonStyle = styled.div`
   display: flex;
-
   margin: 0 0 0 auto;
 `;
 
@@ -387,7 +320,6 @@ const HeaderDiv = styled.header`
   top: 0;
   z-index: 1;
   padding: 20px 0;
-  /* margin: 10px 0; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -403,26 +335,21 @@ const Title = styled.h1`
 `;
 
 const UlDiv = styled.ul`
-
-  /* width: 100%; */
   height: fit-content;
-
-  position:absolute;
+  position: absolute;
   top: 8px;
   right: 0;
   z-index: 1;
-
   display: flex;
   align-items: center;
-  /* margin-top: 3px; */
-`
+`;
+
 const LikeButton = styled.button`
   height: fit-content;
   background-color: transparent;
   border: none;
   img {
     width: 30px;
-
   }
 `
 
