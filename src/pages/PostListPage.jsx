@@ -1,43 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom'
-import supabase from '../supaBasecClient';
+import React, { useContext } from 'react'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import styled from 'styled-components';
-import PostCard from '../components/PostCard';
 import { PostContext } from '../context/PostContext';
+import PostList from '../components/PostList';
 
 const PostListPage = () => {
   const [searchParams, _] = useSearchParams();
   const city = searchParams.get('city');
-  const location = useLocation();
-  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
-  const {user} = useContext(PostContext)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (city) {
-        const { data, error } = await supabase.from("Post").select("*").eq('PostCity', city);
-
-        if (error) {
-          throw error;
-        } else {
-          console.log("data => ", data);
-          setPosts(data)
-        }
-      } else {
-        const { data, error } = await supabase.from("Post").select("*");
-
-        if (error) {
-          throw error;
-        } else {
-          console.log("data => ", data);
-          setPosts(data.reverse())
-        }
-      }
-    };
-
-    fetchData();
-  }, [location.search]);
+  const {user} = useContext(PostContext);
 
   return (
     <PostListBody>
@@ -46,7 +17,7 @@ const PostListPage = () => {
         <h1 onClick={(e) => {
           e.preventDefault();
           navigate('/');
-        }} style={{cursor:'pointer'}}>{city ? city : '전국'}</h1>
+        }} style={{cursor:'pointer'}}>{city ?? '전국'}</h1>
         <UlDiv>
           {
             user ?
@@ -63,11 +34,12 @@ const PostListPage = () => {
         </UlDiv>
       </div>
     </HeaderDiv>
-      <PostGrids>
+      {/* <PostGrids>
         {posts.map((post) => {
           return <PostCard post={post} key={`PostCard-${post.PostID}`} />
         })}
-      </PostGrids>
+      </PostGrids> */}
+      <PostList/>
     </PostListBody>
   )
 }

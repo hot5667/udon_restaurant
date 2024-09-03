@@ -3,15 +3,17 @@ import styled from '@emotion/styled'
 import { PostContext } from '../context/PostContext';
 import { useNavigate } from 'react-router-dom';
 import supabase from '../supaBasecClient';
+import { AuthContext } from "../context/AuthContext";
 
 const STORAGE_NAME = 'images';
 
 const CreateForm = ({ Modify }) => {
   const navigate = useNavigate();
-  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs, user } = useContext(PostContext);
+  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs } = useContext(PostContext);
   const { isToModify, post } = Modify;
+  const { user } = useContext(AuthContext);
   // console.log('createForm :',post);
-  console.log('user :', user);
+  // console.log('user :', user);
 
 
   useEffect(() => {
@@ -63,7 +65,9 @@ const CreateForm = ({ Modify }) => {
       return;
     } else {
       if (!isToModify) {
-        const newPost = { ...writing, PostUserName:user?.UserNickname };
+        console.log('writing user :', user);
+        const newPost = { ...writing, PostUserName:user?.UserNickName };
+        console.log('newPost :', newPost);
         setPostsNumber(prev => {
           newPost.PostID = prev;
           newPost.PostImgs = newPost.PostImgs.filter(ele => Boolean(ele));
@@ -179,7 +183,7 @@ const CreateForm = ({ Modify }) => {
             </select>
           </SelectDiv>
         </section>
-        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black', margin:'10px 0' }} />
         <ContentSection className="content_section">
           <label htmlFor="content">내용</label>
           <p>
@@ -196,7 +200,7 @@ const CreateForm = ({ Modify }) => {
             />
           </p>
         </ContentSection>
-        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black', margin:'10px 0' }} />
         <ImgSection className="img_section">
           <label>사진</label>
           <div className="img_input_container">
