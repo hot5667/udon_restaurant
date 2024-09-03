@@ -11,7 +11,7 @@ const SignUpForm = () => {
   const [userName, setUserName] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(false); // 로그인/회원가입 토글
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -25,7 +25,6 @@ const SignUpForm = () => {
     }
 
     try {
-      // Supabase Auth로 회원가입
       const { data, error: authError } = await supabase.auth.signUp({
         email: email,
         password: userPw,
@@ -61,7 +60,6 @@ const SignUpForm = () => {
     }
 
     try {
-      // Supabase Auth로 로그인
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: email,
         password: userPw,
@@ -73,9 +71,17 @@ const SignUpForm = () => {
 
       if (data.user) {
         setSuccess('로그인 성공!');
-        // 로그인 성공 후 홈 페이지로 리다이렉트
         navigate('/');
       }
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleSocialSignUp = async (provider) => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({ provider });
+      if (error) throw new Error(`소셜 회원가입에 실패했습니다: ${error.message}`);
     } catch (err) {
       setError(err.message);
     }
@@ -114,6 +120,19 @@ const SignUpForm = () => {
           {isLogin ? '로그인' : '회원가입'}
         </button>
       </form>
+      {!isLogin && (
+        <div css={socialLoginContainerStyle}>
+          <button onClick={() => handleSocialSignUp('google')} css={socialButtonStyle}>
+            Google로 회원가입
+          </button>
+          <button onClick={() => handleSocialSignUp('github')} css={socialButtonStyle}>
+            GitHub로 회원가입
+          </button>
+          <button onClick={() => handleSocialSignUp('kakao')} css={socialButtonStyle}>
+            Kakao로 회원가입
+          </button>
+        </div>
+      )}
       <div css={toggleStyle}>
         <p>{isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?'}</p>
         <button onClick={() => setIsLogin(!isLogin)} css={toggleButtonStyle}>
@@ -157,6 +176,28 @@ const buttonStyle = css`
 
   &:hover {
     background-color: #0056b3;
+  }
+`;
+
+const socialLoginContainerStyle = css`
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  gap: 10px;
+`;
+
+const socialButtonStyle = css`
+  padding: 10px;
+  background-color: #eee;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+
+  &:hover {
+    background-color: #ddd;
   }
 `;
 
