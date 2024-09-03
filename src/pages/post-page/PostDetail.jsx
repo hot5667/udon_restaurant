@@ -51,7 +51,6 @@ const PostDetail = () => {
       PostImgs: [],
       UserID: "",
       PostLike: '[]',
-      Comments: [],
       UserProfile: null,
     },
   );
@@ -59,13 +58,12 @@ const PostDetail = () => {
   // const [postImgs, setPostImgs] = useState([]);
   // const [profileImg, setProfileImg] = useState([]);
   const [like, setLike] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true); // 캐러셀에 사용
 
   useEffect(() => {
     const FindSamePost = async () => {
       const { data, error } = await supabase
         .from("Post")
-        .select("*, Comments (*)")
+        .select("*")
         .eq("PostID", postId);
       if (error) {
         console.log("error=>", error);
@@ -97,23 +95,24 @@ const PostDetail = () => {
 
 
     const FindProfileImg = async () => {
-      console.log('post userid', samePost)
+      if (PostUserID) {
+        const { data, error } = await supabase
+          .from("User")
+          .select("UserProfile")
+          .eq("UserID", PostUserID);
 
-      const { data, error } = await supabase
-        .from("User")
-        .select("UserProfile")
-        .eq("UserID", PostUserID);
-      if (error) {
-        console.log("error=>", error);
-      } else {
-        console.log(data[0]);
-        setSamePost(prev => {
-          return { ...prev, UserProfile: data[0].UserProfile };
-        });
+        if (error) {
+          console.log("error=>", error);
+        } else {
+          setSamePost(prev => ({
+            ...prev,
+            UserProfile: data[0]?.UserProfile || null,
+          }));
+        }
       }
     };
     FindProfileImg();
-  }, [like]);
+  }, [like, postId, PostUserID]);
 
   // 캐러셀
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false })]);
@@ -138,20 +137,15 @@ const PostDetail = () => {
     },
     [emblaApi]
   )
-  const toggleAutoplay = useCallback(() => {
-    const autoplay = emblaApi?.plugins()?.autoplay
-    if (!autoplay) return
-
-    const playOrStop = autoplay.isPlaying() ? autoplay.stop : autoplay.play
-    playOrStop()
-  }, [emblaApi])
 
 
 
   let likeArray = JSON.parse(samePost.PostLike)
   const handleLike = async (e) => {
     e.preventDefault();
-    console.log('Like Array :', like, likeArray)
+    if (!user) return; // 사용자 로그인이 필요함
+
+    // console.log('Like Array :', like, likeArray)
     if (likeArray.includes(user.UserID)) {
       try {
         likeArray = likeArray.filter(id => id !== user.UserID);
