@@ -29,72 +29,64 @@ const insertUserData = async (userID, userCity, userName, userNickName, userProf
   }
 };
 
-// Function to handle the upload of a profile picture
 const uploadProfilePicture = async (file, userID) => {
-  // Create a folder for the user based on their UUID
   const folderPath = `profile_pictures/${userID}`;
 
-  // Check if the file exists (i.e., the user has uploaded a profile picture)
   if (!file) {
-    // If no file is provided, create an empty folder for the user
+    // 만약 파일이 없으면, placeholder 파일을 업로드
     const { error: folderError } = await supabase.storage
-      .from('Profile') // Ensure the correct bucket name
+      .from('Profile')
       .upload(`${folderPath}/placeholder.txt`, new Blob(["This is a placeholder file"], { type: 'text/plain' }));
 
     if (folderError) {
       throw new Error(`폴더 생성에 실패했습니다: ${folderError.message}`);
     }
 
-    // Since no profile image was uploaded, return an empty string or a default profile URL
     return '';
   }
 
-  // Continue with file upload logic if a file is provided
-  const fileExt = file.name.split('.').pop();
-  const fileName = `profile.${fileExt}`;
-  const filePath = `${folderPath}/${fileName}`;
+  const fileExt = file.name.split('.').pop(); // 파일 확장자 추출
+  const fileName = `profile.${fileExt}`; // 파일 이름 설정
+  const filePath = `${folderPath}/${fileName}`; // 전체 경로
 
-  // Validate file type and size (example: allow only images and limit size to 5MB)
+  // 파일 형식과 크기 검증
   const allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif'];
   if (!allowedFileTypes.includes(file.type)) {
     throw new Error('지원되지 않는 파일 형식입니다.');
   }
-  if (file.size > 5 * 1024 * 1024) {
+  if (file.size > 5 * 1024 * 1024) { // 5MB 제한
     throw new Error('파일 크기는 5MB를 초과할 수 없습니다.');
   }
 
-  // Upload the file to the user's folder
   const { data, error } = await supabase.storage
     .from('Profile')
-    .upload(filePath, file);
+    .upload(filePath, file); // 파일 업로드
 
   if (error) {
     throw error;
   }
 
-  // Get the public URL of the uploaded file
   const { publicURL, error: publicURLError } = supabase.storage
     .from('Profile')
-    .getPublicUrl(filePath);
+    .getPublicUrl(filePath); // 업로드된 파일의 퍼블릭 URL 가져오기
 
   if (publicURLError) {
     throw publicURLError;
   }
 
-  return publicURL; // Return the public URL of the uploaded profile image
+  return publicURL; // URL 반환
 };
 
-// SignUpForm component for user registration and login
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
   const [userPw, setUserPw] = useState('');
   const [userName, setUserName] = useState('');
-  const [userNickName, setUserNickName] = useState(''); // Added for nickname
+  const [userNickName, setUserNickName] = useState(''); 
   const [userCity, setUserCity] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [isLogin, setIsLogin] = useState(false); // Toggle between login and sign-up
+  const [isLogin, setIsLogin] = useState(false); 
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -108,6 +100,7 @@ const SignUpForm = () => {
     }
 
     try {
+      // Supabase Auth로 회원가입
       const { user, error: authError } = await supabase.auth.signUp({
         email: email,
         password: userPw,
@@ -120,17 +113,17 @@ const SignUpForm = () => {
           throw new Error(`회원가입에 실패했습니다: ${authError.message}`);
         }
       } else if (user) {
-        const userID = uuidv4();
+        const userID = uuidv4(); // 사용자 ID 생성
         let profileImageUrl = '';
 
+        // 프로필 이미지 업로드
         if (profileImage) {
-          // If a profile image is uploaded, handle the upload and get the URL
           profileImageUrl = await uploadProfilePicture(profileImage, userID);
         } else {
-          // If no profile image, create a folder for the user
           await uploadProfilePicture(null, userID);
         }
 
+        // 사용자 데이터베이스에 저장
         await insertUserData(userID, userCity, userName, userNickName, profileImageUrl);
         setSuccess('회원가입이 성공적으로 완료되었습니다!');
       }
@@ -150,6 +143,7 @@ const SignUpForm = () => {
     }
 
     try {
+      // Supabase Auth로 로그인
       const { user, error: authError } = await supabase.auth.signInWithPassword({
         email: email,
         password: userPw,
@@ -169,10 +163,11 @@ const SignUpForm = () => {
 
   const handleOAuthSignUp = async (provider) => {
     try {
+      // OAuth를 통한 회원가입
       const { error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
-          redirectTo: 'http://localhost:5173/auth/callback',
+          redirectTo: 'http://localhost:5173/auth/callback', // 리다이렉트 URL
         },
       });
 
@@ -214,7 +209,7 @@ const SignUpForm = () => {
               required
             />
             <FormField
-              label="닉네임" // Nickname field
+              label="닉네임"
               type="text"
               value={userNickName}
               onChange={(e) => setUserNickName(e.target.value)}
@@ -263,49 +258,58 @@ const formContainerStyle = css`
 `;
 
 const titleStyle = css`
-  font-size: 24px;
-  margin-bottom: 20px;
   text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
 `;
 
 const formStyle = css`
   display: flex;
   flex-direction: column;
-  gap: 15px;
 `;
 
 const buttonStyle = css`
+  padding: 10px;
   background-color: #007bff;
   color: white;
-  padding: 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  text-align: center;
+  font-size: 16px;
+  margin-top: 20px;
 
   &:hover {
     background-color: #0056b3;
   }
 `;
 
+const toggleStyle = css`
+  text-align: center;
+  margin-top: 20px;
+`;
+
+const toggleButtonStyle = css`
+  color: #007bff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+`;
+
 const oauthContainerStyle = css`
   margin-top: 20px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
 `;
 
 const oauthButtonStyle = css`
-  background-color: #f0f0f0;
   padding: 10px;
-  border: none;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  flex-grow: 1;
-  margin-right: 10px;
-
-  &:last-of-type {
-    margin-right: 0;
-  }
+  font-size: 16px;
 
   &:hover {
     background-color: #e0e0e0;
@@ -320,23 +324,6 @@ const errorMessageStyle = css`
 const successMessageStyle = css`
   color: green;
   text-align: center;
-`;
-
-const toggleStyle = css`
-  margin-top: 10px;
-  text-align: center;
-`;
-
-const toggleButtonStyle = css`
-  background: none;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: underline;
-
-  &:hover {
-    color: #0056b3;
-  }
 `;
 
 export default SignUpForm;
