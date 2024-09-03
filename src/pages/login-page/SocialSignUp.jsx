@@ -10,6 +10,7 @@ const SocialSignUp = () => {
   const [userCity, setUserCity] = useState('');
   const [userNickName, setUserNickName] = useState('');
   const [userProfile, setUserProfile] = useState([]); // 파일 배열로 관리
+  const [existingProfileUrls, setExistingProfileUrls] = useState([]); // 기존 프로필 URL 저장
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -19,14 +20,12 @@ const SocialSignUp = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // 현재 세션 가져오기
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
         const user = sessionData.session.user;
-        console.log('User ID:', user.id); // 로그 추가
+        console.log('User ID:', user.id);
 
-        // 사용자 정보 가져오기 (단일 행을 반환하도록 처리)
         const { data: existingUsers, error: fetchError } = await supabase
           .from('User')
           .select('*')
@@ -39,7 +38,9 @@ const SocialSignUp = () => {
         if (existingUser) {
           setUserCity(existingUser.UserCity || '');
           setUserNickName(existingUser.UserNickName || '');
-          setUserProfile(existingUser.UserProfile || []);
+          if (existingUser.UserProfile && Array.isArray(existingUser.UserProfile)) {
+            setExistingProfileUrls(existingUser.UserProfile);
+          }
         }
         setLoading(false);
       } catch (err) {
@@ -57,23 +58,21 @@ const SocialSignUp = () => {
     try {
       for (let i = 0; i < files.length; i++) {
         const fileExt = files[i].name.split('.').pop();
-        const filePath = `${userID}/profile_${i}.${fileExt}`;
+        const filePath = `${userID}/profile_${Date.now()}_${i}.${fileExt}`;
 
-        // 파일 업로드
         const { error: uploadError } = await supabase.storage
           .from(STORAGE_NAME)
           .upload(filePath, files[i]);
 
         if (uploadError) throw uploadError;
 
-        // 업로드 후 URL 가져오기
-        const { data: { publicURL }, error: publicURLError } = supabase.storage
+        const { data: { publicUrl }, error: publicUrlError } = supabase.storage
           .from(STORAGE_NAME)
           .getPublicUrl(filePath);
 
-        if (publicURLError) throw publicURLError;
+        if (publicUrlError) throw publicUrlError;
 
-        fileUrls.push(publicURL);
+        fileUrls.push(publicUrl);
       }
     } catch (error) {
       console.error("Error uploading images:", error.message);
@@ -87,33 +86,33 @@ const SocialSignUp = () => {
     setError(null);
 
     try {
-      // 현재 세션 가져오기
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
       const user = sessionData.session.user;
-      console.log('User ID for submission:', user.id); // 로그 추가
+      console.log('User ID for submission:', user.id);
 
-      // 프로필 이미지 URL 업로드
-      let profileImageUrls = [];
+      let profileImageUrls = [...existingProfileUrls]; // 기존 URL 유지
       if (userProfile.length > 0) {
-        profileImageUrls = await uploadImgs(user.id, userProfile);
-        console.log('Uploaded Profile Image URLs:', profileImageUrls); // 로그 추가
+        const newUrls = await uploadImgs(user.id, userProfile);
+        profileImageUrls = newUrls[0];
       }
 
-      // 사용자 정보 업데이트
+      // 빈 배열이 아닌 경우만 업데이트
+      profileImageUrls = profileImageUrls.length > 0 ? profileImageUrls : null;
+      console.log('Profile Image URLs:', profileImageUrls);
+
       const { error: updateError } = await supabase
         .from('User')
         .upsert({
           UserID: user.id,
           UserCity: userCity,
           UserNickName: userNickName,
-          UserProfile: profileImageUrls.length > 0 ? profileImageUrls : [], // URL 배열 또는 빈 배열로 업데이트
-        }, { onConflict: ['UserID'] }); // conflict 처리
+          UserProfile: profileImageUrls, // 빈 배열이 아닌 경우만 저장
+        }, { onConflict: ['UserID'] });
 
       if (updateError) throw new Error('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
 
-      // 프로필 페이지로 리다이렉트
       navigate('/profile');
     } catch (err) {
       setError(err.message);
@@ -161,10 +160,20 @@ const SocialSignUp = () => {
             type="file"
             accept="image/*"
             multiple
-            onChange={e => setUserProfile(Array.from(e.target.files))} // 파일 배열 선택
+            onChange={e => setUserProfile(Array.from(e.target.files))}
             css={inputStyle}
           />
         </div>
+        {existingProfileUrls.length > 0 && (
+          <div css={formGroupStyle}>
+            <label css={labelStyle}>기존 프로필 이미지:</label>
+            <div css={imagePreviewStyle}>
+              {existingProfileUrls.map((url, index) => (
+                <img key={index} src={url} alt={`프로필 ${index + 1}`} css={previewImageStyle} />
+              ))}
+            </div>
+          </div>
+        )}
         <button type="submit" css={buttonStyle}>정보 제출</button>
       </form>
     </div>
@@ -237,4 +246,17 @@ const errorMessageStyle = css`
   color: red;
   text-align: center;
   margin-bottom: 15px;
+`;
+
+const imagePreviewStyle = css`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+const previewImageStyle = css`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
 `;
