@@ -29,32 +29,25 @@ const insertUserData = async (userID, userCity, userName, userNickName, userProf
   }
 };
 
-// Function to handle the upload of a profile picture
 const uploadProfilePicture = async (file, userID) => {
-  // Create a folder for the user based on their UUID
   const folderPath = `profile_pictures/${userID}`;
 
-  // Check if the file exists (i.e., the user has uploaded a profile picture)
   if (!file) {
-    // If no file is provided, create an empty folder for the user
     const { error: folderError } = await supabase.storage
-      .from('Profile') // Ensure the correct bucket name
+      .from('Profile') 
       .upload(`${folderPath}/placeholder.txt`, new Blob(["This is a placeholder file"], { type: 'text/plain' }));
 
     if (folderError) {
       throw new Error(`폴더 생성에 실패했습니다: ${folderError.message}`);
     }
 
-    // Since no profile image was uploaded, return an empty string or a default profile URL
     return '';
   }
 
-  // Continue with file upload logic if a file is provided
   const fileExt = file.name.split('.').pop();
   const fileName = `profile.${fileExt}`;
   const filePath = `${folderPath}/${fileName}`;
 
-  // Validate file type and size (example: allow only images and limit size to 5MB)
   const allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif'];
   if (!allowedFileTypes.includes(file.type)) {
     throw new Error('지원되지 않는 파일 형식입니다.');
@@ -63,7 +56,6 @@ const uploadProfilePicture = async (file, userID) => {
     throw new Error('파일 크기는 5MB를 초과할 수 없습니다.');
   }
 
-  // Upload the file to the user's folder
   const { data, error } = await supabase.storage
     .from('Profile')
     .upload(filePath, file);
@@ -72,7 +64,6 @@ const uploadProfilePicture = async (file, userID) => {
     throw error;
   }
 
-  // Get the public URL of the uploaded file
   const { publicURL, error: publicURLError } = supabase.storage
     .from('Profile')
     .getPublicUrl(filePath);
@@ -81,20 +72,19 @@ const uploadProfilePicture = async (file, userID) => {
     throw publicURLError;
   }
 
-  return publicURL; // Return the public URL of the uploaded profile image
+  return publicURL; 
 };
 
-// SignUpForm component for user registration and login
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
   const [userPw, setUserPw] = useState('');
   const [userName, setUserName] = useState('');
-  const [userNickName, setUserNickName] = useState(''); // Added for nickname
+  const [userNickName, setUserNickName] = useState(''); 
   const [userCity, setUserCity] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [isLogin, setIsLogin] = useState(false); // Toggle between login and sign-up
+  const [isLogin, setIsLogin] = useState(false); 
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -124,10 +114,8 @@ const SignUpForm = () => {
         let profileImageUrl = '';
 
         if (profileImage) {
-          // If a profile image is uploaded, handle the upload and get the URL
           profileImageUrl = await uploadProfilePicture(profileImage, userID);
         } else {
-          // If no profile image, create a folder for the user
           await uploadProfilePicture(null, userID);
         }
 
