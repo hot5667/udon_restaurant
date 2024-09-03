@@ -1,36 +1,45 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import defaultProfileImg from "../../img/image.png";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import supabase from "../../supaBasecClient";
 import styled from "@emotion/styled";
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+import {
+  NextButton,
+  PrevButton,
+  usePrevNextButtons
+} from '../../components/EmblaCarouselArrowButtons'
 import { AuthContext } from "../../context/AuthContext";
 import DeletePost from "../../components/DeletePost";
 import Comment from "../../components/Comment"
 import UnLikeImg from '../../img/heart-empty-icon.svg'
 import LikeImg from '../../img/heart-icon.svg'
+import defaultImg from '../../img/default-img.png'
 
 
 const supabaseURL = import.meta.env.VITE_SUPABASE_URL;
+const menu = {
+  1: "한식",
+  2: "중식",
+  3: "일식",
+  4: "양식",
+  5: "분식",
+  6: "야식/안주",
+  7: "카페/디저트",
+  8: "기타",
+};
 
 const PostDetail = () => {
-  const menu = {
-    1: "한식",
-    2: "중식",
-    3: "일식",
-    4: "양식",
-    5: "분식",
-    6: "야식/안주",
-    7: "카페/디저트",
-    8: "기타",
-  };
-
   const navigate = useNavigate();
 
   const [searchParam] = useSearchParams();
   const postId = searchParam.get("id");
   const { user } = useContext(AuthContext);
-  const {state:PostUserID} = useLocation();
-  console.log('location :', useLocation())
+  console.log('detail page user :', user);
+
+  const { state: PostUserID } = useLocation();
+  console.log('location :', PostUserID)
 
   const [samePost, setSamePost] = useState(
     {
@@ -48,8 +57,9 @@ const PostDetail = () => {
   );
 
   // const [postImgs, setPostImgs] = useState([]);
-  const [profileImg, setProfileImg] = useState([]);
+  // const [profileImg, setProfileImg] = useState([]);
   const [like, setLike] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true); // 캐러셀에 사용
 
   useEffect(() => {
     const FindSamePost = async () => {
@@ -62,15 +72,15 @@ const PostDetail = () => {
       } else {
         // console.log(data);
         setSamePost(prev => {
-          const curPost = {...prev, ...data[0]};
+          const curPost = { ...prev, ...data[0] };
           curPost.PostImgs = JSON.parse(curPost.PostImgs);
-          return {...curPost};
+          return { ...curPost };
         });
         setLike(JSON.parse(data[0].PostLike).length)
       }
     };
     FindSamePost();
-    
+
     // const FindPostImg = async () => {
     //   const { data, error } = await supabase.storage
     //     .from("images")
@@ -85,9 +95,9 @@ const PostDetail = () => {
     // };
     // FindPostImg();
 
-    
+
     const FindProfileImg = async () => {
-      console.log('post userid',  samePost)
+      console.log('post userid', samePost)
 
       const { data, error } = await supabase
         .from("User")
@@ -98,75 +108,75 @@ const PostDetail = () => {
       } else {
         console.log(data[0]);
         setSamePost(prev => {
-          return {...prev, UserProfile:data[0].UserProfile};
+          return { ...prev, UserProfile: data[0].UserProfile };
         });
       }
     };
     FindProfileImg();
   }, [like]);
 
-  // useEffect(() => {
-  //   const FindPostImg = async () => {
-  //     const { data, error } = await supabase.storage
-  //       .from("images")
-  //       .list(postId);
-  //     if (error) {
-  //       console.log(error);
-  //     } else {
-  //       data;
-  //     }
-  //     // console.log(data);
-  //     setPostImgs(data);
-  //   };
-  //   FindPostImg();
-  // }, []);
+  // 캐러셀
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false })]);
+  const {
+    prevBtnDisabled,
+    nextBtnDisabled,
+    onPrevButtonClick,
+    onNextButtonClick
+  } = usePrevNextButtons(emblaApi);
+  const onButtonAutoplayClick = useCallback(
+    (callback) => {
+      const autoplay = emblaApi?.plugins()?.autoplay
+      if (!autoplay) return
 
-  // useEffect(() => {
-  //   const FindProfileImg = async () => {
-  //     const { data, error } = await supabase
-  //       .from("User")
-  //       .select("UserProfile")
-  //       .eq("UserID", post.UserID);
-  //     if (error) {
-  //       console.log("error=>", error);
-  //     } else {
-  //       console.log(data);
-  //       setProfileImg(data);
-  //     }
-  //   };
-  //   FindProfileImg();
-  // }, [samePost]);
+      const resetOrStop =
+        autoplay.options.stopOnInteraction === false
+          ? autoplay.reset
+          : autoplay.stop
+
+      resetOrStop()
+      callback()
+    },
+    [emblaApi]
+  )
+  const toggleAutoplay = useCallback(() => {
+    const autoplay = emblaApi?.plugins()?.autoplay
+    if (!autoplay) return
+
+    const playOrStop = autoplay.isPlaying() ? autoplay.stop : autoplay.play
+    playOrStop()
+  }, [emblaApi])
+
 
 
   let likeArray = JSON.parse(samePost.PostLike)
   const handleLike = async (e) => {
     e.preventDefault();
     console.log('Like Array :', like, likeArray)
-    if (likeArray.includes(user.UserID)){
+    if (likeArray.includes(user.UserID)) {
       try {
         likeArray = likeArray.filter(id => id !== user.UserID);
         console.log('remove like :', likeArray);
-        const { error } = await supabase.from("Post").update({ PostLike:likeArray }).eq('PostID', post.PostID);
+        const { error } = await supabase.from("Post").update({ PostLike: likeArray }).eq('PostID', post.PostID);
         if (error) throw error;
-  
+
         console.log("add Like:", post.PostLike);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
-      setLike(prev => prev-1);
+      setLike(prev => prev - 1);
 
     } else {
       try {
         // const likeArray = JSON.parse(post.PostLike);
         likeArray.push(user.UserID);
-        const { error } = await supabase.from("Post").update({ PostLike:likeArray }).eq('PostID', post.PostID);
+        const { error } = await supabase.from("Post").update({ PostLike: likeArray }).eq('PostID', post.PostID);
         if (error) throw error;
-  
+
         console.log("Like modified:", post.PostLike);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
-      setLike(prev => prev+1);
+      setLike(prev => prev + 1);
     }
   }
 
@@ -190,53 +200,92 @@ const PostDetail = () => {
   // console.log(profileImg);
   return (
     <DetailPost>
-      
+
       <HeaderDiv>
-          <div className='header'>
-            <Title onClick={(e) => {
-              e.preventDefault();
-              navigate('/');
-            }} style={{cursor:'pointer'}}>우동집</Title>
-            <UlDiv>
-              <li>
-                {
-                  user ?
-                  <Link  style={{textDecoration:'none', color:'black'}} onClick={(e) => {
+        <div className='header'>
+          <Title onClick={(e) => {
+            e.preventDefault();
+            navigate('/');
+          }} style={{ cursor: 'pointer' }}>우동집</Title>
+          <UlDiv>
+            <li>
+              {
+                user ?
+                  <Link style={{ textDecoration: 'none', color: 'black' }} onClick={(e) => {
                     e.preventDefault();
                     signOutUser();
+                    navigate('/');
                   }}>로그아웃</Link>
-                  : <Link to='/sign-in' style={{textDecoration:'none', color:'black'}}>로그인</Link>
-                }
-              </li>
-              <hr style={{height: '18px', width:'1px', backgroundColor:'black', border:'none', margin:'0 3px'}}/>
-              <li>
-                <Link to='/sign-up' style={{textDecoration:'none', color:'black'}}>회원가입</Link>
-              </li>
-            </UlDiv>
+                  : <Link to='/sign-in' style={{ textDecoration: 'none', color: 'black' }}>로그인</Link>
+              }
+            </li>
+            <hr style={{ height: '18px', width: '1px', backgroundColor: 'black', border: 'none', margin: '0 3px' }} />
+            <li>
+              <Link to='/sign-up' style={{ textDecoration: 'none', color: 'black' }}>회원가입</Link>
+            </li>
+          </UlDiv>
+        </div>
+      </HeaderDiv>
+      {
+      post.PostImgs.length === 0 ?
+      <DefaultImg defaultImg={defaultImg}/>
+      : <Embla className='embla' ref={emblaRef}>
+          <div className='embla__container'>
+            {post.PostImgs.map((img, idx) => {
+              return (
+                <div className='embla__slide' key={idx}>
+                  <img
+                    style={{ width: "700px", margin: "auto" }}
+                    key={idx}
+                    src={`${supabaseURL}/storage/v1/object/public/images/${post.PostID}/${img}`}
+                  />
+                </div>
+              );
+            })}
           </div>
-        </HeaderDiv>
-      {post.PostImgs.map((img,idx) => {
-        return (
-          <img
-            style={{ width: "700px", margin: "auto" }}
-            key={idx}
-            src={`${supabaseURL}/storage/v1/object/public/images/${post.PostID}/${img}`}
-          />
-        );
-      })}
+        <EmblaControls className="embla__controls">
+          <div className="embla__buttons">
+            <PrevButton
+              onClick={() => onButtonAutoplayClick(onPrevButtonClick)}
+              disabled={prevBtnDisabled}
+            />
+            <NextButton
+              onClick={() => onButtonAutoplayClick(onNextButtonClick)}
+              disabled={nextBtnDisabled}
+            />
+          </div>
+        </EmblaControls>
+        </Embla>
+      }
+      
+
       <ButtonStyle>
         {user && user.UserID === post.UserID ? (
           <div>
             <button
               onClick={() => {
-                const fixedPost = {
-                  ...post,
-                  PostImgs: JSON.parse(post.PostImgs),
-                };
-
-                navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
-                  state: fixedPost,
-                });
+                const fixedPost = {...post, PostImgs:post.PostImgs};
+                if (!user) {
+                  alert('로그인해야 수정할 수 있습니다. 로그인 페이지로 이동합니다.');
+                  navigate('/sign-in');
+                } else if (user.UserID !== post.UserID) {
+                  alert('작성자만 수정할 수 있습니다.');
+                  return;
+                } else {
+                  navigate(`/create?isToModify=${true}&id=${post.PostID}`,
+                    { state:{
+                      PostCity:fixedPost.PostCity,
+                      PostContent:fixedPost.PostContent,
+                      PostDate:fixedPost.PostDate,
+                      PostFoodType:fixedPost.PostFoodType,
+                      PostID:fixedPost.PostID,
+                      PostImgs:[null,null,null,null],
+                      PostLike:fixedPost.PostLike,
+                      PostTitle:fixedPost.PostTitle,
+                      PostUserName:fixedPost.PostUserName,
+                      UserID:fixedPost.UserID,
+                    }});
+                }
               }}
             >
               게시글 수정
@@ -258,8 +307,8 @@ const PostDetail = () => {
         <LikeButton onClick={handleLike}>
           {
             likeArray.includes(user.UserID) ?
-            <img src={LikeImg}/>
-            : <img src={UnLikeImg}/>
+              <img src={LikeImg} />
+              : <img src={UnLikeImg} />
           }
         </LikeButton>{JSON.parse(post.PostLike).length}
       </PostInfoDetail>
@@ -381,4 +430,71 @@ const LikeButton = styled.button`
     width: 30px;
 
   }
+`
+
+// 캐러셀
+const Embla = styled.div`
+  width: 100%;
+  overflow: hidden;
+  background-color: lightgray;
+
+  position: relative;
+
+  .embla__container {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%; /* Each slide covers x % of the viewport */
+    grid-gap: 0 20px;
+  }
+
+
+  .embla__slide {
+    width: 100%;
+    height: 500px;
+    
+    display: grid;
+    
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .embla__slide:last-child {
+    margin-right:20px;
+  }
+`
+
+const EmblaControls = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  .embla__buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      background-color: transparent;
+      margin: 0;
+      width: 30px;
+      height: 40px;
+      border-radius: 0;
+      padding: 3px 0 0 0;
+      cursor: pointer;
+    }
+  }
+`
+
+const DefaultImg = styled.div`
+  background: white url(${props => props.defaultImg}) no-repeat center;
+  /* background-position: center; */
+  background-size: contain;
+  width: 100%;
+  height: 500px;
 `
