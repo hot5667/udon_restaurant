@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import supabase from '../../supaBasecClient';
 import logoHacan from '../../img/logoHacan.png';
+import MypageLogo from '../../img/notext.png';
 import '../../css/mypage.css';
-import '../../css/font.css';
+    import '../../css/font.css';
 
 const MyPage = () => {
     const [users, setUsers] = useState([]);
@@ -96,6 +97,14 @@ const MyPage = () => {
                             </Link>
                         </li>
                     </UlDiv>
+                    <MyPageMove>
+                        <img
+                            src={MypageLogo}
+                            onClick={() => {
+                                navigate('/MyPage');
+                            }}
+                        />
+                    </MyPageMove>
                 </div>
             </HeaderDiv>
             <h1 style={{ margin: 30, fontSize: 30 }}>마이페이지</h1>
@@ -141,7 +150,7 @@ const MyPage = () => {
 export default MyPage;
 
 const MYPAGE_CONTAINER = styled.div`
-    width: 94%;
+    width: 96%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -223,10 +232,20 @@ const UlDiv = styled.ul`
 
     position: absolute;
     top: 0;
-    right: 0;
+    right: 6%;
     z-index: 1;
 
     display: flex;
     align-items: center;
     margin-top: 3px;
+`;
+
+const MyPageMove = styled.div`
+    position: relative;
+    top: -15px;
+    right: 0;
+    z-index: 1;
+    img {
+        width: 50px;
+    }
 `;

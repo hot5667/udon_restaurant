@@ -618,3 +618,4 @@ const ImgSection = styled.section`
         color: #fff;
     }
 `;
+
