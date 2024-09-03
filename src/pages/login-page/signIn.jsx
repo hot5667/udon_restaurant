@@ -1,13 +1,14 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import supabase from '../../supaBasecClient';
-import { AuthContext } from '../../context/AuthContext';
-import { css } from '@emotion/react';
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import supabase from "../../supaBasecClient";
+import { AuthContext } from "../../context/AuthContext";
+import { css } from "@emotion/react";
+import LogoImg from "../../img/logo-simple.png";
 
 const SignIn = () => {
-  const [userId, setUserId] = useState('');
-  const [userPw, setUserPw] = useState('');
+  const [userId, setUserId] = useState("");
+  const [userPw, setUserPw] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate();
@@ -19,15 +20,16 @@ const SignIn = () => {
     setSuccess(null);
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: userId,
-        password: userPw,
-      });
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email: userId,
+          password: userPw,
+        });
 
       if (authError) throw new Error(authError.message);
 
-      setSuccess('로그인 성공!');
-      navigate('/');
+      setSuccess("로그인 성공!");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
@@ -38,14 +40,16 @@ const SignIn = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          scopes: 'email',
+          scopes: "email",
         },
       });
 
       if (error) throw new Error(`로그인에 실패했습니다: ${error.message}`);
 
-      setSuccess(`${provider} 로그인 성공! 로그인 후 사용자 정보를 확인하세요.`);
-      navigate('/');
+      setSuccess(
+        `${provider} 로그인 성공! 로그인 후 사용자 정보를 확인하세요.`
+      );
+      navigate("/");
     } catch (err) {
       setError(err.message);
     }
@@ -56,19 +60,19 @@ const SignIn = () => {
   }
 
   if (user) {
-    navigate('/');
+    navigate("/");
     return null;
   }
 
   return (
     <div css={containerStyle}>
       <div css={formStyle}>
-        <h1>로그인</h1>
+        <img css={logoImg} src={LogoImg} />
+        <div css={loginTitle}>로그인</div>
         {error && <p css={errorStyle}>{error}</p>}
         {success && <p css={successStyle}>{success}</p>}
         <form onSubmit={handleSignIn}>
           <div css={inputGroupStyle}>
-            <label htmlFor="email">아이디 (이메일):</label>
             <input
               id="email"
               type="email"
@@ -76,10 +80,10 @@ const SignIn = () => {
               onChange={(e) => setUserId(e.target.value)}
               required
               css={inputStyle}
+              placeholder="아이디(이메일)"
             />
           </div>
           <div css={inputGroupStyle}>
-            <label htmlFor="password">비밀번호:</label>
             <input
               id="password"
               type="password"
@@ -87,14 +91,32 @@ const SignIn = () => {
               onChange={(e) => setUserPw(e.target.value)}
               required
               css={inputStyle}
+              placeholder="비밀번호"
             />
           </div>
-          <button type="submit" css={buttonStyle}>로그인</button>
+          <button type="submit" css={buttonStyle}>
+            로그인
+          </button>
         </form>
         <div>
-          <button onClick={() => handleOAuthSignIn('github')} css={oauthButtonStyle}>GitHub으로 로그인</button>
-          <button onClick={() => handleOAuthSignIn('google')} css={oauthButtonStyle}>Google으로 로그인</button>
-          <button onClick={() => handleOAuthSignIn('kakao')} css={oauthButtonStyle}>Kakao로 로그인</button>
+          <button
+            onClick={() => handleOAuthSignIn("github")}
+            css={oauthButtonStyle}
+          >
+            GitHub로 로그인
+          </button>
+          <button
+            onClick={() => handleOAuthSignIn("google")}
+            css={oauthButtonStyle}
+          >
+            Google로 로그인
+          </button>
+          <button
+            onClick={() => handleOAuthSignIn("kakao")}
+            css={oauthButtonStyle}
+          >
+            Kakao로 로그인
+          </button>
         </div>
       </div>
     </div>
@@ -119,8 +141,18 @@ const formStyle = css`
   text-align: center;
 `;
 
+const logoImg = css`
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+`;
+
+const loginTitle = css`
+  margin-bottom: 10px;
+`;
+
 const inputGroupStyle = css`
-  margin-bottom: 1rem;
+  margin-bottom: 0.3rem;
   text-align: left;
 `;
 
@@ -136,14 +168,14 @@ const buttonStyle = css`
   padding: 0.75rem;
   border: none;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #fea100;
   color: white;
   cursor: pointer;
   font-size: 1rem;
   margin-top: 1rem;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #855c17;
   }
 `;
 

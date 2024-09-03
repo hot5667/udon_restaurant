@@ -1,21 +1,21 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { css } from '@emotion/react';
-import supabase from '../../supaBasecClient';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { css } from "@emotion/react";
+import supabase from "../../supaBasecClient";
 
-const STORAGE_NAME = 'Profile';
+const STORAGE_NAME = "Profile";
 
 const SocialSignUp = () => {
-  const [userCity, setUserCity] = useState('');
-  const [userNickName, setUserNickName] = useState('');
+  const [userCity, setUserCity] = useState("");
+  const [userNickName, setUserNickName] = useState("");
   const [userProfile, setUserProfile] = useState([]); // 파일 배열로 관리
   const [existingProfileUrls, setExistingProfileUrls] = useState([]); // 기존 프로필 URL 저장
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const cities = ['서울', '부산', '인천', '대구'];
+  const cities = ["서울", "부산", "인천", "대구"];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -27,11 +27,12 @@ const SocialSignUp = () => {
         console.log('User ID:', user.id);
 
         const { data: existingUsers, error: fetchError } = await supabase
-          .from('User')
-          .select('*')
-          .eq('UserID', user.id);
+          .from("User")
+          .select("*")
+          .eq("UserID", user.id);
 
-        if (fetchError) throw new Error('사용자 정보를 가져오는 중 오류가 발생했습니다.');
+        if (fetchError)
+          throw new Error("사용자 정보를 가져오는 중 오류가 발생했습니다.");
 
         const existingUser = existingUsers.length ? existingUsers[0] : null;
 
@@ -66,9 +67,11 @@ const SocialSignUp = () => {
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl }, error: publicUrlError } = supabase.storage
-          .from(STORAGE_NAME)
-          .getPublicUrl(filePath);
+        // 업로드 후 URL 가져오기
+        const {
+          data: { publicURL },
+          error: publicURLError,
+        } = supabase.storage.from(STORAGE_NAME).getPublicUrl(filePath);
 
         if (publicUrlError) throw publicUrlError;
 
@@ -81,37 +84,39 @@ const SocialSignUp = () => {
     return fileUrls;
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
+      // 현재 세션 가져오기
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+      if (sessionError)
+        throw new Error("세션 정보를 가져오는 중 오류가 발생했습니다.");
 
       const user = sessionData.session.user;
-      console.log('User ID for submission:', user.id);
+      console.log("User ID for submission:", user.id); // 로그 추가
 
       let profileImageUrls = [...existingProfileUrls]; // 기존 URL 유지
       if (userProfile.length > 0) {
-        const newUrls = await uploadImgs(user.id, userProfile);
-        profileImageUrls = newUrls[0];
+        profileImageUrls = await uploadImgs(user.id, userProfile);
+        console.log("Uploaded Profile Image URLs:", profileImageUrls); // 로그 추가
       }
 
-      // 빈 배열이 아닌 경우만 업데이트
-      profileImageUrls = profileImageUrls.length > 0 ? profileImageUrls : null;
-      console.log('Profile Image URLs:', profileImageUrls);
-
-      const { error: updateError } = await supabase
-        .from('User')
-        .upsert({
+      // 사용자 정보 업데이트
+      const { error: updateError } = await supabase.from("User").upsert(
+        {
           UserID: user.id,
           UserCity: userCity,
           UserNickName: userNickName,
-          UserProfile: profileImageUrls, // 빈 배열이 아닌 경우만 저장
-        }, { onConflict: ['UserID'] });
+          UserProfile: profileImageUrls.length > 0 ? profileImageUrls : [], // URL 배열 또는 빈 배열로 업데이트
+        },
+        { onConflict: ["UserID"] }
+      ); // conflict 처리
 
-      if (updateError) throw new Error('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
+      if (updateError)
+        throw new Error("사용자 정보를 업데이트하는 중 오류가 발생했습니다.");
 
       navigate('/profile');
     } catch (err) {
@@ -132,12 +137,12 @@ const SocialSignUp = () => {
           <label css={labelStyle}>도시:</label>
           <select
             value={userCity}
-            onChange={e => setUserCity(e.target.value)}
+            onChange={(e) => setUserCity(e.target.value)}
             required
             css={inputStyle}
           >
             <option value="">도시를 선택하세요</option>
-            {cities.map(city => (
+            {cities.map((city) => (
               <option key={city} value={city}>
                 {city}
               </option>
@@ -149,7 +154,7 @@ const SocialSignUp = () => {
           <input
             type="text"
             value={userNickName}
-            onChange={e => setUserNickName(e.target.value)}
+            onChange={(e) => setUserNickName(e.target.value)}
             required
             css={inputStyle}
           />

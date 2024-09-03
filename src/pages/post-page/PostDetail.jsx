@@ -1,22 +1,26 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import defaultProfileImg from "../../img/image.png";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import supabase from "../../supaBasecClient";
 import styled from "@emotion/styled";
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 import {
   NextButton,
   PrevButton,
-  usePrevNextButtons
-} from '../../components/EmblaCarouselArrowButtons'
+  usePrevNextButtons,
+} from "../../components/EmblaCarouselArrowButtons";
 import { AuthContext } from "../../context/AuthContext";
 import DeletePost from "../../components/DeletePost";
 import Comment from "../../components/Comment";
-import UnLikeImg from '../../img/heart-empty-icon.svg';
-import LikeImg from '../../img/heart-icon.svg';
-import defaultImg from '../../img/default-img.png'
-
+import UnLikeImg from "../../img/heart-empty-icon.svg";
+import LikeImg from "../../img/heart-icon.svg";
+import defaultImg from "../../img/default-img.png";
 
 const supabaseURL = import.meta.env.VITE_SUPABASE_URL;
 const menu = {
@@ -37,7 +41,7 @@ const PostDetail = () => {
   const { user } = useContext(AuthContext);
   const { state: PostUserID } = useLocation();
 
-  const [samePost, setSamePost] = useState({
+  const [post, setPost] = useState({
     PostDate: "",
     PostCity: "",
     PostTitle: "",
@@ -45,11 +49,10 @@ const PostDetail = () => {
     PostFoodType: "",
     PostImgs: [],
     UserID: "",
-    PostLike: '[]',
+    PostLike: "[]",
     Comments: [],
     UserProfile: null,
   });
-
 
   const [like, setLike] = useState(0);
 
@@ -63,11 +66,10 @@ const PostDetail = () => {
       if (error) {
         console.log("error=>", error);
       } else {
-        setSamePost(prev => {
+        setPost((prev) => {
           const curPost = { ...prev, ...data[0] };
           curPost.PostImgs = JSON.parse(curPost.PostImgs);
           return curPost;
-
         });
         setLike(JSON.parse(data[0].PostLike).length);
       }
@@ -83,7 +85,7 @@ const PostDetail = () => {
         if (error) {
           console.log("error=>", error);
         } else {
-          setSamePost(prev => ({
+          setPost((prev) => ({
             ...prev,
             UserProfile: data[0]?.UserProfile || null,
           }));
@@ -92,60 +94,65 @@ const PostDetail = () => {
     };
     FindProfileImg();
   }, [like, postId, PostUserID]);
-  let likeArray = JSON.parse(samePost.PostLike) || [];
+  let likeArray = JSON.parse(post.PostLike) || [];
   // 캐러셀
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false })]);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false }),
+  ]);
   const {
     prevBtnDisabled,
     nextBtnDisabled,
     onPrevButtonClick,
-    onNextButtonClick
+    onNextButtonClick,
   } = usePrevNextButtons(emblaApi);
   const onButtonAutoplayClick = useCallback(
     (callback) => {
-      const autoplay = emblaApi?.plugins()?.autoplay
-      if (!autoplay) return
+      const autoplay = emblaApi?.plugins()?.autoplay;
+      if (!autoplay) return;
 
       const resetOrStop =
         autoplay.options.stopOnInteraction === false
           ? autoplay.reset
-          : autoplay.stop
+          : autoplay.stop;
 
-      resetOrStop()
-      callback()
+      resetOrStop();
+      callback();
     },
     [emblaApi]
-  )
-
+  );
   const handleLike = async (e) => {
     e.preventDefault();
     if (!user) return; // 사용자 로그인이 필요함
 
     if (likeArray.includes(user.UserID)) {
       try {
-        likeArray = likeArray.filter(id => id !== user.UserID);
-        const { error } = await supabase.from("Post").update({ PostLike: likeArray }).eq('PostID', samePost.PostID);
+        likeArray = likeArray.filter((id) => id !== user.UserID);
+        const { error } = await supabase
+          .from("Post")
+          .update({ PostLike: likeArray })
+          .eq("PostID", post.PostID);
         if (error) throw error;
-        setLike(prev => prev - 1);
+        setLike((prev) => prev - 1);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
-
     } else {
       try {
         likeArray.push(user.UserID);
-        const { error } = await supabase.from("Post").update({ PostLike: likeArray }).eq('PostID', samePost.PostID);
+        const { error } = await supabase
+          .from("Post")
+          .update({ PostLike: likeArray })
+          .eq("PostID", post.PostID);
         if (error) throw error;
-        setLike(prev => prev + 1);
+        setLike((prev) => prev + 1);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
-
     }
   };
 
-  let tmp = samePost.PostContent;
-  tmp = tmp.split('\n').map((line, idx) => (
+  let tmp = post.PostContent;
+  tmp = tmp.split("\n").map((line, idx) => (
     <span key={`${postId}_line_${idx}`}>
       {line}
       <br />
@@ -155,38 +162,66 @@ const PostDetail = () => {
   return (
     <DetailPost>
       <HeaderDiv>
-        <div className='header'>
-          <Title onClick={(e) => {
-            e.preventDefault();
-            navigate('/');
-          }} style={{ cursor: 'pointer' }}>우동집</Title>
+        <div className="header">
+          <Title
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/");
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            우동집
+          </Title>
           <UlDiv>
             <li>
-              {
-                user ?
-                  <Link style={{ textDecoration: 'none', color: 'black' }} onClick={(e) => {
+              {user ? (
+                <Link
+                  style={{ textDecoration: "none", color: "black" }}
+                  onClick={(e) => {
                     e.preventDefault();
                     signOutUser();
-                    navigate('/');
-                  }}>로그아웃</Link>
-                  : <Link to='/sign-in' style={{ textDecoration: 'none', color: 'black' }}>로그인</Link>
-              }
+                    navigate("/");
+                  }}
+                >
+                  로그아웃
+                </Link>
+              ) : (
+                <Link
+                  to="/sign-in"
+                  style={{ textDecoration: "none", color: "black" }}
+                >
+                  로그인
+                </Link>
+              )}
             </li>
-            <hr style={{ height: '18px', width: '1px', backgroundColor: 'black', border: 'none', margin: '0 3px' }} />
+            <hr
+              style={{
+                height: "18px",
+                width: "1px",
+                backgroundColor: "black",
+                border: "none",
+                margin: "0 3px",
+              }}
+            />
             <li>
-              <Link to='/sign-up' style={{ textDecoration: 'none', color: 'black' }}>회원가입</Link>
+              <Link
+                to="/sign-up"
+                style={{ textDecoration: "none", color: "black" }}
+              >
+                회원가입
+              </Link>
             </li>
           </UlDiv>
         </div>
       </HeaderDiv>
-      {
-      post.PostImgs.length === 0 ?
-      <DefaultImg defaultImg={defaultImg}/>
-      : <Embla className='embla' ref={emblaRef}>
-          <div className='embla__container'>
+      {post.PostImgs.length === 0 ? (
+        <DefaultImg defaultImg={defaultImg} />
+      ) : (
+        <Embla className="embla" ref={emblaRef}>
+          <div className="embla__container">
             {post.PostImgs.map((img, idx) => {
               return (
-                <div className='embla__slide' key={idx}>
+                <div className="embla__slide" key={idx}>
                   <img
                     style={{ width: "700px", margin: "auto" }}
                     key={idx}
@@ -196,56 +231,58 @@ const PostDetail = () => {
               );
             })}
           </div>
-        <EmblaControls className="embla__controls">
-          <div className="embla__buttons">
-            <PrevButton
-              onClick={() => onButtonAutoplayClick(onPrevButtonClick)}
-              disabled={prevBtnDisabled}
-            />
-            <NextButton
-              onClick={() => onButtonAutoplayClick(onNextButtonClick)}
-              disabled={nextBtnDisabled}
-            />
-          </div>
-        </EmblaControls>
+          <EmblaControls className="embla__controls">
+            <div className="embla__buttons">
+              <PrevButton
+                onClick={() => onButtonAutoplayClick(onPrevButtonClick)}
+                disabled={prevBtnDisabled}
+              />
+              <NextButton
+                onClick={() => onButtonAutoplayClick(onNextButtonClick)}
+                disabled={nextBtnDisabled}
+              />
+            </div>
+          </EmblaControls>
         </Embla>
-      }
-      
+      )}
+
       <ButtonStyle>
-        {user && user.UserID === samePost.UserID ? (
+        {user && user.UserID === post.UserID ? (
           <div>
             <button
               onClick={() => {
                 const fixedPost = {
-                  ...samePost,
-                  PostImgs: JSON.parse(samePost.PostImgs),
+                  ...post,
+                  PostImgs: JSON.parse(post.PostImgs),
                 };
-                navigate(`/create?isToModify=${true}&id=${samePost.PostID}`, {
+                navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
                   state: fixedPost,
                 });
               }}
             >
               게시글 수정
             </button>
-            <DeletePost id={samePost.PostID} />
+            <DeletePost id={post.PostID} />
           </div>
         ) : null}
       </ButtonStyle>
       <PostInfoDetail>
-        <ProfileImg src={samePost.UserProfile || defaultProfileImg} />
-        <p> 작성자: {samePost.PostUserName}</p>
-        <p> 도시: {samePost.PostCity}</p>
-        <p> 음식종류: {menu[samePost.PostFoodType]}</p>
-        <p> 작성날짜: {samePost.PostDate}</p>
+        <ProfileImg src={post.UserProfile || defaultProfileImg} />
+        <p> 작성자: {post.PostUserName}</p>
+        <p> 도시: {post.PostCity}</p>
+        <p> 음식종류: {menu[post.PostFoodType]}</p>
+        <p> 작성날짜: {post.PostDate}</p>
         <LikeButton onClick={handleLike}>
-          {likeArray.includes(user?.UserID) ?
+          {likeArray.includes(user?.UserID) ? (
             <img src={LikeImg} alt="Liked" />
-            : <img src={UnLikeImg} alt="Not Liked" />
-          }
-        </LikeButton>{like}
+          ) : (
+            <img src={UnLikeImg} alt="Not Liked" />
+          )}
+        </LikeButton>
+        {like}
       </PostInfoDetail>
       <PostContents>
-        <p style={{ fontSize: "24px" }}> 제목: {samePost.PostTitle}</p>
+        <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
         <p style={{ wordWrap: "break-word" }}>
           내용 <br />
           {tmp}
@@ -255,8 +292,8 @@ const PostDetail = () => {
         <Comment />
       </CommentStyle>
 
-      {samePost.Comments?.length ? (
-        samePost.Comments.map((comment) => (
+      {post.Comments?.length ? (
+        post.Comments.map((comment) => (
           <CommentStyle key={comment.CommentID}>
             <p>작성자:{comment.commentUserID}</p>
             <p>작성날짜:{comment.CommentDate}</p>
@@ -327,7 +364,7 @@ const HeaderDiv = styled.header`
 
 const Title = styled.h1`
   font-size: 50px;
-  font-family: 'LOTTERIACHAB';
+  font-family: "LOTTERIACHAB";
   color: #fea100;
   margin: 0;
   cursor: pointer;
@@ -351,7 +388,7 @@ const LikeButton = styled.button`
   img {
     width: 30px;
   }
-`
+`;
 
 // 캐러셀
 const Embla = styled.div`
@@ -368,21 +405,20 @@ const Embla = styled.div`
     grid-gap: 0 20px;
   }
 
-
   .embla__slide {
     width: 100%;
     height: 500px;
-    
+
     display: grid;
-    
+
     flex: 0 0 100%;
     min-width: 0;
   }
 
   .embla__slide:last-child {
-    margin-right:20px;
+    margin-right: 20px;
   }
-`
+`;
 
 const EmblaControls = styled.div`
   width: 100%;
@@ -410,12 +446,12 @@ const EmblaControls = styled.div`
       cursor: pointer;
     }
   }
-`
+`;
 
 const DefaultImg = styled.div`
-  background: white url(${props => props.defaultImg}) no-repeat center;
+  background: white url(${(props) => props.defaultImg}) no-repeat center;
   /* background-position: center; */
   background-size: contain;
   width: 100%;
   height: 500px;
-`
+`;
