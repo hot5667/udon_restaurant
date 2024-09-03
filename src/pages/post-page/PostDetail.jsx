@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import supabase, { supabaseUrl } from "../../supaBasecClient";
+import supabase from "../../supaBasecClient";
 import styled from '@emotion/styled';
 
 const PostDetail = () => {
@@ -63,7 +63,7 @@ const PostDetail = () => {
           <img
             style={{ width: "700px", margin: "auto" }}
             key={img.id}
-            src={`${supabaseUrl}/storage/v1/object/public/images/${postId}/${img.name}`}
+            src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/images/${postId}/${img.name}`}
           />
         );
       })}

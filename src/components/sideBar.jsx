@@ -38,7 +38,7 @@ const SideBar = () => {
           <li
             className="sideLi"
             onClick={() => {
-              navigate("/");
+              navigate('/');
             }}
           >
             <img className="logoImg" src={logo} alt="logo" />
@@ -54,11 +54,7 @@ const SideBar = () => {
                 navigate(region.path);
               }}
             >
-              <img
-                className="logoImg2"
-                src={logo}
-                alt={`${region.name} 로고`}
-              />
+              <img className="logoImg2" src={logo} alt={`${region.name} 로고`} />
               <p>{region.name}</p>
             </li>
           ))}
@@ -67,4 +63,5 @@ const SideBar = () => {
     </SIDE_CONTAINER>
   );
 };
+
 export default SideBar;
