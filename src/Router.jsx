@@ -1,7 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
-import { AuthProvider } from './context/AuthContext';
-import PostContextProvider from './context/PostContext';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import PostContextProvider from "./context/PostContext";
 import SignUp from "./pages/login-page/signUp";
 import SignIn from "./pages/login-page/signIn";
 import Profile from "./pages/my-page/Profile";
@@ -12,8 +12,7 @@ import MainPage from "./pages/main-page/MainPage";
 import CreatePostPage from "./pages/create-post-page/CreatePostPage";
 import WrapperComponent from "./components/WrapperComponent";
 import PostDetail from "./pages/post-page/PostDetail";
-import SideBar from './components/sideBar';
-import SocialSignUp from './pages/login-page/SocialSignUp';
+import SocialSignUp from "./pages/login-page/SocialSignUp";
 
 const RouterComponent = () => {
   return (
@@ -37,7 +36,6 @@ const RouterComponent = () => {
         </PostContextProvider>
       </AuthProvider>
     </Router>
-
   );
 };
 

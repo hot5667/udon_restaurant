@@ -9,6 +9,7 @@ const Comment = () => {
   const [changeContent, setChangeContent] = useState("");
   const [isOpenWindow, setIsOpenWindow] = useState(false);
   const [testID, setTestID] = useState(0);
+  const [profileImg, setProfileImg] = useState(null);
   const [params] = useSearchParams();
   const bringPostID = params.get("id");
 
@@ -19,10 +20,28 @@ const Comment = () => {
     async function getComment() {
       let { data: Comments, error } = await supabase
         .from("Comments")
-        .select("*");
+        .select("*")
+        .eq("PostID", bringPostID);
       setComments(Comments);
     }
     getComment();
+  }, []);
+
+  useEffect(() => {
+    async function getProfile() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log(user);
+
+      const { data: profile } = await supabase
+        .from("User")
+        .select(`UserID, UserProfile, Comments(*)`);
+
+      console.log(profile);
+      setProfileImg(profile);
+    }
+    getProfile();
   }, []);
 
   //프로필 이미지 불러오기
@@ -40,6 +59,14 @@ const Comment = () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase.from("Comments").insert({
+      UserID: user.id,
+      PostID: bringPostID,
+      CommentContent: commentContent,
+      CommentFirstUpdate: now,
+    });
+
     console.log(user);
 
     const { data: profile } = await supabase
@@ -48,30 +75,38 @@ const Comment = () => {
 
     console.log(profile);
 
-    const { data, error } = await supabase.from("Comments").insert({
-      UserID: user.id,
-      PostID: bringPostID,
-      CommentContent: commentContent,
-      CommentFirstUpdate: now,
-    });
     setComments((prev) => [
       ...prev,
       {
+        UserID: user.id,
         CommentID: crypto.randomUUID(),
         CommentContent: commentContent,
         CommentDate: formattedDate,
       },
     ]);
+
+    setProfileImg(profile);
   }
 
+  console.log(profileImg);
+
   //댓글 삭제 코드
-  async function deleteComment(Test) {
-    const { error } = await supabase.from("Comments").delete().eq("Test", Test);
-    setComments(comments.filter((c) => c.CommentID !== Test));
+  async function deleteComment(id) {
+    const { data, error } = await supabase
+      .from("Comments")
+      .delete()
+      .eq("CommentID", id); //사용하는건지?
+    setComments(comments.filter((c) => c.CommentID !== id));
   }
 
   //댓글 수정 코드
   async function changeComment(event) {
+    event.preventDefault();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const { data, error } = await supabase
       .from("Comments")
       // .select()
@@ -80,37 +115,42 @@ const Comment = () => {
         CommentContent: changeContent,
         CommentLastUpdate: formattedDate,
       })
-      .eq("CommentID", testID);
-    const filteredComment = comments.filter((c) => {
-      return c.Test !== testID;
+      .eq("CommentID", testID)
+      .select("*");
+    const newComments = comments.map((c) => {
+      if (c.CommentID === testID) {
+        return data[0];
+      } else {
+        return c;
+      }
     });
-    console.log(data);
-    console.log(filteredComment);
+    console.log(newComments);
 
-    setComments([
-      ...filteredComment,
-      { CommentContent: changeContent, CommentLastUpdate: formattedDate },
-    ]);
+    setComments(newComments);
   }
 
   const openChangeCommentWindow = () => {
     return (
-      <form>
+      <form onSubmit={changeComment}>
         <input onChange={(event) => setChangeContent(event.target.value)} />
-        <button onClick={changeComment}>수정하기</button>
+        <button>수정하기</button>
       </form>
     );
   };
 
   //댓글 리스트
   const commentList = comments.map((comment) => {
+    const foundUser = profileImg?.find((p) => comment.UserID === p?.UserID);
+
     return (
       <ul key={comment.CommentID}>
-        <div></div>
+        <div>
+          <img src={foundUser?.UserProfile} alt="프로필 사진" />
+        </div>
         <div>
           <li>{comment.CommentDate}</li>
           <li>{comment.CommentContent}</li>
-          <button onClick={() => deleteComment(comment.Test)}>삭제</button>
+          <button onClick={() => deleteComment(comment.CommentID)}>삭제</button>
           <button
             onClick={() => {
               setTestID(comment.CommentID);
