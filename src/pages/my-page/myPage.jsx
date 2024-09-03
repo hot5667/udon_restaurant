@@ -4,54 +4,68 @@ import testImg from '../../img/test.png';
 import supabase from '../../supaBasecClient';
 
 const MYPAGE_CONTAINER = styled.div`
-  display: flex;
-  margin: 30px 30px 30px 130px;
+    display: flex;
+    margin: 30px 30px 30px 130px;
 `;
 
 const LeftMypage = styled.div`
-  margin-right: 80px;
-  padding-right: 80px;
-  border-right: 2px solid #000;
+    margin-right: 80px;
+    padding-right: 80px;
+    border-right: 2px solid #000;
 `;
 
 const RightMypage = styled.div`
-  flex-grow: 1;
+    flex-grow: 1;
 `;
 
 const PostBox = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(250px, auto));
-  gap: 20px;
-  border: 2px solid #000;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(250px, auto));
+    gap: 20px;
+    border: 2px solid #000;
 `;
 
 const UserInfo = styled.div`
-  border: 1px solid black;
-  padding: 10px;
-  margin-bottom: 20px;
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 20px;
 `;
 
 const MyPage = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
+  const [loginUserId, setLoginUserId] = useState(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUserData = async () => {
       try {
-        const { data, error } = await supabase.from('User').select('*');
-        if (error) {
-          setError('사용자 정보를 불러오는 데 실패했습니다.');
-          console.error(error);
-        } else {
-          setUsers(data || []);
+        // 세션에서 사용자 정보를 가져옴
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError || !sessionData.session) {
+          throw new Error('세션 정보를 가져오는 데 실패했습니다.');
         }
+
+        const userId = sessionData.session.user.id;
+        setLoginUserId(userId);
+
+        // 사용자 정보를 불러옴
+        const { data: userData, error: userError } = await supabase
+          .from('User')
+          .select('*')
+          .eq('UserID', userId);
+
+        if (userError) {
+          throw new Error('사용자 정보를 불러오는 데 실패했습니다.');
+        }
+
+        setUsers(userData || []);
       } catch (err) {
-        setError('사용자 정보를 불러오는 중 문제가 발생했습니다.');
+        setError(err.message);
         console.error(err);
       }
     };
-
-    fetchUsers();
+    fetchUserData();
   }, []);
 
   return (
@@ -59,15 +73,17 @@ const MyPage = () => {
       <LeftMypage>
         {error ? (
           <p style={{ color: 'red' }}>{error}</p>
-        ) : (
-          users.map(user => (
-            <UserInfo key={user.id}>
+        ) : users.length > 0 ? (
+          users.map((user) => (
+            <UserInfo key={user.UserID}>
               <h5>아이디: {user.UserID || 'N/A'}</h5>
               <h5>이름: {user.UserNickName || 'N/A'}</h5>
               <h5>나이: {user.age || 'N/A'}</h5>
               <h5>주소: {user.UserCity || 'N/A'}</h5>
             </UserInfo>
           ))
+        ) : (
+          <p>사용자 정보를 불러오고 있습니다...</p>
         )}
       </LeftMypage>
       <RightMypage>

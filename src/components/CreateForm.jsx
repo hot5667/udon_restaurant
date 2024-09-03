@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react'
-import styled from '@emotion/styled';
+import styled from '@emotion/styled'
 import { PostContext } from '../context/PostContext';
 import { useNavigate } from 'react-router-dom';
+import supabase from '../supaBasecClient';
+import { AuthContext } from "../context/AuthContext";
 
 const STORAGE_NAME = 'images';
 
@@ -9,7 +11,19 @@ const CreateForm = ({ Modify }) => {
   const navigate = useNavigate();
   const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs } = useContext(PostContext);
   const { isToModify, post } = Modify;
+  const { user } = useContext(AuthContext);
   // console.log('createForm :',post);
+  // console.log('user :', user);
+
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      // setUser(session?.user ?? null);
+    }
+
+    getUserInfo();
+  }, [])
 
   // const [title, setTitle] = useState('');
   // const [city, setCity] = useState(0);
@@ -24,7 +38,7 @@ const CreateForm = ({ Modify }) => {
   const [writing, setWriting] = useState(
     !isToModify
       ? {
-          PostUserName: '어드민',
+          PostUserName: '',
           PostTitle: '',
           PostCity: 0,
           PostFoodType: 0,
@@ -33,12 +47,12 @@ const CreateForm = ({ Modify }) => {
           PostImgs: [null, null, null, null],
           PostLike: 0,
         }
-      : post,
+      : post
   );
 
   const handlePost = e => {
     e.preventDefault();
-    console.log(writing);
+    console.log('writing :', writing);
 
     if (!writing.PostTitle) {
       alert('제목을 입력해주세요.');
@@ -51,7 +65,9 @@ const CreateForm = ({ Modify }) => {
       return;
     } else {
       if (!isToModify) {
-        const newPost = { ...writing };
+        console.log('writing user :', user);
+        const newPost = { ...writing, PostUserName:user?.UserNickName };
+        console.log('newPost :', newPost);
         setPostsNumber(prev => {
           newPost.PostID = prev;
           newPost.PostImgs = newPost.PostImgs.filter(ele => Boolean(ele));
@@ -82,6 +98,7 @@ const CreateForm = ({ Modify }) => {
       } else {
         const modify = async () => {
           const curPost = { ...writing };
+          console.log('curPost :', curPost);
           await deleteImgs(curPost.PostID);
 
           curPost.PostImgs = curPost.PostImgs.filter(ele => Boolean(ele));
@@ -166,7 +183,7 @@ const CreateForm = ({ Modify }) => {
             </select>
           </SelectDiv>
         </section>
-        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black', margin:'10px 0' }} />
         <ContentSection className="content_section">
           <label htmlFor="content">내용</label>
           <p>
@@ -175,7 +192,7 @@ const CreateForm = ({ Modify }) => {
               placeholder={'내용을 입력해주세요'}
               onChange={e => {
                 setWriting(prev => {
-                  const cur = { ...prev };
+                  const cur = { ...writing };
                   cur.PostContent = e.target.value;
                   return cur;
                 });
@@ -183,68 +200,50 @@ const CreateForm = ({ Modify }) => {
             />
           </p>
         </ContentSection>
-        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black', margin:'10px 0' }} />
         <ImgSection className="img_section">
           <label>사진</label>
           <div className="img_input_container">
-            {Array(4)
-              .fill()
-              .map((_, idx) => (
-                <input
-                  type="file"
-                  key={`img_input_${idx}`}
-                  onChange={e => {
-                    const newImgs = [...writing.PostImgs];
-                    newImgs[idx] = e.target.files[idx];
-
-                    setWriting(prev => {
-                      const cur = { ...prev };
-                      cur.PostImgs = newImgs;
-                      return cur;
-                    });
-                  }}
-                />
-              ))}
-            {/* <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[0] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
             <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[1] = e.target.files[0];
+                const newImgs = [...writing.PostImgs];
+                newImgs[0] = e.target.files[0];
 
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
             <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[2] = e.target.files[0];
+                const newImgs = [...writing.PostImgs];
+                newImgs[1] = e.target.files[0];
 
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
             <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[3] = e.target.files[0];
+                const newImgs = [...writing.PostImgs];
+                newImgs[2] = e.target.files[0];
 
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} /> */}
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[3] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
           </div>
         </ImgSection>
         <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
@@ -345,182 +344,52 @@ const CreateForm = ({ Modify }) => {
             사진 <span>(수정 시 사진을 다시 업로드해주세요.)</span>
           </label>
           <div className="img_input_container">
-            {Array(4)
-              .fill()
-              .map((_, idx) => (
-                <input
-                  type="file"
-                  key={`img_input_${idx}`}
-                  onChange={e => {
-                    const newImgs = [...writing.PostImgs];
-                    newImgs[idx] = e.target.files[idx];
-
-                    setWriting(prev => {
-                      const cur = { ...prev };
-                      cur.PostImgs = newImgs;
-                      return cur;
-                    });
-                  }}
-                />
-              ))}
-            {/* <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[0] = e.target.files[0];
-
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
             <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[1] = e.target.files[0];
+                const newImgs = [...writing.PostImgs];
+                newImgs[0] = e.target.files[0];
 
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
             <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[2] = e.target.files[0];
+                const newImgs = [...writing.PostImgs];
+                newImgs[1] = e.target.files[0];
 
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} />
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
             <input type='file' onChange={(e) => {
-              const newImgs = [...writing.PostImgs];
-              newImgs[3] = e.target.files[0];
+                const newImgs = [...writing.PostImgs];
+                newImgs[2] = e.target.files[0];
 
-              setWriting(prev => {
-                const cur = { ...prev };
-                cur.PostImgs = newImgs;
-                return cur;
-              });
-            }} /> */}
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[3] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
           </div>
         </ImgSection>
         <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
       </CreateContainer>
     );
   }
-  return (
-    <CreateContainer>
-      <section className="title_section">
-        <label htmlFor="title">제목</label>
-        <input
-          id="title"
-          placeholder="제목을 입력하세요. 최대 20자."
-          maxLength={20} // value={title}
-          onChange={e => {
-            setTitle(e.target.value);
-          }}
-        />
-      </section>
-      <section className="select_section">
-        <label htmlFor="city">지역</label>
-        <select
-          id="city"
-          defaultValue={city}
-          style={{ width: '30%' }}
-          onChange={e => {
-            setCity(+e.target.value);
-          }}
-        >
-          <option value={0}>지역을 선택하세요</option>
-          <option value={1}>서울</option>
-          <option value={2}>부산</option>
-          <option value={3}>강원도</option>
-          <option value={4}>경기도</option>
-          <option value={5}>경상도</option>
-          <option value={6}>전라도</option>
-          <option value={7}>제주도</option>
-          <option value={8}>충청도</option>
-        </select>
-        <label htmlFor="food_type">음식 종류</label>
-        <select
-          id="food_type"
-          defaultValue={foodType}
-          style={{ width: '30%' }}
-          onChange={e => {
-            setFoodType(+e.target.value);
-          }}
-        >
-          <option value={0}>종류를 선택하세요</option>
-          <option value={1}>한식</option>
-          <option value={2}>중식</option>
-          <option value={3}>일식</option>
-          <option value={4}>양식</option>
-          <option value={5}>분식</option>
-          <option value={6}>야식/안주</option>
-          <option value={7}>카페/디저트</option>
-          <option value={8}>기타</option>
-        </select>
-      </section>
-      <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
-      <section className="content_section">
-        <label htmlFor="content">내용</label>
-        <p>
-          <textarea
-            id={'content'}
-            value={content}
-            style={{
-              width: '100%',
-              height: '600px',
-            }}
-            onChange={e => {
-              setContent(e.target.value);
-            }}
-          />
-        </p>
-      </section>
-      <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
-      <section className="img_section">
-        사진
-        <input
-          placeholder="사진을 url로 변환해서 올려주세요."
-          onChange={e => {
-            const img = e.target.value;
-            const newImgs = [...imgs];
-            newImgs[0] = img;
-            setImgs(newImgs);
-          }}
-        />
-        <input
-          placeholder="사진을 url로 변환해서 올려주세요."
-          onChange={e => {
-            const img = e.target.value;
-            const newImgs = [...imgs];
-            newImgs[1] = img;
-            setImgs(newImgs);
-          }}
-        />
-        <input
-          placeholder="사진을 url로 변환해서 올려주세요."
-          onChange={e => {
-            const img = e.target.value;
-            const newImgs = [...imgs];
-            newImgs[2] = img;
-            setImgs(newImgs);
-          }}
-        />
-        <input
-          placeholder="사진을 url로 변환해서 올려주세요."
-          onChange={e => {
-            const img = e.target.value;
-            const newImgs = [...imgs];
-            newImgs[3] = img;
-            setImgs(newImgs);
-          }}
-        />
-      </section>
-    </CreateContainer>
-  );
 };
 
 export default CreateForm;
