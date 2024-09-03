@@ -6,6 +6,10 @@ import styled from "@emotion/styled";
 import { AuthContext } from "../../context/AuthContext";
 import DeletePost from "../../components/DeletePost";
 import Comment from "../../components/Comment"
+import UnLikeImg from '../../img/heart-empty-icon.svg'
+import LikeImg from '../../img/heart-icon.svg'
+
+
 const supabaseURL = import.meta.env.VITE_SUPABASE_URL;
 
 const PostDetail = () => {
@@ -134,9 +138,9 @@ const PostDetail = () => {
   // }, [samePost]);
 
 
+  let likeArray = JSON.parse(samePost.PostLike)
   const handleLike = async (e) => {
     e.preventDefault();
-    let likeArray = JSON.parse(post.PostLike)
     console.log('Like Array :', like, likeArray)
     if (likeArray.includes(user.UserID)){
       try {
@@ -251,7 +255,13 @@ const PostDetail = () => {
         <p> 도시: {post.PostCity}</p>
         <p> 음식종류: {menu[post.PostFoodType]}</p>
         <p> 작성날짜: {post.PostDate}</p>
-        <LikeButton onClick={handleLike}> 좋아요: {JSON.parse(post.PostLike).length}</LikeButton>
+        <LikeButton onClick={handleLike}>
+          {
+            likeArray.includes(user.UserID) ?
+            <img src={LikeImg}/>
+            : <img src={UnLikeImg}/>
+          }
+        </LikeButton>{JSON.parse(post.PostLike).length}
       </PostInfoDetail>
       <PostContents>
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
@@ -364,5 +374,11 @@ const UlDiv = styled.ul`
   /* margin-top: 3px; */
 `
 const LikeButton = styled.button`
-  
+  height: fit-content;
+  background-color: transparent;
+  border: none;
+  img {
+    width: 30px;
+
+  }
 `
