@@ -15,7 +15,7 @@ const MainPage = () => {
 
   useEffect(() => {
     // Ensure to log the user state for debugging
-    console.log('User state:', user);
+    // console.log('User state:', user);
   }, [user]); // Depend on user state
 
   useEffect(() => {
