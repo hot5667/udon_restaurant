@@ -177,8 +177,8 @@ const PostDetail = () => {
         {line}
         <br />
       </span>
-    )
-  })
+    );
+  });
 
   // console.log(profileImg);
   return (
@@ -252,7 +252,11 @@ const PostDetail = () => {
       </PostInfoDetail>
       <PostContents>
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
-        <p style={{ wordWrap: 'break-word' }}> 내용 <br />{tmp}</p>
+        <p style={{ wordWrap: "break-word" }}>
+          {" "}
+          내용 <br />
+          {tmp}
+        </p>
       </PostContents>
       <CommentStyle>
         <Comment />
@@ -318,12 +322,6 @@ const ProfileImg = styled.img`
   width: 50px;
   height: 50px;
 `;
-
-
-
-
-
-
 
 const HeaderDiv = styled.header`
   background-color: white;

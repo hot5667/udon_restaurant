@@ -1,12 +1,11 @@
-import React, { useContext, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styled from '@emotion/styled';
-import SideBar from '../../components/sideBar';
-import RecentPosts from '../../components/RecentPosts';
-import PostList from '../../components/PostList';
-import { AuthContext } from '../../context/AuthContext';
-import { PostContext } from '../../context/PostContext';
-import '../../css/font.css'
+import React, { useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styled from "@emotion/styled";
+import RecentPosts from "../../components/RecentPosts";
+import PostList from "../../components/PostList";
+import { AuthContext } from "../../context/AuthContext";
+import { PostContext } from "../../context/PostContext";
+import "../../css/font.css";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -15,7 +14,7 @@ const MainPage = () => {
 
   useEffect(() => {
     // Ensure to log the user state for debugging
-    // console.log('User state:', user);
+    console.log("User state:", user);
   }, [user]); // Depend on user state
 
   useEffect(() => {
@@ -29,30 +28,58 @@ const MainPage = () => {
     <>
       <MainBody>
         <HeaderDiv>
-          <div className='header'>
-            <Title onClick={(e) => {
-              e.preventDefault();
-              navigate('/');
-            }} style={{cursor:'pointer'}}>우동집</Title>
+          <div className="header">
+            <Title
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              우동집
+            </Title>
             <UlDiv>
               <li>
-                {
-                  user ?
-                  <Link  style={{textDecoration:'none', color:'black'}} onClick={(e) => {
-                    e.preventDefault();
-                    signOutUser();
-                  }}>로그아웃</Link>
-                  : <Link to='/sign-in' style={{textDecoration:'none', color:'black'}}>로그인</Link>
-                }
+                {user ? (
+                  <Link
+                    style={{ textDecoration: "none", color: "black" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      signOutUser();
+                    }}
+                  >
+                    로그아웃
+                  </Link>
+                ) : (
+                  <Link
+                    to="/sign-in"
+                    style={{ textDecoration: "none", color: "black" }}
+                  >
+                    로그인
+                  </Link>
+                )}
               </li>
-              <hr style={{height: '18px', width:'1px', backgroundColor:'black', border:'none', margin:'0 3px'}}/>
+              <hr
+                style={{
+                  height: "18px",
+                  width: "1px",
+                  backgroundColor: "black",
+                  border: "none",
+                  margin: "0 3px",
+                }}
+              />
               <li>
-                <Link to='/sign-up' style={{textDecoration:'none', color:'black'}}>회원가입</Link>
+                <Link
+                  to="/sign-up"
+                  style={{ textDecoration: "none", color: "black" }}
+                >
+                  회원가입
+                </Link>
               </li>
             </UlDiv>
           </div>
         </HeaderDiv>
-        
+
         <RecentPosts />
         <PostList />
         {/* <SideBar />
@@ -106,7 +133,7 @@ const HeaderDiv = styled.header`
 
 const Title = styled.h1`
   font-size: 50px;
-  font-family: 'LOTTERIACHAB';
+  font-family: "LOTTERIACHAB";
   color: #fea100;
   margin: 0;
   cursor: pointer;
@@ -163,18 +190,16 @@ const AddPostButton = styled.button`
   }
 `;
 
-
 const UlDiv = styled.ul`
-
   /* width: 100%; */
   height: fit-content;
 
-  position:absolute;
-  top:8px;
+  position: absolute;
+  top: 8px;
   right: 0;
   z-index: 1;
 
   display: flex;
   align-items: center;
   margin-top: 3px;
-`
+`;
