@@ -10,7 +10,7 @@ const STORAGE_NAME = 'Profile';
 const SocialSignUp = () => {
   const [userCity, setUserCity] = useState('');
   const [userNickName, setUserNickName] = useState('');
-  const [userProfile, setUserProfile] = useState(null); // URL 대신 파일로 관리
+  const [userProfile, setUserProfile] = useState([]); // 파일 배열로 관리
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const SocialSignUp = () => {
         if (existingUser) {
           setUserCity(existingUser.UserCity || '');
           setUserNickName(existingUser.UserNickName || '');
-          setUserProfile(existingUser.UserProfile || '');
+          setUserProfile(existingUser.UserProfile || []);
         }
         setLoading(false);
       } catch (err) {
@@ -48,27 +48,35 @@ const SocialSignUp = () => {
     fetchUserData();
   }, []);
 
-  const uploadProfilePicture = async (file, userID) => {
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/{userID}/profile.${fileExt}`;
-  
-    const { data, error } = await supabase.storage
-      .from(STORAGE_NAME)
-      .upload(filePath, file);
-  
-    if (error) {
-      throw new Error('프로필 이미지 업로드 중 오류가 발생했습니다.');
+  const uploadImgs = async (userID, files) => {
+    const fileUrls = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const fileExt = files[i].name.split('.').pop();
+        const filePath = `${userID}/profile_${i}.${fileExt}`;
+
+        // 파일 업로드
+        const { error: uploadError } = await supabase.storage
+          .from(STORAGE_NAME)
+          .upload(filePath, files[i]);
+
+        if (uploadError) throw uploadError;
+
+        // 업로드 후 URL 가져오기
+        const { publicURL, error: publicURLError } = supabase.storage
+          .from(STORAGE_NAME)
+          .getPublicUrl(filePath);
+
+        if (publicURLError) throw publicURLError;
+
+        fileUrls.push(publicURL);
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error.message);
     }
-  
-    const { publicURL, error: publicURLError } = supabase.storage
-      .from(STORAGE_NAME)
-      .getPublicUrl(filePath);
-  
-    if (publicURLError) {
-      throw new Error('프로필 이미지 URL을 가져오는 중 오류가 발생했습니다.');
-    }
-  
-    return publicURL;
+
+    return fileUrls;
   };
 
   const handleSubmit = async e => {
@@ -76,27 +84,31 @@ const SocialSignUp = () => {
     setError(null);
 
     try {
+      // 현재 세션 가져오기
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
       const user = sessionData.session.user;
-      let profileImageUrl = userProfile;
 
-      if (userProfile instanceof File) {
-        profileImageUrl = await uploadProfilePicture(userProfile, user.id);
+      // 프로필 이미지 URL 업로드
+      let profileImageUrls = [];
+      if (userProfile.length > 0) {
+        profileImageUrls = await uploadImgs(user.id, userProfile);
       }
 
+      // 사용자 정보 업데이트
       const { error: updateError } = await supabase
         .from('User')
         .update({
           UserCity: userCity,
           UserNickName: userNickName,
-          UserProfile: profileImageUrl,
+          UserProfile: profileImageUrls,
         })
         .eq('UserID', user.id);
 
       if (updateError) throw new Error('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
 
+      // 프로필 페이지로 리다이렉트
       navigate('/profile');
     } catch (err) {
       setError(err.message);
@@ -143,7 +155,8 @@ const SocialSignUp = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={e => setUserProfile(e.target.files[0])} // 파일 선택
+            multiple
+            onChange={e => setUserProfile(Array.from(e.target.files))} // 파일 배열 선택
             css={inputStyle}
           />
         </div>

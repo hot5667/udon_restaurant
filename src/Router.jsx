@@ -15,6 +15,7 @@ import PostDetail from './pages/post-page/PostDetail';
 import SideBar from './components/sideBar';
 import SocialSignUp from './pages/login-page/SocialSignUp';
 import MyPage from './pages/my-page/myPage';
+import SignupComplete from "./pages/login-page/SignupComplete";
 
 const RouterComponent = () => {
     return (
@@ -35,6 +36,7 @@ const RouterComponent = () => {
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/sign-up" element={<SignUp />} />
                         <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/sign-complete" element={<SignupComplete />}></Route>
                     </Routes>
                 </PostContextProvider>
             </AuthProvider>

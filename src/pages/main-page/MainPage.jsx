@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import RecentPosts from '../../components/RecentPosts';
@@ -13,17 +13,36 @@ const MainPage = () => {
     const { user, signOutUser, loading: authLoading } = useContext(AuthContext);
     const { fetchPosts, posts, loading: postsLoading } = useContext(PostContext);
 
-    useEffect(() => {
-        // Ensure to log the user state for debugging
-        console.log('User state:', user);
-    }, [user]); // Depend on user state
+  // 상태 추가
+  const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
-        // Fetch posts when the component mounts or when `user` changes
-        if (!posts) fetchPosts();
+            console.log('User state:', user);
+    }, [user]);
+
+    useEffect(() => {
+            if (!posts) fetchPosts();
     }, [fetchPosts, posts]);
 
-    if (authLoading || postsLoading) return <p>로딩 중...</p>; // Loading state handling
+  useEffect(() => {
+    if (showAlert) {
+      alert("회원가입은 로그인된 사용자에게는 필요하지 않습니다.");
+      setShowAlert(false); // 알림창을 한 번만 띄우도록 상태 초기화
+    }
+  }, [showAlert]);
+
+    if (authLoading || postsLoading) return <p>로딩 중...</p>; 
+
+  const handleSignUpClick = (e) => {
+    e.preventDefault();
+    if (user) {
+      // 로그인 상태일 때 회원가입 버튼 클릭 시 알림창 표시
+      setShowAlert(true);
+    } else {
+      // 로그인 상태가 아닐 때 회원가입 페이지로 이동
+      navigate("/sign-up");
+    }
+  };
 
     return (
         <>
