@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import SideBar from '../../components/sideBar';
 import RecentPosts from '../../components/RecentPosts';
 import PostList from '../../components/PostList';
-import SideBar from '../../components/SideBar';
 import { AuthContext } from '../../context/AuthContext';
 import { PostContext } from '../../context/PostContext';
 import '../../css/font.css'
@@ -16,7 +15,7 @@ const MainPage = () => {
 
   useEffect(() => {
     // Ensure to log the user state for debugging
-    console.log('User state:', user);
+    // console.log('User state:', user);
   }, [user]); // Depend on user state
 
   useEffect(() => {
@@ -27,20 +26,6 @@ const MainPage = () => {
   if (authLoading || postsLoading) return <p>로딩 중...</p>; // Loading state handling
 
   return (
-<<<<<<< HEAD
-    <MainBody>
-      <SideBar />
-      우동집 Main
-      <RecentPosts />
-      <button
-        onClick={() => {
-          navigate('/create');
-        }}
-      >
-        게시글 작성하기
-      </button>
-    </MainBody>
-=======
     <>
       <MainBody>
         <HeaderDiv>
@@ -90,7 +75,6 @@ const MainPage = () => {
         </AddPostButton> */}
       </MainBody>
     </>
->>>>>>> 6c15c317a51e8a624ee45dc2507676c6b54d3c71
   );
 };
 

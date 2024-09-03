@@ -45,7 +45,7 @@ const CreateForm = ({ Modify }) => {
           PostContent: '',
           PostDate: `${year}-${month}-${date}`,
           PostImgs: [null, null, null, null],
-          PostLike: 0,
+          PostLike: '[]',
         }
       : post
   );
