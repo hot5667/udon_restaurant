@@ -1,35 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-// import testImg from '../../img/test.png';
 import supabase from '../../supaBasecClient';
-
-const MYPAGE_CONTAINER = styled.div`
-    display: flex;
-    margin: 30px 30px 30px 130px;
-`;
-
-const LeftMypage = styled.div`
-    margin-right: 80px;
-    padding-right: 80px;
-    border-right: 2px solid #000;
-`;
-
-const RightMypage = styled.div`
-    flex-grow: 1;
-`;
-
-const PostBox = styled.div`
-    display: grid;
-    grid-template-columns: repeat(3, minmax(250px, auto));
-    gap: 20px;
-    border: 2px solid #000;
-`;
-
-const UserInfo = styled.div`
-    border: 1px solid black;
-    padding: 10px;
-    margin-bottom: 20px;
-`;
+import logoHacan from '../../img/logoHacan.png';
+import '../../css/mypage.css';
+import '../../css/font.css';
 
 const MyPage = () => {
     const [users, setUsers] = useState([]);
@@ -77,16 +52,62 @@ const MyPage = () => {
 
     return (
         <MYPAGE_CONTAINER>
+            <HeaderDiv>
+                <div className="header">
+                    <h1
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate('/');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        우동집
+                    </h1>
+                    <UlDiv>
+                        <li>
+                            {users ? (
+                                <Link
+                                    style={{ textDecoration: 'none', color: 'black' }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        signOutUser();
+                                    }}
+                                >
+                                    로그아웃
+                                </Link>
+                            ) : (
+                                <Link to="/sign-in" style={{ textDecoration: 'none', color: 'black' }}>
+                                    로그인
+                                </Link>
+                            )}
+                        </li>
+                        <hr
+                            style={{
+                                height: '18px',
+                                width: '1px',
+                                backgroundColor: 'black',
+                                border: 'none',
+                                margin: '0 15px',
+                            }}
+                        />
+                        <li>
+                            <Link to="/sign-up" style={{ textDecoration: 'none', color: 'black' }}>
+                                회원가입
+                            </Link>
+                        </li>
+                    </UlDiv>
+                </div>
+            </HeaderDiv>
+            <h1 style={{ margin: 30, fontSize: 30 }}>마이페이지</h1>
             <LeftMypage>
+                <img src={logoHacan} style={{ width: 150, float: 'left' }} />
                 {error ? (
                     <p style={{ color: 'red' }}>{error}</p>
                 ) : users.length > 0 ? (
                     users.map((user) => (
                         <UserInfo key={user.UserID}>
-                            <h5>아이디: {user.UserID || 'N/A'}</h5>
                             <h5>이름: {user.UserNickName || 'N/A'}</h5>
-                            <h5>나이: {user.age || 'N/A'}</h5>
-                            <h5>주소: {user.UserCity || 'N/A'}</h5>
+                            <h5>지역: {user.UserCity || 'N/A'}</h5>
                         </UserInfo>
                     ))
                 ) : (
@@ -101,18 +122,107 @@ const MyPage = () => {
                     <p style={{ color: 'red' }}>{error}</p>
                 ) : (
                     posts.map((post) => (
-                        <PostBox key={post.PostTitle}>
+                        <PostBox className="rightBox" key={post.PostTitle}>
                             <img
+                                className="postImg"
                                 src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/images/${post.PostID}/${JSON.parse(post.PostImgs)[0]}`}
                             />
-                            <p>{`${post.PostTitle}`}</p>
+                            <h2>{post.PostTitle}</h2>
+                            <p>{post.PostDate}</p>
+                            <p className="content">{post.PostContent}</p>
                         </PostBox>
                     ))
                 )}
-                <p>닉네임, 이메일, 관심동네, 내 댓글/게시글이라.....</p>
             </RightMypage>
         </MYPAGE_CONTAINER>
     );
 };
 
 export default MyPage;
+
+const MYPAGE_CONTAINER = styled.div`
+    width: 94%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    margin: 30px 30px 30px 90px;
+    font-family: GmarketSansMedium;
+`;
+
+const LeftMypage = styled.div`
+    display: flex;
+    float: left;
+    border: 2px solid #fea100;
+`;
+
+const RightMypage = styled.div`
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(40px, 400px));
+    gap: 25px;
+    justify-content: center;
+    margin: 20px;
+`;
+
+const PostBox = styled.div`
+    overflow: hidden;
+    img {
+        object-fit: cover;
+        width: 100%;
+        height: 50%;
+        border-radius: 10px;
+    }
+`;
+
+const UserInfo = styled.div`
+    margin-bottom: 20px;
+    border-radius: 15px;
+    padding: 20px;
+`;
+
+const HeaderDiv = styled.div`
+    background-color: white;
+
+    width: inherit;
+    height: fit-content;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    padding: 20px 0;
+
+    .header {
+        width: 100%;
+        display: flex;
+        position: relative;
+    }
+
+    h1 {
+        font-size: 50px;
+        font-family: 'LOTTERIACHAB';
+        color: #fea100;
+
+        z-index: 1;
+
+        margin: auto;
+    }
+`;
+
+const UlDiv = styled.ul`
+    /* width: 100%; */
+    height: fit-content;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
+`;
