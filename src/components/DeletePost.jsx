@@ -13,7 +13,7 @@ const DeletePost = ({ id }) => {
       navigate("/");
     }
   };
-  return <button onClick={deletePost}>포스트 삭제</button>;
+  return <button onClick={deletePost}>게시글 삭제</button>;
 };
 
 export default DeletePost;
