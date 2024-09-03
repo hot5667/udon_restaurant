@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import { AuthProvider } from './context/AuthContext';
 import PostContextProvider from './context/PostContext';
 import SignUp from "./pages/login-page/signUp";
@@ -14,12 +14,6 @@ import WrapperComponent from "./components/WrapperComponent";
 import PostDetail from "./pages/post-page/PostDetail";
 import SideBar from './components/SideBar';
 import SocialSignUp from './pages/login-page/SocialSignUp';
-
-const SideBarLayout = () => (
-  <SideBar>
-    <Outlet />
-  </SideBar>
-);
 
 const RouterComponent = () => {
   return (

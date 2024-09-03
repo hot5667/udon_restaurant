@@ -1,9 +1,9 @@
-import RouterComponent from './Router'
+import RouterComponent from "./Router";
 
 function App() {
   return (
     <>
-      <RouterComponent/>
+      <RouterComponent />
     </>
   );
 }
