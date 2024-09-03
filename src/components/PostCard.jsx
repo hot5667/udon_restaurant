@@ -21,7 +21,8 @@ const PostCard = ({post}) => {
     <Card onClick={(e) => {
       e.preventDefault();
       if (user) {
-      alert(`Post ID : ${PostID}`);
+      // alert(`Post ID : ${PostID}`);
+      navigate(`/detail?id=${PostID}`);
 
       }else {
         alert('로그인해야 확인 가능합니다. 로그인 페이지로 이동합니다.');

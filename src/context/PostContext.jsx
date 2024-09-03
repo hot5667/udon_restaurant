@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import supabase from "../supaBasecClient";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 export const PostContext = createContext(null);
 
@@ -8,6 +9,8 @@ const STORAGE_NAME = 'images';
 const PostContextProvider = ({ children }) => {
   const [postsNumber, setPostsNumber] = useState(0);
   const [user, setUser] = useState(null);
+  // const [searchParams, _] = useSearchParams();
+  const location = useLocation();
   // console.log()
 
   useEffect(() => {
@@ -17,8 +20,13 @@ const PostContextProvider = ({ children }) => {
         throw error;
       } else {
         data.sort((a, b) => a.PostID - b.PostID)
-        // console.log("data => ", data);
+        console.log("data => ", data);
+        console.log("postsNumber => ", postsNumber);
+        // if (postsNumber === 0) {
         setPostsNumber(prev => prev + data.at(-1).PostID + 1);
+        // } else {
+        // setPostsNumber(prev => prev + 1);
+        // }
       }
     };
 

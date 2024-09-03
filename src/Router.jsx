@@ -13,20 +13,12 @@ import PostDetail from "./pages/post-page/PostDetail";
 import SideBar from './components/sideBar';
 // import SignOut from './pages/signOut';
 import SocialSignUp from './pages/login-page/SocialSignUp';
-
-const SideBarLayout = () => {
-  return (
-    <>
-    <SideBar>
-      <Outlet/>
-      </SideBar>
-    </>
-  )
-}
+import PostContextProvider from "./context/PostContext";
 
 const RouterComponent = () => {
   return (
     <Router>
+      <PostContextProvider>
       <Routes>
         <Route element={<WrapperComponent />}>
           <Route path="/" element={<MainPage />} />
@@ -44,6 +36,7 @@ const RouterComponent = () => {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/sign-in" element={<SignIn />} />
       </Routes>
+      </PostContextProvider>
     </Router>
   );
 };
