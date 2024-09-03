@@ -8,7 +8,7 @@ const PostListPage = () => {
   const [searchParams, _] = useSearchParams();
   const city = searchParams.get('city');
   const navigate = useNavigate();
-  const {user} = useContext(AuthContext);
+  const { user, signOutUser } = useContext(AuthContext);
 
   return (
     <PostListBody>
@@ -27,7 +27,7 @@ const PostListPage = () => {
             }}>로그아웃</Link>
             : <Link to='/sign-in' style={{textDecoration:'none', color:'black'}}>로그인</Link>
           }
-          <hr style={{height: '18px', width:'1px', backgroundColor:'black', border:'none', margin:'0 3px'}}/>
+          <Separator />
           <li>
             <Link to='/sign-up' style={{textDecoration:'none', color:'black'}}>회원가입</Link>
           </li>
@@ -110,3 +110,11 @@ const UlDiv = styled.ul`
   align-items: center;
   margin-top: 3px;
 `
+
+const Separator = styled.hr`
+  height: 18px;
+  width: 1px;
+  background-color: black;
+  border: none;
+  margin: 0 10px;
+`;

@@ -34,7 +34,7 @@ const PostDetail = () => {
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
   const postId = searchParam.get("id");
-  const { user } = useContext(AuthContext);
+  const { user, signOutUser } = useContext(AuthContext);
   const { state: PostUserID } = useLocation();
 
   const [post, setPost] = useState({
@@ -255,7 +255,7 @@ const PostDetail = () => {
         <Comment />
       </CommentStyle>
 
-      {post.Comments?.length ? (
+      {/* {post.Comments?.length ? (
         post.Comments.map((comment) => (
           <CommentStyle key={comment.CommentID}>
             <p>작성자:{comment.commentUserID}</p>
@@ -267,7 +267,7 @@ const PostDetail = () => {
         ))
       ) : (
         <CommentStyle> 작성된 댓글이 없습니다</CommentStyle>
-      )}
+      )} */}
     </DetailPost>
   );
 };
