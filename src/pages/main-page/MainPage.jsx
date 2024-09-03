@@ -1,9 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
+import SideBar from '../../components/sideBar';
 import RecentPosts from '../../components/RecentPosts';
 import PostList from '../../components/PostList';
-import SideBar from '../../components/SideBar';
 import { AuthContext } from '../../context/AuthContext';
 import { PostContext } from '../../context/PostContext';
 import '../../css/font.css'
@@ -15,7 +15,7 @@ const MainPage = () => {
 
   useEffect(() => {
     // Ensure to log the user state for debugging
-    console.log('User state:', user);
+    // console.log('User state:', user);
   }, [user]); // Depend on user state
 
   useEffect(() => {

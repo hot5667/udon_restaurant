@@ -1,14 +1,14 @@
 import React, { useContext } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import styled from 'styled-components';
-import { PostContext } from '../context/PostContext';
 import PostList from '../components/PostList';
+import { AuthContext } from '../context/AuthContext';
 
 const PostListPage = () => {
   const [searchParams, _] = useSearchParams();
   const city = searchParams.get('city');
   const navigate = useNavigate();
-  const {user} = useContext(PostContext);
+  const {user} = useContext(AuthContext);
 
   return (
     <PostListBody>

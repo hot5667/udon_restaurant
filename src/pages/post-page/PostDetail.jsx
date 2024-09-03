@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import defaultProfileImg from "../../img/image.png";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import supabase, { supabaseUrl } from "../../supaBasecClient";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import supabase from "../../supaBasecClient";
 import styled from "@emotion/styled";
-import { PostContext } from "../../context/PostContext";
+import { AuthContext } from "../../context/AuthContext";
 import DeletePost from "../../components/DeletePost";
+import Comment from "../../components/Comment"
+const supabaseURL = import.meta.env.VITE_SUPABASE_URL;
 
 const PostDetail = () => {
   const menu = {
@@ -19,27 +21,29 @@ const PostDetail = () => {
   };
 
   const navigate = useNavigate();
-  //객체로 받아옴
-  const { user } = useContext(PostContext);
-  console.log(user);
 
   const [searchParam] = useSearchParams();
   const postId = searchParam.get("id");
+  const { user } = useContext(AuthContext);
 
-  const [samePost, setSamePost] = useState([
+  const [samePost, setSamePost] = useState(
     {
       PostDate: "",
       PostCity: "",
       PostTitle: "",
       PostContent: "",
-      Comments: [],
       PostFoodType: "",
+      PostImgs: [],
       UserID: "",
+      PostLike: '[]',
+      Comments: [],
+      UserProfile: null,
     },
-  ]);
+  );
 
-  const [postImgs, setPostImgs] = useState([]);
+  // const [postImgs, setPostImgs] = useState([]);
   const [profileImg, setProfileImg] = useState([]);
+  const [like, setLike] = useState(0);
 
   useEffect(() => {
     const FindSamePost = async () => {
@@ -50,30 +54,32 @@ const PostDetail = () => {
       if (error) {
         console.log("error=>", error);
       } else {
-        console.log(data);
-        setSamePost(data);
+        // console.log(data);
+        setSamePost(prev => {
+          const curPost = {...data[0]};
+          curPost.PostImgs = JSON.parse(curPost.PostImgs);
+          return {...curPost};
+        });
+        setLike(JSON.parse(data[0].PostLike).length)
       }
     };
     FindSamePost();
-  }, []);
+    
+    // const FindPostImg = async () => {
+    //   const { data, error } = await supabase.storage
+    //     .from("images")
+    //     .list(postId);
+    //   if (error) {
+    //     console.log(error);
+    //   } else {
+    //     data;
+    //   }
+    //   // console.log(data);
+    //   setPostImgs(data);
+    // };
+    // FindPostImg();
 
-  useEffect(() => {
-    const FindPostImg = async () => {
-      const { data, error } = await supabase.storage
-        .from("images")
-        .list(postId);
-      if (error) {
-        console.log(error);
-      } else {
-        data;
-      }
-      // console.log(data);
-      setPostImgs(data);
-    };
-    FindPostImg();
-  }, []);
-
-  useEffect(() => {
+    
     const FindProfileImg = async () => {
       const { data, error } = await supabase
         .from("User")
@@ -84,17 +90,87 @@ const PostDetail = () => {
       } else {
         console.log(data);
         setProfileImg(data);
+        setSamePost(prev => {
+          return {...prev, UserProfile:data};
+        });
       }
     };
     FindProfileImg();
-  }, [samePost]);
+  }, [like]);
+
+  // useEffect(() => {
+  //   const FindPostImg = async () => {
+  //     const { data, error } = await supabase.storage
+  //       .from("images")
+  //       .list(postId);
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       data;
+  //     }
+  //     // console.log(data);
+  //     setPostImgs(data);
+  //   };
+  //   FindPostImg();
+  // }, []);
+
+  // useEffect(() => {
+  //   const FindProfileImg = async () => {
+  //     const { data, error } = await supabase
+  //       .from("User")
+  //       .select("UserProfile")
+  //       .eq("UserID", post.UserID);
+  //     if (error) {
+  //       console.log("error=>", error);
+  //     } else {
+  //       console.log(data);
+  //       setProfileImg(data);
+  //     }
+  //   };
+  //   FindProfileImg();
+  // }, [samePost]);
+
+
+  const handleLike = async (e) => {
+    e.preventDefault();
+    let likeArray = JSON.parse(post.PostLike)
+    console.log('Like Array :', like, likeArray)
+    if (likeArray.includes(user.UserID)){
+      try {
+        likeArray = likeArray.filter(id => id !== user.UserID);
+        console.log('remove like :', likeArray);
+        const { error } = await supabase.from("Post").update({ PostLike:likeArray }).eq('PostID', post.PostID);
+        if (error) throw error;
+  
+        console.log("add Like:", post.PostLike);
+      } catch (error) {
+        console.error("Error modifying Like:", error.message);
+      }
+      setLike(prev => prev-1);
+
+    } else {
+      try {
+        // const likeArray = JSON.parse(post.PostLike);
+        likeArray.push(user.UserID);
+        const { error } = await supabase.from("Post").update({ PostLike:likeArray }).eq('PostID', post.PostID);
+        if (error) throw error;
+  
+        console.log("Like modified:", post.PostLike);
+      } catch (error) {
+        console.error("Error modifying Like:", error.message);
+      }
+      setLike(prev => prev+1);
+    }
+  }
+
+
 
   console.log(samePost);
 
-  const [post] = samePost;
+  const post = samePost;
 
   let tmp = post.PostContent;
-  console.log('tmp', tmp);
+  // console.log('tmp', tmp);
   tmp = tmp.split('\n').map((line, idx) => {
     return (
       <span key={`${postId}_line_${idx}`}>
@@ -104,15 +180,40 @@ const PostDetail = () => {
     )
   })
 
-  console.log(profileImg);
+  // console.log(profileImg);
   return (
     <DetailPost>
-      {postImgs.map((img) => {
+      
+      <HeaderDiv>
+          <div className='header'>
+            <Title onClick={(e) => {
+              e.preventDefault();
+              navigate('/');
+            }} style={{cursor:'pointer'}}>우동집</Title>
+            <UlDiv>
+              <li>
+                {
+                  user ?
+                  <Link  style={{textDecoration:'none', color:'black'}} onClick={(e) => {
+                    e.preventDefault();
+                    signOutUser();
+                  }}>로그아웃</Link>
+                  : <Link to='/sign-in' style={{textDecoration:'none', color:'black'}}>로그인</Link>
+                }
+              </li>
+              <hr style={{height: '18px', width:'1px', backgroundColor:'black', border:'none', margin:'0 3px'}}/>
+              <li>
+                <Link to='/sign-up' style={{textDecoration:'none', color:'black'}}>회원가입</Link>
+              </li>
+            </UlDiv>
+          </div>
+        </HeaderDiv>
+      {post.PostImgs.map((img,idx) => {
         return (
           <img
             style={{ width: "700px", margin: "auto" }}
-            key={img.id}
-            src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/images/${postId}/${img.name}`}
+            key={idx}
+            src={`${supabaseURL}/storage/v1/object/public/images/${post.PostID}/${img}`}
           />
         );
       })}
@@ -138,8 +239,8 @@ const PostDetail = () => {
         ) : null}
       </ButtonStyle>
       <PostInfoDetail>
-        {profileImg[0]?.UserProfile ? (
-          <ProfileImg src={profileImg[0]?.UserProfile} />
+        {post.UserProfile?.UserProfile ? (
+          <ProfileImg src={post.UserProfile?.UserProfile} />
         ) : (
           <ProfileImg src={defaultProfileImg} />
         )}
@@ -147,11 +248,15 @@ const PostDetail = () => {
         <p> 도시: {post.PostCity}</p>
         <p> 음식종류: {menu[post.PostFoodType]}</p>
         <p> 작성날짜: {post.PostDate}</p>
+        <LikeButton onClick={handleLike}> 좋아요: {JSON.parse(post.PostLike).length}</LikeButton>
       </PostInfoDetail>
       <PostContents>
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
         <p style={{ wordWrap: 'break-word' }}> 내용 <br />{tmp}</p>
       </PostContents>
+      <CommentStyle>
+        <Comment />
+      </CommentStyle>
 
       {post.Comments?.length ? (
         post.Comments.map((comment) => {
@@ -200,7 +305,7 @@ const DetailPost = styled.div`
   gap: 50px;
   justify-content: center;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 0 auto; // margin 0은 위아래를 0 좌우 margin을 auto 가운데 정렬에 유용
 `;
 
 const ButtonStyle = styled.div`
@@ -213,3 +318,50 @@ const ProfileImg = styled.img`
   width: 50px;
   height: 50px;
 `;
+
+
+
+
+
+
+
+const HeaderDiv = styled.header`
+  background-color: white;
+  width: 100%;
+  height: fit-content;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 20px 0;
+  /* margin: 10px 0; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Title = styled.h1`
+  font-size: 50px;
+  font-family: 'LOTTERIACHAB';
+  color: #fea100;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+`;
+
+const UlDiv = styled.ul`
+
+  /* width: 100%; */
+  height: fit-content;
+
+  position:absolute;
+  top: 8px;
+  right: 0;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  /* margin-top: 3px; */
+`
+const LikeButton = styled.button`
+  
+`
