@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import supabase from '../supaBasecClient'
 import styled from '@emotion/styled';
 import RecentPost from './RecentPost';
@@ -9,9 +9,11 @@ import {
   PrevButton,
   usePrevNextButtons
 } from './EmblaCarouselArrowButtons'
+import { PostContext } from '../context/PostContext';
 
 const RecentPosts = () => {
   const [recentPosts, setRecentPosts] = useState([]);
+  const { postsNumber } = useContext(PostContext);
   const [isPlaying, setIsPlaying] = useState(true)
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false })])
 
@@ -59,14 +61,16 @@ const RecentPosts = () => {
     };
 
     fetchData();
-  }, []);
+  }, [postsNumber]);
 
 
   return (
+  <div>
+  <h1 style={{ fontSize: '24px' }}>최신글</h1>
+      <hr style={{height: '1px', border:'none', backgroundColor: 'black', margin:'10px 0'}}/>
     <RecentDiv>
-      <h1 style={{ fontSize: '24px' }}>최신글</h1>
-      <hr style={{margin:'10px 0'}}/>
       <Embla className='embla' ref={emblaRef}>
+     
         <div className='embla__container'>
           {recentPosts.map(recent => {
 
@@ -93,6 +97,7 @@ const RecentPosts = () => {
         </EmblaActionButton>
       </EmblaControls>
     </RecentDiv>
+    </div>
   )
 }
 
@@ -105,7 +110,10 @@ const RecentDiv = styled.div`
   padding: 20px;
   margin: 0 0 20px 0;
 
-  background-color: gray;
+  /* background-color: gray; */
+
+  border-bottom: 1px solid black;
+  /* border-radius: 20px; */
 
   hr {
     height: 1px;
