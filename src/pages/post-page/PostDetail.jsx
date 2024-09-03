@@ -92,6 +92,18 @@ const PostDetail = () => {
   console.log(samePost);
 
   const [post] = samePost;
+
+  let tmp = post.PostContent;
+  console.log('tmp', tmp);
+  tmp = tmp.split('\n').map((line, idx) => {
+    return (
+      <span key={`${postId}_line_${idx}`}>
+        {line}
+        <br />
+      </span>
+    )
+  })
+
   console.log(profileImg);
   return (
     <DetailPost>
@@ -138,7 +150,7 @@ const PostDetail = () => {
       </PostInfoDetail>
       <PostContents>
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
-        <p style={{ wordWrap: "break-word" }}> 내용: {post.PostContent}</p>
+        <p style={{ wordWrap: 'break-word' }}> 내용 <br />{tmp}</p>
       </PostContents>
 
       {post.Comments?.length ? (
