@@ -46,7 +46,7 @@ const RecentPost = ({ post }) => {
             return;
           }
         }}>
-          게시글로 이동
+          이동
         </Button>
         <Button2 onClick={() => {
           const fixedPost = {...post, PostImgs:JSON.parse(post.PostImgs)};
@@ -103,21 +103,22 @@ const CardContent = styled.div`
 `;
 
 const Button = styled.button`
-  height: 30px;
+  width: 40px;
+  height: 40px;
   padding-bottom: 3px;
 
-  border: 1px solid black;
-  border-radius: 10px;
+  border: 1px solid lightgray;
+  border-radius: 40px;
 
   position: absolute;
   bottom: 30px;
   right: 30px;
 
-  background-color: lightgray;
+  background-color: white;
 
   cursor: pointer;
   &:hover {
-    background-color: #a5a5a5;
+    background-color: #e5e5e5;
   }
 `;
 const Button2 = styled.button`

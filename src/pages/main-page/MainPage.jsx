@@ -170,7 +170,7 @@ const UlDiv = styled.ul`
   height: fit-content;
 
   position:absolute;
-  top:0;
+  top:8px;
   right: 0;
   z-index: 1;
 

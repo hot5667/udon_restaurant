@@ -47,15 +47,28 @@ const PostDetail = () => {
       } else {
         data;
       }
-      console.log(data);
+      // console.log(data);
       setPostImgs(data);
     };
     FindPostImg();
   }, []);
 
-  console.log(samePost);
+  // console.log(samePost);
 
   const [post] = samePost;
+
+  let tmp = post.PostContent;
+  console.log('tmp', tmp);
+  tmp = tmp.split('\n').map((line, idx) => {
+    return (
+      <span key={`${postId}_line_${idx}`}>
+        {line}
+        <br/>
+      </span>
+    )
+  })
+
+
   return (
     <DetailPost>
       {postImgs.map((img) => {
@@ -75,7 +88,7 @@ const PostDetail = () => {
       </PostInfoDetail>
       <PostContents>
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
-        <p> 내용: {post.PostContent}</p>
+        <p style={{wordWrap: 'break-word'}}> 내용 <br/>{tmp}</p>
       </PostContents>
 
       {post.Comments.map((comment) => {
