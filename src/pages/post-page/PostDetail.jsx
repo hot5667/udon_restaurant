@@ -154,10 +154,10 @@ const PostDetail = () => {
         if (error) throw error;
 
         console.log("add Like:", post.PostLike);
+      setLike(prev => prev - 1);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
-      setLike(prev => prev - 1);
 
     } else {
       try {
@@ -167,10 +167,10 @@ const PostDetail = () => {
         if (error) throw error;
 
         console.log("Like modified:", post.PostLike);
+      setLike(prev => prev + 1);
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
-      setLike(prev => prev + 1);
     }
   }
 
