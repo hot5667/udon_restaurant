@@ -177,6 +177,10 @@ const PostBox = styled.div`
         height: 50%;
         border-radius: 10px;
     }
+
+    h2{
+        font-size: 20px;
+    }
 `;
 
 const UserInfo = styled.div`

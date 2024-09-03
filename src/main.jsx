@@ -4,7 +4,7 @@ import './reset.css'
 import PostsNumberProvider from './context/PostContext.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <PostsNumberProvider>
+  // <PostsNumberProvider>
       <App />
-  </PostsNumberProvider>,
+  // </PostsNumberProvider>,
 );
