@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
-import styled from '@emotion/styled'
-import { PostContext } from '../context/PostContext';
-import { useNavigate } from 'react-router-dom';
-import supabase from '../supaBasecClient';
+import React, { useContext, useEffect, useState } from "react";
+import styled from "@emotion/styled";
+import { PostContext } from "../context/PostContext";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import supabase from "../supaBasecClient";
 
 const STORAGE_NAME = 'images';
 
