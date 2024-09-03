@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import supabase, { supabaseUrl } from "../../supaBasecClient";
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
+import Comment from "../../components/Comment";
 
 const PostDetail = () => {
   const [searchParam] = useSearchParams();
@@ -77,16 +78,19 @@ const PostDetail = () => {
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
         <p> 내용: {post.PostContent}</p>
       </PostContents>
-
-      {post.Comments.map((comment) => {
+      <CommentStyle>
+        <Comment />
+      </CommentStyle>
+      {/* {post.Comments.map((comment) => {
         return (
           <CommentStyle key={comment.CommentID}>
             <p>작성자:{comment.commentUserID}</p>
             <p>작성날짜:{comment.CommentDate}</p>
             <p>내용:{comment.CommentContent}</p>
+            
           </CommentStyle>
         );
-      })}
+      })} */}
     </DetailPost>
   );
 };
