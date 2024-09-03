@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Link, useSearchParams, useNavigate } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom'
 import supabase from '../supaBasecClient';
 import styled from 'styled-components';
 import PostCard from '../components/PostCard';
@@ -8,6 +8,7 @@ import { PostContext } from '../context/PostContext';
 const PostListPage = () => {
   const [searchParams, _] = useSearchParams();
   const city = searchParams.get('city');
+  const location = useLocation();
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
   const {user} = useContext(PostContext)
@@ -36,7 +37,7 @@ const PostListPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [location.search]);
 
   return (
     <PostListBody>

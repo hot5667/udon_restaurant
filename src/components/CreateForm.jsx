@@ -50,7 +50,7 @@ const CreateForm = ({ Modify }) => {
 
   const handlePost = e => {
     e.preventDefault();
-    console.log(writing);
+    console.log('writing :', writing);
 
     if (!writing.PostTitle) {
       alert('제목을 입력해주세요.');
@@ -94,6 +94,7 @@ const CreateForm = ({ Modify }) => {
       } else {
         const modify = async () => {
           const curPost = { ...writing };
+          console.log('curPost :', curPost);
           await deleteImgs(curPost.PostID);
 
           curPost.PostImgs = curPost.PostImgs.filter(ele => Boolean(ele));
@@ -187,7 +188,7 @@ const CreateForm = ({ Modify }) => {
               placeholder={'내용을 입력해주세요'}
               onChange={e => {
                 setWriting(prev => {
-                  const cur = { ...prev };
+                  const cur = { ...writing };
                   cur.PostContent = e.target.value;
                   return cur;
                 });
@@ -199,24 +200,46 @@ const CreateForm = ({ Modify }) => {
         <ImgSection className="img_section">
           <label>사진</label>
           <div className="img_input_container">
-            {Array(4)
-              .fill()
-              .map((_, idx) => (
-                <input
-                  type="file"
-                  key={`img_input_${idx}`}
-                  onChange={e => {
-                    const newImgs = [...writing.PostImgs];
-                    newImgs[idx] = e.target.files[idx];
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[0] = e.target.files[0];
 
-                    setWriting(prev => {
-                      const cur = { ...prev };
-                      cur.PostImgs = newImgs;
-                      return cur;
-                    });
-                  }}
-                />
-              ))}
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[1] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[2] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[3] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
           </div>
         </ImgSection>
         <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
@@ -317,24 +340,46 @@ const CreateForm = ({ Modify }) => {
             사진 <span>(수정 시 사진을 다시 업로드해주세요.)</span>
           </label>
           <div className="img_input_container">
-            {Array(4)
-              .fill()
-              .map((_, idx) => (
-                <input
-                  type="file"
-                  key={`img_input_${idx}`}
-                  onChange={e => {
-                    const newImgs = [...writing.PostImgs];
-                    newImgs[idx] = e.target.files[idx];
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[0] = e.target.files[0];
 
-                    setWriting(prev => {
-                      const cur = { ...prev };
-                      cur.PostImgs = newImgs;
-                      return cur;
-                    });
-                  }}
-                />
-              ))}
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[1] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[2] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
+            <input type='file' onChange={(e) => {
+                const newImgs = [...writing.PostImgs];
+                newImgs[3] = e.target.files[0];
+
+                setWriting(prev => {
+                  const cur = { ...prev };
+                  cur.PostImgs = newImgs;
+                  return cur;
+                });
+              }} />
           </div>
         </ImgSection>
         <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>

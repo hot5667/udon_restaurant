@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import supabase from '../supaBasecClient'
 import styled from '@emotion/styled';
 import RecentPost from './RecentPost';
@@ -9,9 +9,11 @@ import {
   PrevButton,
   usePrevNextButtons
 } from './EmblaCarouselArrowButtons'
+import { PostContext } from '../context/PostContext';
 
 const RecentPosts = () => {
   const [recentPosts, setRecentPosts] = useState([]);
+  const { postsNumber } = useContext(PostContext);
   const [isPlaying, setIsPlaying] = useState(true)
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false })])
 
@@ -59,7 +61,7 @@ const RecentPosts = () => {
     };
 
     fetchData();
-  }, []);
+  }, [postsNumber]);
 
 
   return (
