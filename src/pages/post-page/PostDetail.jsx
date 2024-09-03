@@ -1,11 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import defaultProfileImg from "../../img/image.png";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import supabase from "../../supaBasecClient";
 import styled from "@emotion/styled";
 import { AuthContext } from "../../context/AuthContext";
 import DeletePost from "../../components/DeletePost";
 import Comment from "../../components/Comment"
+import UnLikeImg from '../../img/heart-empty-icon.svg'
+import LikeImg from '../../img/heart-icon.svg'
+
+
 const supabaseURL = import.meta.env.VITE_SUPABASE_URL;
 
 const PostDetail = () => {
@@ -25,6 +29,8 @@ const PostDetail = () => {
   const [searchParam] = useSearchParams();
   const postId = searchParam.get("id");
   const { user } = useContext(AuthContext);
+  const {state:PostUserID} = useLocation();
+  console.log('location :', useLocation())
 
   const [samePost, setSamePost] = useState(
     {
@@ -56,7 +62,7 @@ const PostDetail = () => {
       } else {
         // console.log(data);
         setSamePost(prev => {
-          const curPost = {...data[0]};
+          const curPost = {...prev, ...data[0]};
           curPost.PostImgs = JSON.parse(curPost.PostImgs);
           return {...curPost};
         });
@@ -81,17 +87,18 @@ const PostDetail = () => {
 
     
     const FindProfileImg = async () => {
+      console.log('post userid',  samePost)
+
       const { data, error } = await supabase
         .from("User")
         .select("UserProfile")
-        .eq("UserID", post.UserID);
+        .eq("UserID", PostUserID);
       if (error) {
         console.log("error=>", error);
       } else {
-        console.log(data);
-        setProfileImg(data);
+        console.log(data[0]);
         setSamePost(prev => {
-          return {...prev, UserProfile:data};
+          return {...prev, UserProfile:data[0].UserProfile};
         });
       }
     };
@@ -131,9 +138,9 @@ const PostDetail = () => {
   // }, [samePost]);
 
 
+  let likeArray = JSON.parse(samePost.PostLike)
   const handleLike = async (e) => {
     e.preventDefault();
-    let likeArray = JSON.parse(post.PostLike)
     console.log('Like Array :', like, likeArray)
     if (likeArray.includes(user.UserID)){
       try {
@@ -239,8 +246,8 @@ const PostDetail = () => {
         ) : null}
       </ButtonStyle>
       <PostInfoDetail>
-        {post.UserProfile?.UserProfile ? (
-          <ProfileImg src={post.UserProfile?.UserProfile} />
+        {post?.UserProfile ? (
+          <ProfileImg src={post?.UserProfile} />
         ) : (
           <ProfileImg src={defaultProfileImg} />
         )}
@@ -248,7 +255,13 @@ const PostDetail = () => {
         <p> 도시: {post.PostCity}</p>
         <p> 음식종류: {menu[post.PostFoodType]}</p>
         <p> 작성날짜: {post.PostDate}</p>
-        <LikeButton onClick={handleLike}> 좋아요: {JSON.parse(post.PostLike).length}</LikeButton>
+        <LikeButton onClick={handleLike}>
+          {
+            likeArray.includes(user.UserID) ?
+            <img src={LikeImg}/>
+            : <img src={UnLikeImg}/>
+          }
+        </LikeButton>{JSON.parse(post.PostLike).length}
       </PostInfoDetail>
       <PostContents>
         <p style={{ fontSize: "24px" }}> 제목: {post.PostTitle}</p>
@@ -361,5 +374,11 @@ const UlDiv = styled.ul`
   /* margin-top: 3px; */
 `
 const LikeButton = styled.button`
-  
+  height: fit-content;
+  background-color: transparent;
+  border: none;
+  img {
+    width: 30px;
+
+  }
 `
