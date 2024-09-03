@@ -12,7 +12,6 @@ const STORAGE_NAME = "images";
 const PostCard = ({ post }) => {
   const { PostID, PostImgs, PostTitle, PostLike } = post;
   const { user } = useContext(AuthContext); // Use AuthContext to get user
-  const { posts } = useContext(PostContext); // Use PostContext to get posts
   const navigate = useNavigate();
   let imgArray = JSON.parse(PostImgs);
   if (imgArray.some(img => img.includes('https'))) {

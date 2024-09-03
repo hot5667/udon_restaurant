@@ -1,28 +1,36 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import defaultProfileImg from "../../img/image.png";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import supabase from "../../supaBasecClient";
 import styled from "@emotion/styled";
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+import {
+  NextButton,
+  PrevButton,
+  usePrevNextButtons
+} from '../../components/EmblaCarouselArrowButtons'
 import { AuthContext } from "../../context/AuthContext";
 import DeletePost from "../../components/DeletePost";
 import Comment from "../../components/Comment";
 import UnLikeImg from '../../img/heart-empty-icon.svg';
 import LikeImg from '../../img/heart-icon.svg';
+import defaultImg from '../../img/default-img.png'
+
 
 const supabaseURL = import.meta.env.VITE_SUPABASE_URL;
+const menu = {
+  1: "한식",
+  2: "중식",
+  3: "일식",
+  4: "양식",
+  5: "분식",
+  6: "야식/안주",
+  7: "카페/디저트",
+  8: "기타",
+};
 
 const PostDetail = () => {
-  const menu = {
-    1: "한식",
-    2: "중식",
-    3: "일식",
-    4: "양식",
-    5: "분식",
-    6: "야식/안주",
-    7: "카페/디저트",
-    8: "기타",
-  };
-
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
   const postId = searchParam.get("id");
@@ -42,13 +50,14 @@ const PostDetail = () => {
     UserProfile: null,
   });
 
+
   const [like, setLike] = useState(0);
 
   useEffect(() => {
     const FindSamePost = async () => {
       const { data, error } = await supabase
         .from("Post")
-        .select("*, Comments (*)")
+        .select("*")
         .eq("PostID", postId);
 
       if (error) {
@@ -58,12 +67,12 @@ const PostDetail = () => {
           const curPost = { ...prev, ...data[0] };
           curPost.PostImgs = JSON.parse(curPost.PostImgs);
           return curPost;
+
         });
         setLike(JSON.parse(data[0].PostLike).length);
       }
     };
     FindSamePost();
-
     const FindProfileImg = async () => {
       if (PostUserID) {
         const { data, error } = await supabase
@@ -82,9 +91,31 @@ const PostDetail = () => {
       }
     };
     FindProfileImg();
-  }, [postId, PostUserID]);
-
+  }, [like, postId, PostUserID]);
   let likeArray = JSON.parse(samePost.PostLike) || [];
+  // 캐러셀
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false })]);
+  const {
+    prevBtnDisabled,
+    nextBtnDisabled,
+    onPrevButtonClick,
+    onNextButtonClick
+  } = usePrevNextButtons(emblaApi);
+  const onButtonAutoplayClick = useCallback(
+    (callback) => {
+      const autoplay = emblaApi?.plugins()?.autoplay
+      if (!autoplay) return
+
+      const resetOrStop =
+        autoplay.options.stopOnInteraction === false
+          ? autoplay.reset
+          : autoplay.stop
+
+      resetOrStop()
+      callback()
+    },
+    [emblaApi]
+  )
 
   const handleLike = async (e) => {
     e.preventDefault();
@@ -99,6 +130,7 @@ const PostDetail = () => {
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
+
     } else {
       try {
         likeArray.push(user.UserID);
@@ -108,6 +140,7 @@ const PostDetail = () => {
       } catch (error) {
         console.error("Error modifying Like:", error.message);
       }
+
     }
   };
 
@@ -123,12 +156,20 @@ const PostDetail = () => {
     <DetailPost>
       <HeaderDiv>
         <div className='header'>
-          <Title onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>우동집</Title>
+          <Title onClick={(e) => {
+            e.preventDefault();
+            navigate('/');
+          }} style={{ cursor: 'pointer' }}>우동집</Title>
           <UlDiv>
             <li>
-              {user ?
-                <Link style={{ textDecoration: 'none', color: 'black' }} onClick={() => { /* handle logout */ }}>로그아웃</Link>
-                : <Link to='/sign-in' style={{ textDecoration: 'none', color: 'black' }}>로그인</Link>
+              {
+                user ?
+                  <Link style={{ textDecoration: 'none', color: 'black' }} onClick={(e) => {
+                    e.preventDefault();
+                    signOutUser();
+                    navigate('/');
+                  }}>로그아웃</Link>
+                  : <Link to='/sign-in' style={{ textDecoration: 'none', color: 'black' }}>로그인</Link>
               }
             </li>
             <hr style={{ height: '18px', width: '1px', backgroundColor: 'black', border: 'none', margin: '0 3px' }} />
@@ -138,14 +179,38 @@ const PostDetail = () => {
           </UlDiv>
         </div>
       </HeaderDiv>
-      {samePost.PostImgs.map((img, idx) => (
-        <img
-          style={{ width: "700px", margin: "auto" }}
-          key={idx}
-          src={`${supabaseURL}/storage/v1/object/public/images/${samePost.PostID}/${img}`}
-          alt={`post-${idx}`}
-        />
-      ))}
+      {
+      post.PostImgs.length === 0 ?
+      <DefaultImg defaultImg={defaultImg}/>
+      : <Embla className='embla' ref={emblaRef}>
+          <div className='embla__container'>
+            {post.PostImgs.map((img, idx) => {
+              return (
+                <div className='embla__slide' key={idx}>
+                  <img
+                    style={{ width: "700px", margin: "auto" }}
+                    key={idx}
+                    src={`${supabaseURL}/storage/v1/object/public/images/${post.PostID}/${img}`}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        <EmblaControls className="embla__controls">
+          <div className="embla__buttons">
+            <PrevButton
+              onClick={() => onButtonAutoplayClick(onPrevButtonClick)}
+              disabled={prevBtnDisabled}
+            />
+            <NextButton
+              onClick={() => onButtonAutoplayClick(onNextButtonClick)}
+              disabled={nextBtnDisabled}
+            />
+          </div>
+        </EmblaControls>
+        </Embla>
+      }
+      
       <ButtonStyle>
         {user && user.UserID === samePost.UserID ? (
           <div>
@@ -286,4 +351,71 @@ const LikeButton = styled.button`
   img {
     width: 30px;
   }
-`;
+`
+
+// 캐러셀
+const Embla = styled.div`
+  width: 100%;
+  overflow: hidden;
+  background-color: lightgray;
+
+  position: relative;
+
+  .embla__container {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%; /* Each slide covers x % of the viewport */
+    grid-gap: 0 20px;
+  }
+
+
+  .embla__slide {
+    width: 100%;
+    height: 500px;
+    
+    display: grid;
+    
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  .embla__slide:last-child {
+    margin-right:20px;
+  }
+`
+
+const EmblaControls = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  .embla__buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      background-color: transparent;
+      margin: 0;
+      width: 30px;
+      height: 40px;
+      border-radius: 0;
+      padding: 3px 0 0 0;
+      cursor: pointer;
+    }
+  }
+`
+
+const DefaultImg = styled.div`
+  background: white url(${props => props.defaultImg}) no-repeat center;
+  /* background-position: center; */
+  background-size: contain;
+  width: 100%;
+  height: 500px;
+`

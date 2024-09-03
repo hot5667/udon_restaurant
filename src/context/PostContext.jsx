@@ -1,17 +1,15 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useState, useEffect } from "react";
 import supabase from "../supaBasecClient";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
 
 export const PostContext = createContext();
 
-const STORAGE_NAME = "images";
+const STORAGE_NAME = 'images';
 
 const PostContextProvider = ({ children }) => {
   const [postsNumber, setPostsNumber] = useState(0);
+  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]); // 추가된 상태
-  const {user} = useContext(AuthContext)
-  const location = useLocation();
 
   useEffect(() => {
     const fetchPostsNumber = async () => {
@@ -23,12 +21,11 @@ const PostContextProvider = ({ children }) => {
         setPostsNumber(prev => (data.length > 0 ? data.at(-1).PostID + 1 : 0));
       } catch (error) {
         console.error("Error fetching posts:", error.message);
-
       }
     };
 
     fetchPostsNumber();
-  }, [location.search]);
+  }, []);
 
   const fetchPosts = async () => {
     try {
@@ -54,8 +51,8 @@ const PostContextProvider = ({ children }) => {
 
   const modifyData = async (post) => {
     try {
-      const { PostTitle, PostContent, PostCity, PostFoodType } = post;
-      const { error } = await supabase.from("Post").update({ PostTitle, PostContent, PostCity, PostFoodType }).eq('PostID', post.PostID);
+      const { PostTitle, PostContent, PostCity, PostFoodType, PostImgs } = post;
+      const { error } = await supabase.from("Post").update({ PostTitle, PostContent, PostCity, PostFoodType, PostImgs }).eq('PostID', post.PostID);
       if (error) throw error;
 
       console.log("Post modified:", post.PostID);
@@ -129,6 +126,33 @@ const PostContextProvider = ({ children }) => {
       console.error("Error uploading file:", error.message);
     }
   };
+
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const { data: userData } = await supabase.auth.getSession();
+        if (userData.session) {
+          const { data, error } = await supabase.from('User').select('UserNickName').eq('UserID', userData.session.user.id);
+          
+          if (error) throw error;
+          
+          // Ensure data is an array and has at least one element
+          if (Array.isArray(data) && data.length > 0) {
+            setUser({ UserID: userData.session.user.id, UserNickName: data[0].UserNickName });
+          } else {
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Error fetching user session:", error.message);
+        setUser(null);
+      }
+    };
+
+    checkUserSession();
+  }, []);
 
   const signOutUser = async () => {
     try {

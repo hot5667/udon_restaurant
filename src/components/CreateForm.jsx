@@ -5,25 +5,25 @@ import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import supabase from "../supaBasecClient";
 
-const STORAGE_NAME = "images";
+const STORAGE_NAME = 'images';
 
 const CreateForm = ({ Modify }) => {
   const navigate = useNavigate();
-  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs } =
-    useContext(PostContext);
+  const { setPostsNumber, addPost, modifyPost, uploadImgs, deleteImgs } = useContext(PostContext);
   const { isToModify, post } = Modify;
   const { user } = useContext(AuthContext);
   // console.log('createForm :',post);
-  console.log("user :", user);
+  // console.log('user :', user);
+
 
   useEffect(() => {
     const getUserInfo = async () => {
       const { data: session } = await supabase.auth.getSession();
       // setUser(session?.user ?? null);
-    };
+    }
 
     getUserInfo();
-  }, []);
+  }, [])
 
   // const [title, setTitle] = useState('');
   // const [city, setCity] = useState(0);
@@ -33,82 +33,69 @@ const CreateForm = ({ Modify }) => {
 
   const today = new Date();
   const year = today.getFullYear();
-  const month = ("0" + (today.getMonth() + 1)).slice(-2);
-  const date = ("0" + today.getDate()).slice(-2);
+  const month = ('0' + (today.getMonth() + 1)).slice(-2);
+  const date = ('0' + today.getDate()).slice(-2);
   const [writing, setWriting] = useState(
     !isToModify
       ? {
-          PostUserName: "",
-          PostTitle: "",
-          PostCity: 0,
-          PostFoodType: 0,
-          PostContent: "",
-          PostDate: `${year}-${month}-${date}`,
-          PostImgs: [null, null, null, null],
-          PostLike: "[]",
-        }
-      : post
+        PostUserName: '',
+        PostTitle: '',
+        PostCity: 0,
+        PostFoodType: 0,
+        PostContent: '',
+        PostDate: `${year}-${month}-${date}`,
+        PostImgs: [null, null, null, null],
+        PostLike: '[]',
+      }
+      : {...post}
   );
 
-  const handlePost = (e) => {
+  const handlePost = e => {
     e.preventDefault();
-    console.log("writing :", writing);
+    // console.log('writing :', writing);
 
     if (!writing.PostTitle) {
-      alert("제목을 입력해주세요.");
+      alert('제목을 입력해주세요.');
       return;
-    } else if (writing.PostCity === "0" || writing.PostFoodType === 0) {
-      alert("지역과 음식 종류를 입력했는지 확인해주세요.");
+    } else if (writing.PostCity === '0' || writing.PostFoodType === 0) {
+      alert('지역과 음식 종류를 입력했는지 확인해주세요.');
       return;
     } else if (!writing.PostContent) {
-      alert("내용을 입력해주세요.");
+      alert('내용을 입력해주세요.');
       return;
     } else {
       if (!isToModify) {
-        const newPost = { ...writing, PostUserName: user?.UserNickname };
-        setPostsNumber((prev) => {
+        // console.log('writing user :', user);
+        const newPost = { ...writing, PostUserName: user?.UserNickName };
+        // console.log('newPost :', newPost);
+        setPostsNumber(prev => {
           newPost.PostID = prev;
-          newPost.PostImgs = newPost.PostImgs.filter((ele) => Boolean(ele));
+          newPost.PostImgs = newPost.PostImgs.filter(ele => Boolean(ele));
           uploadImgs(newPost.PostID, newPost.PostImgs);
           // const tmpPost = {...newPost};
           newPost.PostImgs = newPost.PostImgs.map((_, idx) => `${prev}_${idx}`);
 
           addPost(newPost);
-          // const n = newPost.length;
-          // newPost.PostImgs = newPost.PostImgs.map((ele, idx) => {
-          //   if (ele) {
-          //     return `${prev}_${idx}`;
-          //   } else {
-          //     return null;
-          //   }
-          // });
           return prev + 1;
         });
-        // const today = new Date();
-        // const year = today.getFullYear();
-        // const month = ('0' + (today.getMonth() + 1)).slice(-2);
-        // const date = ('0' + (today.getDate() + 1)).slice(-2);
-        // const newPost = { ...writing };
-        // newPost.PostImgs = newPost.PostImgs.map((ele, idx) => ele.name);
 
-        alert("게시글이 등록되었습니다.");
-        navigate("/");
+        alert('게시글이 등록되었습니다.');
+        navigate('/');
       } else {
         const modify = async () => {
           const curPost = { ...writing };
-          console.log("curPost :", curPost);
+          // console.log('curPost :', curPost);
           await deleteImgs(curPost.PostID);
 
-          curPost.PostImgs = curPost.PostImgs.filter((ele) => Boolean(ele));
+          curPost.PostImgs = curPost.PostImgs.filter(ele => Boolean(ele));
           await uploadImgs(curPost.PostID, curPost.PostImgs);
-          curPost.PostImgs = curPost.PostImgs.map(
-            (_, idx) => `${curPost.PostID}_${idx}`
-          );
+          curPost.PostImgs = curPost.PostImgs.map((_, idx) => `${curPost.PostID}_${idx}`);
           await modifyPost(curPost);
-          alert("게시글이 수정되었습니다.");
-          navigate("/");
+          alert('게시글이 수정되었습니다.');
+          navigate('/');
         };
         modify();
+        alert('게시글이 수정 중입니다.');
       }
     }
   };
@@ -122,8 +109,8 @@ const CreateForm = ({ Modify }) => {
             id="title"
             placeholder="제목을 입력하세요. 최대 20자."
             maxLength={20}
-            onChange={(e) => {
-              setWriting((prev) => {
+            onChange={e => {
+              setWriting(prev => {
                 const cur = { ...prev };
                 cur.PostTitle = e.target.value;
                 return cur;
@@ -131,18 +118,15 @@ const CreateForm = ({ Modify }) => {
             }}
           />
         </SelectDiv>
-        <section
-          className="select_section"
-          style={{ width: "100%", height: "30px", display: "flex" }}
-        >
+        <section className="select_section" style={{ width: '100%', height: '30px', display: 'flex' }}>
           <SelectDiv>
             <label htmlFor="city">지역</label>
             <select
               id="city"
               defaultValue={0}
-              onChange={(e) => {
+              onChange={e => {
                 // setCity(e.target.value);
-                setWriting((prev) => {
+                setWriting(prev => {
                   const cur = { ...prev };
                   cur.PostCity = e.target.value;
                   return cur;
@@ -150,14 +134,14 @@ const CreateForm = ({ Modify }) => {
               }}
             >
               <option value={0}>지역을 선택하세요</option>
-              <option value={"서울"}>서울</option>
-              <option value={"부산"}>부산</option>
-              <option value={"강원도"}>강원도</option>
-              <option value={"경기도"}>경기도</option>
-              <option value={"경상도"}>경상도</option>
-              <option value={"전라도"}>전라도</option>
-              <option value={"제주도"}>제주도</option>
-              <option value={"충청도"}>충청도</option>
+              <option value={'서울'}>서울</option>
+              <option value={'부산'}>부산</option>
+              <option value={'강원도'}>강원도</option>
+              <option value={'경기도'}>경기도</option>
+              <option value={'경상도'}>경상도</option>
+              <option value={'전라도'}>전라도</option>
+              <option value={'제주도'}>제주도</option>
+              <option value={'충청도'}>충청도</option>
             </select>
           </SelectDiv>
           <SelectDiv>
@@ -165,9 +149,9 @@ const CreateForm = ({ Modify }) => {
             <select
               id="food_type"
               defaultValue={0}
-              onChange={(e) => {
+              onChange={e => {
                 // setFoodType(+e.target.value);
-                setWriting((prev) => {
+                setWriting(prev => {
                   const cur = { ...prev };
                   cur.PostFoodType = +e.target.value;
                   return cur;
@@ -186,24 +170,16 @@ const CreateForm = ({ Modify }) => {
             </select>
           </SelectDiv>
         </section>
-        <hr
-          style={{
-            width: "100%",
-            height: "1px",
-            border: "none",
-            backgroundColor: "black",
-            margin: "10px 0",
-          }}
-        />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black', margin: '10px 0' }} />
         <ContentSection className="content_section">
           <label htmlFor="content">내용</label>
           <p>
             <TextArea
-              id={"content"}
-              placeholder={"내용을 입력해주세요"}
-              onChange={(e) => {
-                setWriting((prev) => {
-                  const cur = { ...prev };
+              id={'content'}
+              placeholder={'내용을 입력해주세요'}
+              onChange={e => {
+                setWriting(prev => {
+                  const cur = { ...writing };
                   cur.PostContent = e.target.value;
                   return cur;
                 });
@@ -211,40 +187,54 @@ const CreateForm = ({ Modify }) => {
             />
           </p>
         </ContentSection>
-        <hr
-          style={{
-            width: "100%",
-            height: "1px",
-            border: "none",
-            backgroundColor: "black",
-          }}
-        />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black', margin: '10px 0' }} />
         <ImgSection className="img_section">
           <label>사진</label>
           <div className="img_input_container">
-            {Array(4)
-              .fill()
-              .map((_, idx) => (
-                <input
-                  type="file"
-                  key={`img_input_${idx}`}
-                  onChange={(e) => {
-                    const newImgs = [...writing.PostImgs];
-                    newImgs[idx] = e.target.files[idx];
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[0] = e.target.files[0];
+              console.log
 
-                    setWriting((prev) => {
-                      const cur = { ...prev };
-                      cur.PostImgs = newImgs;
-                      return cur;
-                    });
-                  }}
-                />
-              ))}
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[1] = e.target.files[0];
+
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[2] = e.target.files[0];
+
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[3] = e.target.files[0];
+
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
           </div>
         </ImgSection>
-        <Button onClick={handlePost}>
-          {isToModify ? "수정하기" : "등록하기"}
-        </Button>
+        <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
       </CreateContainer>
     );
   } else {
@@ -256,8 +246,8 @@ const CreateForm = ({ Modify }) => {
             id="title"
             maxLength={20}
             defaultValue={writing.PostTitle}
-            onChange={(e) => {
-              setWriting((prev) => {
+            onChange={e => {
+              setWriting(prev => {
                 const cur = { ...prev };
                 cur.PostTitle = e.target.value;
                 return cur;
@@ -265,19 +255,16 @@ const CreateForm = ({ Modify }) => {
             }}
           />
         </SelectDiv>
-        <section
-          className="select_section"
-          style={{ width: "100%", height: "30px", display: "flex" }}
-        >
+        <section className="select_section" style={{ width: '100%', height: '30px', display: 'flex' }}>
           <SelectDiv>
             <label htmlFor="city">지역</label>
             <select
               id="city"
               defaultValue={writing.PostCity}
-              style={{ width: "30%" }}
-              onChange={(e) => {
+              style={{ width: '30%' }}
+              onChange={e => {
                 // setCity(e.target.value);
-                setWriting((prev) => {
+                setWriting(prev => {
                   const cur = { ...prev };
                   cur.PostCity = e.target.value;
                   return cur;
@@ -285,14 +272,14 @@ const CreateForm = ({ Modify }) => {
               }}
             >
               <option value={0}>지역을 선택하세요</option>
-              <option value={"서울"}>서울</option>
-              <option value={"부산"}>부산</option>
-              <option value={"강원도"}>강원도</option>
-              <option value={"경기도"}>경기도</option>
-              <option value={"경상도"}>경상도</option>
-              <option value={"전라도"}>전라도</option>
-              <option value={"제주도"}>제주도</option>
-              <option value={"충청도"}>충청도</option>
+              <option value={'서울'}>서울</option>
+              <option value={'부산'}>부산</option>
+              <option value={'강원도'}>강원도</option>
+              <option value={'경기도'}>경기도</option>
+              <option value={'경상도'}>경상도</option>
+              <option value={'전라도'}>전라도</option>
+              <option value={'제주도'}>제주도</option>
+              <option value={'충청도'}>충청도</option>
             </select>
           </SelectDiv>
           <SelectDiv>
@@ -300,10 +287,10 @@ const CreateForm = ({ Modify }) => {
             <select
               id="food_type"
               defaultValue={writing.PostFoodType}
-              style={{ width: "30%" }}
-              onChange={(e) => {
+              style={{ width: '30%' }}
+              onChange={e => {
                 // setFoodType(+e.target.value);
-                setWriting((prev) => {
+                setWriting(prev => {
                   const cur = { ...prev };
                   cur.PostFoodType = +e.target.value;
                   return cur;
@@ -322,22 +309,15 @@ const CreateForm = ({ Modify }) => {
             </select>
           </SelectDiv>
         </section>
-        <hr
-          style={{
-            width: "100%",
-            height: "1px",
-            border: "none",
-            backgroundColor: "black",
-          }}
-        />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
         <ContentSection className="content_section">
           <label htmlFor="content">내용</label>
           <p>
             <TextArea
-              id={"content"}
+              id={'content'}
               defaultValue={writing.PostContent}
-              onChange={(e) => {
-                setWriting((prev) => {
+              onChange={e => {
+                setWriting(prev => {
                   const cur = { ...prev };
                   cur.PostContent = e.target.value;
                   return cur;
@@ -346,42 +326,55 @@ const CreateForm = ({ Modify }) => {
             />
           </p>
         </ContentSection>
-        <hr
-          style={{
-            width: "100%",
-            height: "1px",
-            border: "none",
-            backgroundColor: "black",
-          }}
-        />
+        <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
         <ImgSection className="img_section">
           <label>
             사진 <span>(수정 시 사진을 다시 업로드해주세요.)</span>
           </label>
           <div className="img_input_container">
-            {Array(4)
-              .fill()
-              .map((_, idx) => (
-                <input
-                  type="file"
-                  key={`img_input_${idx}`}
-                  onChange={(e) => {
-                    const newImgs = [...writing.PostImgs];
-                    newImgs[idx] = e.target.files[idx];
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[0] = e.target.files[0];
 
-                    setWriting((prev) => {
-                      const cur = { ...prev };
-                      cur.PostImgs = newImgs;
-                      return cur;
-                    });
-                  }}
-                />
-              ))}
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[1] = e.target.files[0];
+
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[2] = e.target.files[0];
+
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
+            <input type='file' onChange={(e) => {
+              const newImgs = [...writing.PostImgs];
+              newImgs[3] = e.target.files[0];
+
+              setWriting(prev => {
+                const cur = { ...writing };
+                cur.PostImgs = newImgs;
+                return cur;
+              });
+            }} />
           </div>
         </ImgSection>
-        <Button onClick={handlePost}>
-          {isToModify ? "수정하기" : "등록하기"}
-        </Button>
+        <Button onClick={handlePost}>{isToModify ? '수정하기' : '등록하기'}</Button>
       </CreateContainer>
     );
   }
