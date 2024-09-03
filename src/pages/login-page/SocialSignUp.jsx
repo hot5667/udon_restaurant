@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { css } from '@emotion/react';
 import supabase from '../../supaBasecClient';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const STORAGE_NAME = 'Profile';
 
 const SocialSignUp = () => {
@@ -20,18 +19,22 @@ const SocialSignUp = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        // 현재 세션 가져오기
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
         const user = sessionData.session.user;
+        console.log('User ID:', user.id); // 로그 추가
 
-        const { data: existingUser, error: fetchError } = await supabase
+        // 사용자 정보 가져오기 (단일 행을 반환하도록 처리)
+        const { data: existingUsers, error: fetchError } = await supabase
           .from('User')
           .select('*')
-          .eq('UserID', user.id)
-          .single();
+          .eq('UserID', user.id);
 
         if (fetchError) throw new Error('사용자 정보를 가져오는 중 오류가 발생했습니다.');
+
+        const existingUser = existingUsers.length ? existingUsers[0] : null;
 
         if (existingUser) {
           setUserCity(existingUser.UserCity || '');
@@ -64,7 +67,7 @@ const SocialSignUp = () => {
         if (uploadError) throw uploadError;
 
         // 업로드 후 URL 가져오기
-        const { publicURL, error: publicURLError } = supabase.storage
+        const { data: { publicURL }, error: publicURLError } = supabase.storage
           .from(STORAGE_NAME)
           .getPublicUrl(filePath);
 
@@ -89,22 +92,24 @@ const SocialSignUp = () => {
       if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
       const user = sessionData.session.user;
+      console.log('User ID for submission:', user.id); // 로그 추가
 
       // 프로필 이미지 URL 업로드
       let profileImageUrls = [];
       if (userProfile.length > 0) {
         profileImageUrls = await uploadImgs(user.id, userProfile);
+        console.log('Uploaded Profile Image URLs:', profileImageUrls); // 로그 추가
       }
 
       // 사용자 정보 업데이트
       const { error: updateError } = await supabase
         .from('User')
-        .update({
+        .upsert({
+          UserID: user.id,
           UserCity: userCity,
           UserNickName: userNickName,
-          UserProfile: profileImageUrls,
-        })
-        .eq('UserID', user.id);
+          UserProfile: profileImageUrls.length > 0 ? profileImageUrls : [], // URL 배열 또는 빈 배열로 업데이트
+        }, { onConflict: ['UserID'] }); // conflict 처리
 
       if (updateError) throw new Error('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
 
