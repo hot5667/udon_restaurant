@@ -58,7 +58,7 @@ const PostDetail = () => {
   const [post] = samePost;
 
   let tmp = post.PostContent;
-  console.log('tmp', tmp);
+  // console.log('tmp', tmp);
   tmp = tmp.split('\n').map((line, idx) => {
     return (
       <span key={`${postId}_line_${idx}`}>
