@@ -9,6 +9,7 @@ const Comment = () => {
   const [changeContent, setChangeContent] = useState("");
   const [isOpenWindow, setIsOpenWindow] = useState(false);
   const [testID, setTestID] = useState(0);
+  const [profileImg, setProfileImg] = useState(null);
   const [params] = useSearchParams();
   const bringPostID = params.get("id");
 
@@ -19,10 +20,28 @@ const Comment = () => {
     async function getComment() {
       let { data: Comments, error } = await supabase
         .from("Comments")
-        .select("*");
+        .select("*")
+        .eq("PostID", bringPostID);
       setComments(Comments);
     }
     getComment();
+  }, []);
+
+  useEffect(() => {
+    async function getProfile() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log(user);
+
+      const { data: profile } = await supabase
+        .from("User")
+        .select(`UserID, UserProfile, Comments(*)`);
+
+      console.log(profile);
+      setProfileImg(profile);
+    }
+    getProfile();
   }, []);
 
   //프로필 이미지 불러오기
@@ -40,6 +59,14 @@ const Comment = () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase.from("Comments").insert({
+      UserID: user.id,
+      PostID: bringPostID,
+      CommentContent: commentContent,
+      CommentFirstUpdate: now,
+    });
+
     console.log(user);
 
     const { data: profile } = await supabase
@@ -48,21 +75,20 @@ const Comment = () => {
 
     console.log(profile);
 
-    const { data, error } = await supabase.from("Comments").insert({
-      UserID: user.id,
-      PostID: bringPostID,
-      CommentContent: commentContent,
-      CommentFirstUpdate: now,
-    });
     setComments((prev) => [
       ...prev,
       {
+        UserID: user.id,
         CommentID: crypto.randomUUID(),
         CommentContent: commentContent,
         CommentDate: formattedDate,
       },
     ]);
+
+    setProfileImg(profile);
   }
+
+  console.log(profileImg);
 
   //댓글 삭제 코드
   async function deleteComment(Test) {
@@ -82,7 +108,7 @@ const Comment = () => {
       })
       .eq("CommentID", testID);
     const filteredComment = comments.filter((c) => {
-      return c.Test !== testID;
+      return c.CommentID !== testID;
     });
     console.log(data);
     console.log(filteredComment);
@@ -104,9 +130,13 @@ const Comment = () => {
 
   //댓글 리스트
   const commentList = comments.map((comment) => {
+    const foundUser = profileImg?.find((p) => comment.UserID === p?.UserID);
+
     return (
       <ul key={comment.CommentID}>
-        <div></div>
+        <div>
+          <img src={foundUser?.UserProfile} alt="프로필 사진" />
+        </div>
         <div>
           <li>{comment.CommentDate}</li>
           <li>{comment.CommentContent}</li>
