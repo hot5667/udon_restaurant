@@ -5,7 +5,7 @@ import { AuthContext } from "./AuthContext";
 
 export const PostContext = createContext();
 
-const STORAGE_NAME = 'images';
+const STORAGE_NAME = "images";
 
 const PostContextProvider = ({ children }) => {
   const [postsNumber, setPostsNumber] = useState(0);
@@ -23,6 +23,7 @@ const PostContextProvider = ({ children }) => {
         setPostsNumber(prev => (data.length > 0 ? data.at(-1).PostID + 1 : 0));
       } catch (error) {
         console.error("Error fetching posts:", error.message);
+
       }
     };
 
