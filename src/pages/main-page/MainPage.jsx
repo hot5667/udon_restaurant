@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from '@emotion/styled';
 import RecentPosts from '../../components/RecentPosts';
 import PostList from '../../components/PostList';
 import { PostContext } from '../../context/PostContext';
-import SideBar from '../../components/sideBar'
 import '../../css/font.css'
 
 const MainPage = () => {
