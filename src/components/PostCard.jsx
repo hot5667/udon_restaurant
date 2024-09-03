@@ -24,7 +24,7 @@ const PostCard = ({ post }) => {
       e.preventDefault();
       if (user) {
       // alert(`Post ID : ${PostID}`);
-      navigate(`/detail?id=${PostID}`);
+      navigate(`/detail?id=${PostID}`, {state:post.UserID});
 
       }else {
         alert('로그인해야 확인 가능합니다. 로그인 페이지로 이동합니다.');
