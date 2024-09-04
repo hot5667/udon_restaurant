@@ -10,6 +10,7 @@ const PostList = () => {
   const city = searchParams.get('city');
   const location = useLocation();
   const [posts, setPosts] = useState([]);
+  
   useEffect(() => {
     const fetchData = async () => {
       if (city) {
@@ -27,7 +28,7 @@ const PostList = () => {
         if (error) {
           throw error;
         } else {
-          console.log("data => ", data);
+          // console.log("data => ", data);
           setPosts(data.reverse())
         }
       }
@@ -77,7 +78,7 @@ const EmptyDiv = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
+
   p {
     font-size: 30px;
   }

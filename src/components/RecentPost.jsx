@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import supabase from '../supaBasecClient';
 import { PostContext } from '../context/PostContext';
 import defaultImg from '../img/default-img.png'
+import '../css/font.css';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const STORAGE_NAME = "images";
@@ -39,16 +40,16 @@ const RecentPost = ({ post }) => {
         <Button onClick={(e) => {
           e.preventDefault();
           if (user) {
-            navigate(`/detail?id=${post.PostID}`);
+            navigate(`/detail?id=${post.PostID}`, {state:post.UserID});
           }else {
             alert('로그인해야 확인 가능합니다. 로그인 페이지로 이동합니다.');
             navigate('/sign-in');
             return;
           }
         }}>
-          이동
+          맛집췤!
         </Button>
-        <Button2 onClick={() => {
+        {/* <Button2 onClick={() => {
           const fixedPost = {...post, PostImgs:JSON.parse(post.PostImgs)};
           if (!user) {
             alert('로그인해야 수정할 수 있습니다. 로그인 페이지로 이동합니다.');
@@ -61,7 +62,7 @@ const RecentPost = ({ post }) => {
           }
         }}>
           게시글 수정
-        </Button2>
+        </Button2> */}
       </CardContent>
     </PostCard>
   );
@@ -70,22 +71,24 @@ const RecentPost = ({ post }) => {
 export default RecentPost;
 
 const PostCard = styled.div`
-  width: 100%;
-  height: 400px;
+    width: 100%;
+    height: 400px;
 
-  display: flex;
-  justify-content: space-around;
+    display: flex;
+    justify-content: space-around;
 
-  background-color: white;
-  /* border: 1px solid lightgray; */
-  border-radius: 30px;
-  overflow: hidden;
+    background-color: white;
+    /* border: 1px solid lightgray; */
+    border-radius: 30px;
+    overflow: hidden;
 
-  img {
-    width: 70%;
-    height: 100%;
-    object-fit: cover;
-  }
+    font-family: 'GmarketSansMedium';
+
+    img {
+        width: 70%;
+        height: 100%;
+        object-fit: cover;
+    }
 `;
 
 const CardContent = styled.div`
@@ -103,23 +106,25 @@ const CardContent = styled.div`
 `;
 
 const Button = styled.button`
-  width: 40px;
-  height: 40px;
-  padding-bottom: 3px;
+    width: 100px;
+    height: 40px;
 
-  border: 1px solid lightgray;
-  border-radius: 40px;
+    border: none;
+    border-radius: 10px;
 
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
+    font-size: 15px;
 
-  background-color: white;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
 
-  cursor: pointer;
-  &:hover {
-    background-color: #e5e5e5;
-  }
+    background-color: white;
+    font-family: 'GmarketSansMedium';
+
+    cursor: pointer;
+    &:hover {
+        background-color: #e5e5e5;
+    }
 `;
 const Button2 = styled.button`
   height: 30px;

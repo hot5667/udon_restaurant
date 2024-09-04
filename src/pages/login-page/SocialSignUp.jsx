@@ -4,18 +4,27 @@ import { useNavigate } from 'react-router-dom';
 import { css } from '@emotion/react';
 import supabase from '../../supaBasecClient';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const STORAGE_NAME = 'Profile';
 
 const SocialSignUp = () => {
   const [userCity, setUserCity] = useState('');
   const [userNickName, setUserNickName] = useState('');
-  const [userProfile, setUserProfile] = useState(null); // URL 대신 파일로 관리
+  const [userProfile, setUserProfile] = useState([]); // 파일 배열로 관리
+  const [existingProfileUrls, setExistingProfileUrls] = useState([]); // 기존 프로필 URL 저장
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const cities = ['서울', '부산', '인천', '대구'];
+  const cities = [ 
+    '서울',
+    '부산',
+    '강원도',
+    '경기도',
+    '경상도',
+    '전라도',
+    '제주도',
+    '충청도',
+  ];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,19 +33,23 @@ const SocialSignUp = () => {
         if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
         const user = sessionData.session.user;
+        console.log('User ID:', user.id);
 
-        const { data: existingUser, error: fetchError } = await supabase
+        const { data: existingUsers, error: fetchError } = await supabase
           .from('User')
           .select('*')
-          .eq('UserID', user.id)
-          .single();
+          .eq('UserID', user.id);
 
         if (fetchError) throw new Error('사용자 정보를 가져오는 중 오류가 발생했습니다.');
+
+        const existingUser = existingUsers.length ? existingUsers[0] : null;
 
         if (existingUser) {
           setUserCity(existingUser.UserCity || '');
           setUserNickName(existingUser.UserNickName || '');
-          setUserProfile(existingUser.UserProfile || '');
+          if (existingUser.UserProfile && Array.isArray(existingUser.UserProfile)) {
+            setExistingProfileUrls(existingUser.UserProfile);
+          }
         }
         setLoading(false);
       } catch (err) {
@@ -48,27 +61,33 @@ const SocialSignUp = () => {
     fetchUserData();
   }, []);
 
-  const uploadProfilePicture = async (file, userID) => {
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${supabaseUrl}/storage/v1/object/public/${STORAGE_NAME}/{userID}/profile.${fileExt}`;
-  
-    const { data, error } = await supabase.storage
-      .from(STORAGE_NAME)
-      .upload(filePath, file);
-  
-    if (error) {
-      throw new Error('프로필 이미지 업로드 중 오류가 발생했습니다.');
+  const uploadImgs = async (userID, files) => {
+    const fileUrls = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const fileExt = files[i].name.split('.').pop();
+        const filePath = `${userID}/profile_${Date.now()}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from(STORAGE_NAME)
+          .upload(filePath, files[i]);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl }, error: publicUrlError } = supabase.storage
+          .from(STORAGE_NAME)
+          .getPublicUrl(filePath);
+
+        if (publicUrlError) throw publicUrlError;
+
+        fileUrls.push(publicUrl);
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error.message);
     }
-  
-    const { publicURL, error: publicURLError } = supabase.storage
-      .from(STORAGE_NAME)
-      .getPublicUrl(filePath);
-  
-    if (publicURLError) {
-      throw new Error('프로필 이미지 URL을 가져오는 중 오류가 발생했습니다.');
-    }
-  
-    return publicURL;
+
+    return fileUrls;
   };
 
   const handleSubmit = async e => {
@@ -80,24 +99,30 @@ const SocialSignUp = () => {
       if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
       const user = sessionData.session.user;
-      let profileImageUrl = userProfile;
+      console.log('User ID for submission:', user.id);
 
-      if (userProfile instanceof File) {
-        profileImageUrl = await uploadProfilePicture(userProfile, user.id);
+      let profileImageUrls = [...existingProfileUrls]; // 기존 URL 유지
+      if (userProfile.length > 0) {
+        const newUrls = await uploadImgs(user.id, userProfile);
+        profileImageUrls = newUrls[0];
       }
+
+      // 빈 배열이 아닌 경우만 업데이트
+      profileImageUrls = profileImageUrls.length > 0 ? profileImageUrls : null;
+      console.log('Profile Image URLs:', profileImageUrls);
 
       const { error: updateError } = await supabase
         .from('User')
-        .update({
+        .upsert({
+          UserID: user.id,
           UserCity: userCity,
           UserNickName: userNickName,
-          UserProfile: profileImageUrl,
-        })
-        .eq('UserID', user.id);
+          UserProfile: profileImageUrls, // 빈 배열이 아닌 경우만 저장
+        }, { onConflict: ['UserID'] });
 
       if (updateError) throw new Error('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
 
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
       setError(err.message);
     }
@@ -143,10 +168,21 @@ const SocialSignUp = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={e => setUserProfile(e.target.files[0])} // 파일 선택
+            multiple
+            onChange={e => setUserProfile(Array.from(e.target.files))}
             css={inputStyle}
           />
         </div>
+        {existingProfileUrls.length > 0 && (
+          <div css={formGroupStyle}>
+            <label css={labelStyle}>기존 프로필 이미지:</label>
+            <div css={imagePreviewStyle}>
+              {existingProfileUrls.map((url, index) => (
+                <img key={index} src={url} alt={`프로필 ${index + 1}`} css={previewImageStyle} />
+              ))}
+            </div>
+          </div>
+        )}
         <button type="submit" css={buttonStyle}>정보 제출</button>
       </form>
     </div>
@@ -219,4 +255,17 @@ const errorMessageStyle = css`
   color: red;
   text-align: center;
   margin-bottom: 15px;
+`;
+
+const imagePreviewStyle = css`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+const previewImageStyle = css`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
 `;

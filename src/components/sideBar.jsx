@@ -3,8 +3,8 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 import logo from '../img/logo.png';
 import '../css/main.css';
-import { PostContext } from '../context/PostContext';
 import addPostIcon from '../img/add-post-icon.svg'
+import { AuthContext } from '../context/AuthContext';
 
 const SIDE_CONTAINER = styled.div`
   position: fixed;
@@ -13,7 +13,7 @@ const SIDE_CONTAINER = styled.div`
 
   height: 100%;
   background-color: #fea100;
-  width: 80px;
+  width: 90px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -24,7 +24,7 @@ const SIDE_CONTAINER = styled.div`
 
 const SideBar = () => {
   const navigate = useNavigate();
-  const {user} = useContext(PostContext);
+  const {user} = useContext(AuthContext);
 
   const regions = [
     { name: '전국', path: '/post-list' },
