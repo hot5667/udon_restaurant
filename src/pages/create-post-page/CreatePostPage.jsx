@@ -154,7 +154,6 @@ const UlDiv = styled.ul`
 
 const MyPageMove = styled.div`
     position: absolute;
-    top: -15px;
     right: 4%;
     z-index: 1;
     img {
