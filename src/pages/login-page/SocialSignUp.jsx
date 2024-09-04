@@ -122,7 +122,7 @@ const SocialSignUp = () => {
 
       if (updateError) throw new Error('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
 
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
       setError(err.message);
     }

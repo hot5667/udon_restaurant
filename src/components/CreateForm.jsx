@@ -582,7 +582,7 @@ const ContentSection = styled.section`
 
 const ImgSection = styled.section`
     width: 100%;
-    height: 120px;
+    height: 170px;
 
     display: flex;
     align-items: center;
@@ -602,6 +602,7 @@ const ImgSection = styled.section`
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        
     }
 
     input::file-selector-button {

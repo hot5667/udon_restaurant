@@ -116,7 +116,7 @@ const MyPage = () => {
                     <p style={{ color: 'red' }}>{error}</p>
                 ) : users.length > 0 ? (
                     users.map((user) => (
-                        <UserInfo key={user.UserID}>
+                        <UserInfo key={`${user.UserID}_profile`}>
                             <h5>이름: {user.UserNickName || 'N/A'}</h5>
                             <h5>지역: {user.UserCity || 'N/A'}</h5>
                         </UserInfo>

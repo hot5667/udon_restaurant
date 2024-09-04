@@ -25,7 +25,6 @@ const RouterComponent = () => {
                     <Routes>
                         <Route element={<WrapperComponent />}>
                             <Route path="/" element={<MainPage />} />
-                            <Route path="/profile" element={<Profile />} />
                             <Route path="/post-list" element={<PostListPage />} />
                             <Route path="/detail" element={<PostDetail />} />
                             <Route path="/create" element={<CreatePostPage />} />
