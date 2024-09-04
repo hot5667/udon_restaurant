@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { PostContext } from "../context/PostContext";
 import { useNavigate } from "react-router-dom";
 import supabase from "../supaBasecClient";
+import { AuthContext } from "../context/AuthContext";
 
 const STORAGE_NAME = 'images';
 
