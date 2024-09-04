@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import PostList from '../components/PostList';
 import { AuthContext } from '../context/AuthContext';
 import MypageLogo from '../img/notext.png';
+import '../css/font.css';
 
 const PostListPage = () => {
 
@@ -47,7 +48,7 @@ const PostListPage = () => {
                                 width: '1px',
                                 backgroundColor: 'black',
                                 border: 'none',
-                                margin: '0 3px',
+                                margin: '0 15px',
                             }}
                         />
                         <li>
@@ -88,6 +89,7 @@ const PostListBody = styled.div`
     padding: 0;
     margin-left: 80px;
     margin-top: 30px;
+    font-family: GmarketSansMedium;
 `;
 
 const PostGrids = styled.div`
@@ -105,7 +107,8 @@ const HeaderDiv = styled.div`
     position: sticky;
     top: 0;
     z-index: 1;
-
+    display: flex;
+    align-items: center;
     padding: 20px 0;
 
     .header {
@@ -134,22 +137,14 @@ const UlDiv = styled.ul`
   right: 6%;
   z-index: 1;
 
-  display: flex;
-  align-items: center;
-  margin-top: 3px;
-`
-
-const Separator = styled.hr`
-  height: 18px;
-  width: 1px;
-  background-color: black;
-  border: none;
-  margin-right: 10px;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
 `;
 
 const MyPageMove = styled.div`
-    position: relative;
-    top: -15px;
+    position: absolute;
+
     right: 0;
     z-index: 1;
     img {
