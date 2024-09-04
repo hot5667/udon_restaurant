@@ -253,7 +253,7 @@ const PostDetail = () => {
               onClick={() => {
                 const fixedPost = {
                   ...post,
-                  PostImgs: JSON.parse(post.PostImgs),
+                  PostImgs: typeof post.PostImgs === 'string' ? JSON.parse(post.PostImgs) : post.PostImgs,
                 };
                 navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
                   state: fixedPost,
@@ -401,7 +401,7 @@ const Embla = styled.div`
   .embla__container {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: 100%; /* Each slide covers x % of the viewport */
+    grid-auto-columns: 100%; 
     grid-gap: 0 20px;
   }
 
@@ -450,7 +450,6 @@ const EmblaControls = styled.div`
 
 const DefaultImg = styled.div`
   background: white url(${(props) => props.defaultImg}) no-repeat center;
-  /* background-position: center; */
   background-size: contain;
   width: 100%;
   height: 500px;

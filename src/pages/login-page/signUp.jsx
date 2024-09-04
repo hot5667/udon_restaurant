@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import supabase from "../../supaBasecClient";
 import FormField from "../../components/FromField";
-import LogoImg from "../../img/logo-simple.png";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +26,7 @@ const SignUpForm = () => {
 
     try {
       const { data, error: authError } = await supabase.auth.signUp({
-        email: email,
+        email,
         password: userPw,
       });
 
@@ -41,7 +40,6 @@ const SignUpForm = () => {
       }
 
       if (data.user) {
-        // 회원가입 성공 후 추가정보 입력 페이지로 리다이렉트
         setSuccess("회원가입이 성공적으로 완료되었습니다!");
         navigate("/social-sign-up");
       }
@@ -61,13 +59,10 @@ const SignUpForm = () => {
     }
 
     try {
-      // Supabase Auth로 로그인
-      const { data, error: authError } = await supabase.auth.signInWithPassword(
-        {
-          email: email,
-          password: userPw,
-        }
-      );
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password: userPw,
+      });
 
       if (authError) {
         throw new Error(`로그인에 실패했습니다: ${authError.message}`);
@@ -75,7 +70,6 @@ const SignUpForm = () => {
 
       if (data.user) {
         setSuccess("로그인 성공!");
-        // 로그인 성공 후 홈 페이지로 리다이렉트
         navigate("/");
       }
     } catch (err) {
@@ -86,8 +80,7 @@ const SignUpForm = () => {
   const handleSocialSignUp = async (provider) => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({ provider });
-      if (error)
-        throw new Error(`소셜 회원가입에 실패했습니다: ${error.message}`);
+      if (error) throw new Error(`소셜 회원가입에 실패했습니다: ${error.message}`);
     } catch (err) {
       setError(err.message);
     }
@@ -102,66 +95,39 @@ const SignUpForm = () => {
         <form onSubmit={isLogin ? handleSignIn : handleSignUp} css={formStyle}>
           {!isLogin && (
             <div css={socialLoginContainerStyle}>
-              <button
-                onClick={() => handleSocialSignUp("google")}
-                css={socialButtonStyle}
-              >
+              <FormField
+                label="이름"
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
+              <FormField
+                label="이메일"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <FormField
+                label="비밀번호"
+                type="password"
+                value={userPw}
+                onChange={(e) => setUserPw(e.target.value)}
+                required
+              />
+              <button onClick={() => handleSocialSignUp("google")} css={socialButtonStyle}>
                 Google로 회원가입
               </button>
-              <button
-                onClick={() => handleSocialSignUp("github")}
-                css={socialButtonStyle}
-              >
+              <button onClick={() => handleSocialSignUp("github")} css={socialButtonStyle}>
                 GitHub로 회원가입
-              </button>
-              <button
-                onClick={() => handleSocialSignUp("kakao")}
-                css={socialButtonStyle}
-              >
-                Kakao로 회원가입
               </button>
             </div>
           )}
-          <FormField
-            label="이메일"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <FormField
-            label="비밀번호"
-            type="password"
-            value={userPw}
-            onChange={(e) => setUserPw(e.target.value)}
-            required
-          />
           <button type="submit" css={buttonStyle}>
             {isLogin ? "로그인" : "회원가입"}
           </button>
         </form>
-        {!isLogin && (
-          <div css={socialLoginContainerStyle}>
-            <button
-              onClick={() => handleSocialSignUp("google")}
-              css={socialButtonStyle}
-            >
-              Google로 회원가입
-            </button>
-            <button
-              onClick={() => handleSocialSignUp("github")}
-              css={socialButtonStyle}
-            >
-              GitHub로 회원가입
-            </button>
-            <button
-              onClick={() => handleSocialSignUp("kakao")}
-              css={socialButtonStyle}
-            >
-              Kakao로 회원가입
-            </button>
-          </div>
-        )}
         <div css={toggleStyle}>
           <p>{isLogin ? "계정이 없으신가요?" : "이미 계정이 있으신가요?"}</p>
           <button onClick={() => setIsLogin(!isLogin)} css={toggleButtonStyle}>
@@ -174,7 +140,6 @@ const SignUpForm = () => {
 };
 
 // CSS styles
-
 const WrappedContainer = css`
   width: 100%;
   height: 900px;
@@ -190,13 +155,6 @@ const formContainerStyle = css`
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-`;
-
-const logoImg = css`
-  width: 100px;
-  height: auto;
-  margin-left: 130px;
-  margin-bottom: 10px;
 `;
 
 const titleStyle = css`

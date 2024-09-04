@@ -111,12 +111,6 @@ const SignIn = () => {
           >
             Google로 로그인
           </button>
-          <button
-            onClick={() => handleOAuthSignIn("kakao")}
-            css={oauthButtonStyle}
-          >
-            Kakao로 로그인
-          </button>
         </div>
       </div>
     </div>

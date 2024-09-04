@@ -15,7 +15,15 @@ const SocialSignUp = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const cities = ["서울", "부산", "인천", "대구"];
+  const cities = ['서울',
+    '부산',
+    '강원도',
+    '경기도',
+    '경상도',
+    '전라도',
+    '제주도',
+    '충청도',
+  ];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -190,7 +198,7 @@ export default SocialSignUp;
 // Emotion 스타일 정의
 const containerStyle = css`
   max-width: 400px;
-  margin: 0 auto;
+  margin: 300px auto;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -228,7 +236,7 @@ const inputStyle = css`
 const buttonStyle = css`
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
+  background-color: #fea100;
   color: white;
   border: none;
   border-radius: 4px;
@@ -237,7 +245,7 @@ const buttonStyle = css`
   margin-top: 10px;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #fea100;
   }
 `;
 
