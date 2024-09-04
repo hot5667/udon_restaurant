@@ -1,31 +1,37 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import defaultProfileImg from '../../img/image.png';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import supabase from '../../supaBasecClient';
-import styled from '@emotion/styled';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
-import { NextButton, PrevButton, usePrevNextButtons } from '../../components/EmblaCarouselArrowButtons';
-import { AuthContext } from '../../context/AuthContext';
-import DeletePost from '../../components/DeletePost';
-import Comment from '../../components/Comment';
-import UnLikeImg from '../../img/heart-empty-icon.svg';
-import LikeImg from '../../img/heart-icon.svg';
-import defaultImg from '../../img/default-img.png';
-import MypageLogo from '../../img/notext.png';
-import MyPage from '../my-page/myPage';
-import '../../css/font.css';
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import defaultProfileImg from "../../img/image.png";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import supabase from "../../supaBasecClient";
+import styled from "@emotion/styled";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import {
+  NextButton,
+  PrevButton,
+  usePrevNextButtons,
+} from "../../components/EmblaCarouselArrowButtons";
+import { AuthContext } from "../../context/AuthContext";
+import DeletePost from "../../components/DeletePost";
+import Comment from "../../components/Comment";
+import UnLikeImg from "../../img/heart-empty-icon.svg";
+import LikeImg from "../../img/heart-icon.svg";
+import defaultImg from "../../img/default-img.png";
 
 const supabaseURL = import.meta.env.VITE_SUPABASE_URL;
 const menu = {
-  1: '한식',
-  2: '중식',
-  3: '일식',
-  4: '양식',
-  5: '분식',
-  6: '야식/안주',
-  7: '카페/디저트',
-  8: '기타',
+  1: "한식",
+  2: "중식",
+  3: "일식",
+  4: "양식",
+  5: "분식",
+  6: "야식/안주",
+  7: "카페/디저트",
+  8: "기타",
 };
 
 const PostDetail = () => {
@@ -36,14 +42,14 @@ const PostDetail = () => {
   const { state: PostUserID } = useLocation();
 
   const [post, setPost] = useState({
-    PostDate: '',
-    PostCity: '',
-    PostTitle: '',
-    PostContent: '',
-    PostFoodType: '',
+    PostDate: "",
+    PostCity: "",
+    PostTitle: "",
+    PostContent: "",
+    PostFoodType: "",
     PostImgs: [],
-    UserID: '',
-    PostLike: '[]',
+    UserID: "",
+    PostLike: "[]",
     Comments: [],
     UserProfile: null,
   });
@@ -52,10 +58,13 @@ const PostDetail = () => {
 
   useEffect(() => {
     const FindSamePost = async () => {
-      const { data, error } = await supabase.from('Post').select('*').eq('PostID', postId);
+      const { data, error } = await supabase
+        .from("Post")
+        .select("*")
+        .eq("PostID", postId);
 
       if (error) {
-        console.log('error=>', error);
+        console.log("error=>", error);
       } else {
         setPost((prev) => {
           const curPost = { ...prev, ...data[0] };
@@ -68,10 +77,13 @@ const PostDetail = () => {
     FindSamePost();
     const FindProfileImg = async () => {
       if (PostUserID) {
-        const { data, error } = await supabase.from('User').select('UserProfile').eq('UserID', PostUserID);
+        const { data, error } = await supabase
+          .from("User")
+          .select("UserProfile")
+          .eq("UserID", PostUserID);
 
         if (error) {
-          console.log('error=>', error);
+          console.log("error=>", error);
         } else {
           setPost((prev) => ({
             ...prev,
@@ -87,20 +99,27 @@ const PostDetail = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({ stopOnMouseEnter: true, stopOnInteraction: false }),
   ]);
-  const { prevBtnDisabled, nextBtnDisabled, onPrevButtonClick, onNextButtonClick } = usePrevNextButtons(emblaApi);
+  const {
+    prevBtnDisabled,
+    nextBtnDisabled,
+    onPrevButtonClick,
+    onNextButtonClick,
+  } = usePrevNextButtons(emblaApi);
   const onButtonAutoplayClick = useCallback(
     (callback) => {
       const autoplay = emblaApi?.plugins()?.autoplay;
       if (!autoplay) return;
 
-      const resetOrStop = autoplay.options.stopOnInteraction === false ? autoplay.reset : autoplay.stop;
+      const resetOrStop =
+        autoplay.options.stopOnInteraction === false
+          ? autoplay.reset
+          : autoplay.stop;
 
       resetOrStop();
       callback();
     },
     [emblaApi]
   );
-
   const handleLike = async (e) => {
     e.preventDefault();
     if (!user) return; // 사용자 로그인이 필요함
@@ -108,26 +127,32 @@ const PostDetail = () => {
     if (likeArray.includes(user.UserID)) {
       try {
         likeArray = likeArray.filter((id) => id !== user.UserID);
-        const { error } = await supabase.from('Post').update({ PostLike: likeArray }).eq('PostID', post.PostID);
+        const { error } = await supabase
+          .from("Post")
+          .update({ PostLike: likeArray })
+          .eq("PostID", post.PostID);
         if (error) throw error;
         setLike((prev) => prev - 1);
       } catch (error) {
-        console.error('Error modifying Like:', error.message);
+        console.error("Error modifying Like:", error.message);
       }
     } else {
       try {
         likeArray.push(user.UserID);
-        const { error } = await supabase.from('Post').update({ PostLike: likeArray }).eq('PostID', post.PostID);
+        const { error } = await supabase
+          .from("Post")
+          .update({ PostLike: likeArray })
+          .eq("PostID", post.PostID);
         if (error) throw error;
         setLike((prev) => prev + 1);
       } catch (error) {
-        console.error('Error modifying Like:', error.message);
+        console.error("Error modifying Like:", error.message);
       }
     }
   };
 
   let tmp = post.PostContent;
-  tmp = tmp.split('\n').map((line, idx) => (
+  tmp = tmp.split("\n").map((line, idx) => (
     <span key={`${postId}_line_${idx}`}>
       {line}
       <br />
@@ -219,19 +244,19 @@ const PostDetail = () => {
         <ButtonStyle>
           {user && user.UserID === post.UserID ? (
             <div>
-              <button
-                onClick={() => {
-                  const fixedPost = {
-                    ...post,
-                    PostImgs: JSON.parse(post.PostImgs),
-                  };
-                  navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
-                    state: fixedPost,
-                  });
-                }}
-              >
-                게시글 수정
-              </button>
+            <button
+              onClick={() => {
+                const fixedPost = {
+                  ...post,
+                  PostImgs: typeof post.PostImgs === 'string' ? JSON.parse(post.PostImgs) : post.PostImgs,
+                };
+                navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
+                  state: fixedPost,
+                });
+              }}
+            >
+              게시글 수정
+            </button>
               <DeletePost id={post.PostID} />
             </div>
           ) : null}

@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
-import styled from "@emotion/styled";
-import { PostContext } from "../context/PostContext";
-import { useNavigate } from "react-router-dom";
-import supabase from "../supaBasecClient";
-import { AuthContext } from "../context/AuthContext";
+import React, { useContext, useEffect, useState } from 'react';
+import styled from '@emotion/styled';
+import { PostContext } from '../context/PostContext';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import supabase from '../supaBasecClient';
 
 const STORAGE_NAME = 'images';
 
@@ -582,7 +582,7 @@ const ContentSection = styled.section`
 
 const ImgSection = styled.section`
     width: 100%;
-    height: 120px;
+    height: 170px;
 
     display: flex;
     align-items: center;
@@ -602,6 +602,7 @@ const ImgSection = styled.section`
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        
     }
 
     input::file-selector-button {
