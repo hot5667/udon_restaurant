@@ -137,16 +137,26 @@ const Comment = () => {
         return (
             <ul key={comment.CommentID}>
                 <div>
-                    <img src={foundUser?.UserProfile} alt="프로필 사진" />
+                    <img
+                        src={foundUser?.UserProfile}
+                        alt="프로필 사진"
+                        style={{ width: 35, height: 35, borderRadius: 50 }}
+                    />
                 </div>
                 <div>
                     <li>{comment.CommentDate}</li>
                     <li>{comment.CommentContent}</li>
-                    <button onClick={() => deleteComment(comment.CommentID)}>삭제</button>
+                    <button
+                        onClick={() => deleteComment(comment.CommentID)}
+                        style={{ width: 60, height: 30, borderRadius: 20}}
+                    >
+                        삭제
+                    </button>
                     <button
                         onClick={() => {
                             setTestID(comment.CommentID);
                         }}
+                        style={{ width: 60, height: 30, borderRadius: 20 }}
                     >
                         수정
                     </button>
@@ -166,7 +176,7 @@ const Comment = () => {
                         setCommentContent(event.target.value);
                     }}
                 />
-                <button>입력</button>
+                <button>댓글등록</button>
             </CommentInput>
             <div>{commentList}</div>
         </CommentInputMain>
@@ -181,6 +191,32 @@ const CommentInput = styled.form`
 
 const CommentInputMain = styled.div`
     width: 100%;
+
+    margin-bottom: 20px;
+
+    button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 110px;
+        height: 40px;
+
+        border: none;
+        border-radius: 30px;
+
+        margin-left: auto;
+
+        background-color: #fea100;
+        font-size: 14px;
+        font-weight: 700;
+
+        color: #fff;
+    }
+    button:hover {
+        background-color: #5043ff;
+        border: 2px solid #5043ff;
+        color: #fff;
+    }
 `;
 
 const TextArea = styled.textarea`
