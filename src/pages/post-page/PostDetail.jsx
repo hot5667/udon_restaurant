@@ -253,7 +253,7 @@ const PostDetail = () => {
               onClick={() => {
                 const fixedPost = {
                   ...post,
-                  PostImgs: JSON.parse(post.PostImgs),
+                  PostImgs: typeof post.PostImgs === 'string' ? JSON.parse(post.PostImgs) : post.PostImgs,
                 };
                 navigate(`/create?isToModify=${true}&id=${post.PostID}`, {
                   state: fixedPost,
@@ -312,146 +312,200 @@ const PostDetail = () => {
 export default PostDetail;
 
 const PostInfoDetail = styled.div`
-  display: flex;
-  gap: 20px;
-  border-bottom: 1px solid lightgrey;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid lightgrey;
+    padding-bottom: 20px;
+    max-width: 900px;
 `;
 
 const PostContents = styled.div`
-  line-height: 30px;
-  border-top: 1px solid lightgrey;
-  border-bottom: 1px solid lightgrey;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 30px;
+    max-width: 900px;
+    margin-top: 30px;
 `;
 
 const CommentStyle = styled.div`
-  border-top: 1px solid lightgrey;
-  border-bottom: 1px solid lightgrey;
+    max-width: 900px;
+    border-top: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
 `;
 
 const DetailPost = styled.div`
-  max-width: 900px;
-  display: flex;
-  padding-bottom: 30px;
-  line-height: 30px;
-  gap: 50px;
-  justify-content: center;
-  flex-direction: column;
-  margin: 0 auto; // margin 0은 위아래를 0 좌우 margin을 auto 가운데 정렬에 유용
+    width: 96%;
+
+    display: flex;
+    padding-bottom: 30px;
+    line-height: 30px;
+    gap: 50px;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto; // margin 0은 위아래를 0 좌우 margin을 auto 가운데 정렬에 유용
+    margin-left: 80px;
+    margin-top: 30px;
+    font-family: 'GmarketSansMedium';
 `;
 
 const ButtonStyle = styled.div`
-  display: flex;
-  margin: 0 0 0 auto;
+    display: flex;
+
+    margin: 0 0 0 auto;
 `;
 
 const ProfileImg = styled.img`
-  width: 50px;
-  height: 50px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
 `;
 
-const HeaderDiv = styled.header`
-  background-color: white;
-  width: 100%;
-  height: fit-content;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 20px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const HeaderDiv = styled.div`
+    background-color: white;
+
+    width: inherit;
+    height: fit-content;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    padding: 20px 0;
+
+    border-bottom: 2px solid #cecece;
+
+    .header {
+        width: 100%;
+        display: flex;
+        position: relative;
+        align-items: center;
+    }
+
+    h1 {
+        font-size: 50px;
+        font-family: 'LOTTERIACHAB';
+        color: #fea100;
+
+        z-index: 1;
+
+        margin: auto;
+    }
 `;
 
 const Title = styled.h1`
-  font-size: 50px;
-  font-family: "LOTTERIACHAB";
-  color: #fea100;
-  margin: 0;
-  cursor: pointer;
-  user-select: none;
+    font-size: 50px;
+    font-family: 'LOTTERIACHAB';
+    color: #fea100;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
 `;
 
 const UlDiv = styled.ul`
-  height: fit-content;
-  position: absolute;
-  top: 8px;
-  right: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
+    height: fit-content;
+
+    position: absolute;
+    top: 0;
+    right: 6%;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
+
+    margin-right: 10px;
 `;
 
 const LikeButton = styled.button`
-  height: fit-content;
-  background-color: transparent;
-  border: none;
-  img {
-    width: 30px;
-  }
+    height: fit-content;
+    background-color: transparent;
+    border: none;
+    img {
+        width: 30px;
+    }
 `;
 
 // 캐러셀
 const Embla = styled.div`
-  width: 100%;
-  overflow: hidden;
-  background-color: lightgray;
-
-  position: relative;
-
-  .embla__container {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 100%; /* Each slide covers x % of the viewport */
-    grid-gap: 0 20px;
-  }
-
-  .embla__slide {
     width: 100%;
-    height: 500px;
+    overflow: hidden;
+    background-color: lightgray;
 
-    display: grid;
+    position: relative;
 
-    flex: 0 0 100%;
-    min-width: 0;
-  }
+    .embla__container {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 100%; /* Each slide covers x % of the viewport */
+        grid-gap: 0 20px;
+    }
 
-  .embla__slide:last-child {
-    margin-right: 20px;
-  }
+    .embla__slide {
+        width: 100%;
+        height: 500px;
+
+        display: grid;
+
+        flex: 0 0 100%;
+        min-width: 0;
+    }
+
+    .embla__slide:last-child {
+        margin-right: 20px;
+    }
 `;
 
 const EmblaControls = styled.div`
-  width: 100%;
-  height: 50px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-
-  .embla__buttons {
     width: 100%;
+    height: 50px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
-    button {
-      background-color: transparent;
-      margin: 0;
-      width: 30px;
-      height: 40px;
-      border-radius: 0;
-      padding: 3px 0 0 0;
-      cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    .embla__buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+        button {
+            background-color: transparent;
+            margin: 0;
+            width: 30px;
+            height: 40px;
+            border-radius: 0;
+            padding: 3px 0 0 0;
+            cursor: pointer;
+        }
     }
-  }
 `;
 
 const DefaultImg = styled.div`
-  background: white url(${(props) => props.defaultImg}) no-repeat center;
-  /* background-position: center; */
-  background-size: contain;
-  width: 100%;
-  height: 500px;
+    background: white url(${(props) => props.defaultImg}) no-repeat center;
+    /* background-position: center; */
+    background-size: contain;
+    width: 100%;
+    height: 500px;
+`;
+const MyPageMove = styled.div`
+    position: relative;
+    top: -15px;
+    right: 0;
+    z-index: 1;
+    img {
+        width: 50px;
+    }
+`;
+
+const PostBox = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 30px;
+    max-width: 900px;
 `;
