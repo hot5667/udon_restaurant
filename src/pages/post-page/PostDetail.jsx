@@ -172,7 +172,7 @@ const PostDetail = () => {
                                 width: '1px',
                                 backgroundColor: 'black',
                                 border: 'none',
-                                margin: '0 3px',
+                                margin: '0 15px',
                             }}
                         />
                         <li>
@@ -181,6 +181,14 @@ const PostDetail = () => {
                             </Link>
                         </li>
                     </UlDiv>
+                    <MyPageMove>
+                        <img
+                            src={MypageLogo}
+                            onClick={() => {
+                                navigate('/MyPage');
+                            }}
+                        />
+                    </MyPageMove>
                 </div>
             </HeaderDiv>
             <PostBox>
@@ -251,6 +259,7 @@ const PostDetail = () => {
                     </LikeButton>
                     {like}
                 </PostInfoDetail>
+                <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'lightgrey' }} />
                 <PostContents>
                     <p style={{ fontSize: '24px' }}> 제목: {post.PostTitle}</p>
                     <p style={{ wordWrap: 'break-word' }}>
@@ -258,6 +267,7 @@ const PostDetail = () => {
                         {tmp}
                     </p>
                 </PostContents>
+                <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'lightgrey' }} />
                 <CommentStyle>
                     <Comment />
                 </CommentStyle>
@@ -284,8 +294,8 @@ const PostInfoDetail = styled.div`
     display: flex;
     align-items: center;
     gap: 20px;
-    border-bottom: 1px solid lightgrey;
     padding-bottom: 20px;
+    padding-top: 20px;
     max-width: 900px;
 `;
 
@@ -296,12 +306,16 @@ const PostContents = styled.div`
     line-height: 30px;
     max-width: 900px;
     margin-top: 30px;
+    margin-left: 30px;
+    margin-right: 30px;
 `;
 
 const CommentStyle = styled.div`
     max-width: 900px;
-    border-top: 1px solid lightgrey;
     border-bottom: 1px solid lightgrey;
+    margin-top: 30px;
+    margin-left: 30px;
+    margin-right: 30px;
 `;
 
 const DetailPost = styled.div`
@@ -382,9 +396,6 @@ const UlDiv = styled.ul`
 
     display: flex;
     align-items: center;
-    margin-top: 3px;
-
-    margin-right: 10px;
 `;
 
 const LikeButton = styled.button`
@@ -400,7 +411,7 @@ const LikeButton = styled.button`
 const Embla = styled.div`
     width: 100%;
     overflow: hidden;
-    background-color: lightgray;
+    background-color: #ffffff;
 
     position: relative;
 
@@ -461,9 +472,10 @@ const DefaultImg = styled.div`
     width: 100%;
     height: 500px;
 `;
+
 const MyPageMove = styled.div`
-    position: relative;
-    top: -15px;
+    position: absolute;
+
     right: 0;
     z-index: 1;
     img {
@@ -478,3 +490,4 @@ const PostBox = styled.div`
     line-height: 30px;
     max-width: 900px;
 `;
+

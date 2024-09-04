@@ -82,7 +82,7 @@ const MainPage = () => {
                                     width: '1px',
                                     backgroundColor: 'black',
                                     border: 'none',
-                                    margin: '0 3px',
+                                    margin: '0 15px',
                                 }}
                             />
                             <li>
@@ -141,6 +141,7 @@ const MainBody = styled.div`
     padding: 0;
     margin-left: 80px;
     margin-top: 30px;
+    font-family: 'GmarketSansMedium';
 `;
 
 const Title = styled.h1`
@@ -240,14 +241,12 @@ const UlDiv = styled.ul`
 
     display: flex;
     align-items: center;
-    margin-top: 3px;
-
-    margin-right: 10px;
+    margin-top: 20px;
 `;
 
 const MyPageMove = styled.div`
-    position: relative;
-    top: -15px;
+    position: absolute;
+
     right: 0;
     z-index: 1;
     img {

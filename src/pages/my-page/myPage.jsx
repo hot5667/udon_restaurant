@@ -5,13 +5,15 @@ import supabase from '../../supaBasecClient';
 import logoHacan from '../../img/logoHacan.png';
 import MypageLogo from '../../img/notext.png';
 import '../../css/mypage.css';
-    import '../../css/font.css';
+import '../../css/font.css';
 
 const MyPage = () => {
     const [users, setUsers] = useState([]);
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState(null);
     const [loginUserId, setLoginUserId] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -109,7 +111,7 @@ const MyPage = () => {
             </HeaderDiv>
             <h1 style={{ margin: 30, fontSize: 30 }}>마이페이지</h1>
             <LeftMypage>
-                <img src={logoHacan} style={{ width: 150, float: 'left' }} />
+                <img src={MypageLogo} style={{ width: 150, float: 'left' }} />
                 {error ? (
                     <p style={{ color: 'red' }}>{error}</p>
                 ) : users.length > 0 ? (
@@ -131,14 +133,25 @@ const MyPage = () => {
                     <p style={{ color: 'red' }}>{error}</p>
                 ) : (
                     posts.map((post) => (
-                        <PostBox className="rightBox" key={post.PostTitle}>
+                        <PostBox
+                            className="rightBox"
+                            key={post.PostTitle}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                if (users) {
+                                    navigate(`/detail?id=${post.PostID}`, { state: post.UserID });
+                                }
+                            }}
+                        >
                             <img
                                 className="postImg"
                                 src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/images/${post.PostID}/${JSON.parse(post.PostImgs)[0]}`}
                             />
-                            <h2>{post.PostTitle}</h2>
-                            <p>{post.PostDate}</p>
-                            <p className="content">{post.PostContent}</p>
+                            <PostBoxDiv>
+                                <h2>{post.PostTitle}</h2>
+                                <h3>{post.PostDate}</h3>
+                                <p className="content">{post.PostContent}</p>
+                            </PostBoxDiv>
                         </PostBox>
                     ))
                 )}
@@ -164,6 +177,8 @@ const MYPAGE_CONTAINER = styled.div`
 `;
 
 const LeftMypage = styled.div`
+    max-width: 1080px;
+    border-radius: 20px;
     display: flex;
     float: left;
     border: 2px solid #fea100;
@@ -180,15 +195,39 @@ const RightMypage = styled.div`
 
 const PostBox = styled.div`
     overflow: hidden;
+    display: block;
     img {
         object-fit: cover;
         width: 100%;
         height: 50%;
         border-radius: 10px;
     }
+`;
 
-    h2{
+const PostBoxDiv = styled.div`
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding-top: 20px;
+    padding-right: 20px ;
+
+    h2 {
         font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        font-size: 13px;
+        font-weight: 300;
+        margin-bottom: 10px;
+        color: #696969;
+    }
+
+    p {
+        margin-bottom: 10px;
+        color: #696969;
     }
 `;
 
@@ -227,7 +266,6 @@ const HeaderDiv = styled.div`
 `;
 
 const UlDiv = styled.ul`
-    /* width: 100%; */
     height: fit-content;
 
     position: absolute;
@@ -237,12 +275,12 @@ const UlDiv = styled.ul`
 
     display: flex;
     align-items: center;
-    margin-top: 3px;
+    margin-top: 20px;
 `;
 
 const MyPageMove = styled.div`
-    position: relative;
-    top: -15px;
+    position: absolute;
+
     right: 0;
     z-index: 1;
     img {
