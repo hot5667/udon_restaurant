@@ -13,7 +13,7 @@ const SIDE_CONTAINER = styled.div`
 
   height: 100%;
   background-color: #fea100;
-  width: 80px;
+  width: 90px;
   display: flex;
   flex-direction: row;
   justify-content: center;

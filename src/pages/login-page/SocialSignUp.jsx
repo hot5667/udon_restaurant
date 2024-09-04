@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import supabase from "../../supaBasecClient";
 
-const STORAGE_NAME = "Profile";
+const STORAGE_NAME = 'Profile';
 
 const SocialSignUp = () => {
   const [userCity, setUserCity] = useState("");
@@ -28,6 +28,7 @@ const SocialSignUp = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        // 현재 세션 가져오기
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { PostContext } from "../context/PostContext";
-import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import supabase from "../supaBasecClient";
 
@@ -25,11 +24,11 @@ const CreateForm = ({ Modify }) => {
     getUserInfo();
   }, [])
 
-  // const [title, setTitle] = useState('');
-  // const [city, setCity] = useState(0);
-  // const [foodType, setFoodType] = useState(0);
-  // const [content, setContent] = useState('');
-  // const [imgs, setImgs] = useState(['', '', '', '']);
+    // const [title, setTitle] = useState('');
+    // const [city, setCity] = useState(0);
+    // const [foodType, setFoodType] = useState(0);
+    // const [content, setContent] = useState('');
+    // const [imgs, setImgs] = useState(['', '', '', '']);
 
   const today = new Date();
   const year = today.getFullYear();
@@ -383,98 +382,199 @@ const CreateForm = ({ Modify }) => {
 export default CreateForm;
 
 const CreateContainer = styled.form`
-  width: 100%;
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-`;
-
-const Button = styled.button`
-  width: 100px;
-  height: 40px;
-
-  margin: auto;
-  padding-bottom: 3px;
-
-  border: 1px solid black;
-  border-radius: 10px;
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 100%;
-  resize: none;
-  overflow-y: scroll;
-`;
-
-const SelectDiv = styled.div`
-  width: 50%;
-  height: 100%;
-
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-
-  label {
-    width: 15%;
-
-    text-align: center;
-  }
-
-  select {
-    width: 85%;
-    height: 80%;
-
-    font-size: 15px;
-  }
-
-  input {
-    width: 85%;
-    height: 80%;
-
-    font-size: 15px;
-  }
-`;
-
-const ContentSection = styled.section`
-  width: 100%;
-  height: 600px;
-
-  display: flex;
-  align-items: center;
-
-  label {
-    width: 7.5%;
-
-    text-align: center;
-  }
-
-  p {
-    width: 92.5%;
-    height: 100%;
-  }
-`;
-
-const ImgSection = styled.section`
-  width: 100%;
-  height: 120px;
-
-  display: flex;
-  align-items: center;
-
-  label {
-    width: 7.5%;
-
-    text-align: center;
-  }
-
-  .img_input_container {
-    width: 92.5%;
+    width: 100%;
     height: 100%;
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-  }
+`;
+
+const Button = styled.button`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 50px;
+
+    margin: auto;
+
+    border: none;
+    border-radius: 10px;
+
+    background-color: #fea100;
+    font-size: 16px;
+    font-weight: 700;
+
+    :hover {
+        background-color: #5043ff;
+        border: 2px solid #5043ff;
+        color: #fff;
+    }
+`;
+
+const TextArea = styled.textarea`
+    width: 100%;
+    height: 100%;
+    resize: none;
+    overflow-y: scroll;
+`;
+
+const SelectDiv = styled.div`
+    width: 50%;
+    height: 45px;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    label {
+        width: 20%;
+        height: 0px;
+        text-align: center;
+    }
+
+    select {
+        width: 85%;
+        height: 35px;
+        font-size: 15px;
+        /* 유현지 css추가라인 */
+        margin-top: 20px;
+        appearance: none;
+        padding-left: 10px;
+        border: none;
+        border-bottom: 2px solid #ffae00;
+    }
+
+    select:focus {
+        outline: none;
+        border-bottom: 2px solid #ff7083;
+    }
+
+    select option {
+        border-radius: 8px;
+    }
+`;
+
+const InputDiv = styled.div`
+    width: 50%;
+    height: 45px;
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    label {
+        width: 20%;
+        height: 10px;
+        text-align: center;
+    }
+
+    input {
+        width: 85%;
+        height: 80%;
+        font-size: 15px;
+        /* 유현지 css추가라인 */
+        padding: 5px;
+        border: none;
+        border-bottom: 2px solid #ffae00;
+        padding-left: 10px;
+    }
+
+    input:focus {
+        outline: none;
+        border-bottom: 2px solid #ff7083;
+    }
+`;
+
+const ContentSection = styled.section`
+    width: 100%;
+    height: 600px;
+
+    display: flex;
+    align-items: center;
+
+    label {
+        width: 7.5%;
+        text-align: center;
+    }
+
+    p {
+        width: 92.5%;
+        height: 100%;
+    }
+
+    TextArea {
+        border-radius: 20px;
+        padding: 15px 5px 15px 15px;
+        font-size: 15px;
+        border: 1px solid #ffae00;
+    }
+
+    TextArea:focus {
+        outline: 2px solid #ffae00;
+        border: 1px solid #ffae00;
+    }
+    TextArea::-webkit-scrollbar {
+        width: 16px;
+    }
+
+    TextArea::-webkit-scrollbar-thumb {
+        background-color: #fea100;
+        border: 2px solid #ffeac7;
+        border-radius: 20px; /* 테두리의 둥글기 */
+    }
+
+    TextArea::-webkit-scrollbar-thumb:hover {
+        background-color: #968fff;
+        border: 2px solid #e6e4ff; /* 호버 시 thumb 색상 */
+    }
+
+    TextArea::-webkit-scrollbar-button:vertical:end:decrement {
+        display: block;
+        width: 10px;
+    }
+
+    TextArea::-webkit-scrollbar-button:vertical:start:increment {
+        display: block;
+        height: 10px;
+    }
+`;
+
+const ImgSection = styled.section`
+    width: 100%;
+    height: 120px;
+
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 50px;
+
+    label {
+        width: 7.5%;
+
+        text-align: center;
+    }
+
+    .img_input_container {
+        width: 92.5%;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    input::file-selector-button {
+        background-color: #fea100;
+        border-radius: 8px;
+        border: 2px solid #fea100;
+        padding: 5px 10px 5px 10px;
+        margin: 3px 15px 3px 3px;
+    }
+
+    input::file-selector-button:hover {
+        background-color: #837aff;
+        border: 2px solid #837aff;
+        color: #fff;
+    }
 `;
