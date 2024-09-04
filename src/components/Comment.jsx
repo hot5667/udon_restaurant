@@ -181,6 +181,10 @@ const CommentInput = styled.form`
 
 const CommentInputMain = styled.div`
     width: 100%;
+
+    button {
+        
+    }
 `;
 
 const TextArea = styled.textarea`
