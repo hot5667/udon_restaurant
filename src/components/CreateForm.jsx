@@ -267,7 +267,7 @@ const CreateForm = ({ Modify }) => {
     } else {
         return (
             <CreateContainer>
-                <SelectDiv className="title_section">
+                <InputDiv className="title_section">
                     <label htmlFor="title">제목</label>
                     <input
                         id="title"
@@ -281,7 +281,7 @@ const CreateForm = ({ Modify }) => {
                             });
                         }}
                     />
-                </SelectDiv>
+                </InputDiv>
                 <section className="select_section" style={{ width: '100%', display: 'flex' }}>
                     <SelectDiv>
                         <label htmlFor="city">지역</label>
@@ -336,7 +336,15 @@ const CreateForm = ({ Modify }) => {
                         </select>
                     </SelectDiv>
                 </section>
-                <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
+                <hr
+                    style={{
+                        width: '100%',
+                        height: '1px',
+                        border: 'none',
+                        backgroundColor: '#9c9c9c',
+                        margin: '30px 0',
+                    }}
+                />
                 <ContentSection className="content_section">
                     <label htmlFor="content">내용</label>
                     <p>
@@ -353,10 +361,18 @@ const CreateForm = ({ Modify }) => {
                         />
                     </p>
                 </ContentSection>
-                <hr style={{ width: '100%', height: '1px', border: 'none', backgroundColor: 'black' }} />
+                <hr
+                    style={{
+                        width: '100%',
+                        height: '1px',
+                        border: 'none',
+                        backgroundColor: '#9c9c9c',
+                        margin: '30px 0',
+                    }}
+                />
                 <ImgSection className="img_section">
                     <label>
-                        사진 <span>(수정 시 사진을 다시 업로드해주세요.)</span>
+                        사진 <br/><span>(수정 시 사진을 다시 업로드해주세요.)</span>
                     </label>
                     <div className="img_input_container">
                         <input
@@ -582,7 +598,7 @@ const ContentSection = styled.section`
 
 const ImgSection = styled.section`
     width: 100%;
-    height: 120px;
+    height: 170px;
 
     display: flex;
     align-items: center;
@@ -602,6 +618,7 @@ const ImgSection = styled.section`
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        
     }
 
     input::file-selector-button {
@@ -616,5 +633,10 @@ const ImgSection = styled.section`
         background-color: #837aff;
         border: 2px solid #837aff;
         color: #fff;
+    }
+
+    span {
+        font-size: 12px;
+        line-height: 0;
     }
 `;

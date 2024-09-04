@@ -137,16 +137,26 @@ const Comment = () => {
         return (
             <ul key={comment.CommentID}>
                 <div>
-                    <img src={foundUser?.UserProfile} alt="프로필 사진" />
+                    <img
+                        src={foundUser?.UserProfile}
+                        alt="프로필 사진"
+                        style={{ width: 35, height: 35, borderRadius: 50 }}
+                    />
                 </div>
                 <div>
                     <li>{comment.CommentDate}</li>
                     <li>{comment.CommentContent}</li>
-                    <button onClick={() => deleteComment(comment.CommentID)}>삭제</button>
+                    <button
+                        onClick={() => deleteComment(comment.CommentID)}
+                        style={{ width: 60, height: 30, borderRadius: 20}}
+                    >
+                        삭제
+                    </button>
                     <button
                         onClick={() => {
                             setTestID(comment.CommentID);
                         }}
+                        style={{ width: 60, height: 30, borderRadius: 20 }}
                     >
                         수정
                     </button>
