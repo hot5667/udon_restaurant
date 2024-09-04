@@ -1,14 +1,14 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { css } from '@emotion/react';
-import supabase from '../../supaBasecClient';
-import FormField from '../../components/FromField';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { css } from "@emotion/react";
+import supabase from "../../supaBasecClient";
+import FormField from "../../components/FromField";
 
 const SignUpForm = () => {
-  const [email, setEmail] = useState('');
-  const [userPw, setUserPw] = useState('');
-  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState("");
+  const [userPw, setUserPw] = useState("");
+  const [userName, setUserName] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isLogin, setIsLogin] = useState(false); // 로그인/회원가입 토글
@@ -20,19 +20,19 @@ const SignUpForm = () => {
     setSuccess(null);
 
     if (!email || !userPw || !userName) {
-      setError('모든 필드를 입력하세요.');
+      setError("모든 필드를 입력하세요.");
       return;
     }
 
     try {
       const { data, error: authError } = await supabase.auth.signUp({
-        email: email,
+        email,
         password: userPw,
       });
 
       if (authError) {
-        if (authError.message.includes('already registered')) {
-          setError('이미 가입된 사용자입니다.');
+        if (authError.message.includes("already registered")) {
+          setError("이미 가입된 사용자입니다.");
         } else {
           throw new Error(`회원가입에 실패했습니다: ${authError.message}`);
         }
@@ -40,9 +40,8 @@ const SignUpForm = () => {
       }
 
       if (data.user) {
-        // 회원가입 성공 후 추가정보 입력 페이지로 리다이렉트
-        setSuccess('회원가입이 성공적으로 완료되었습니다!');
-        navigate('/social-sign-up');
+        setSuccess("회원가입이 성공적으로 완료되었습니다!");
+        navigate("/social-sign-up");
       }
     } catch (err) {
       setError(err.message);
@@ -55,13 +54,13 @@ const SignUpForm = () => {
     setSuccess(null);
 
     if (!email || !userPw) {
-      setError('이메일과 비밀번호를 입력하세요.');
+      setError("이메일과 비밀번호를 입력하세요.");
       return;
     }
 
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: email,
+        email,
         password: userPw,
       });
 
@@ -70,8 +69,8 @@ const SignUpForm = () => {
       }
 
       if (data.user) {
-        setSuccess('로그인 성공!');
-        navigate('/');
+        setSuccess("로그인 성공!");
+        navigate("/");
       }
     } catch (err) {
       setError(err.message);
@@ -88,62 +87,67 @@ const SignUpForm = () => {
   };
 
   return (
-    <div css={formContainerStyle}>
-      <h1 css={titleStyle}>{isLogin ? '로그인' : '회원가입'}</h1>
-      {error && <p css={errorMessageStyle}>{error}</p>}
-      {success && <p css={successMessageStyle}>{success}</p>}
-      <form onSubmit={isLogin ? handleSignIn : handleSignUp} css={formStyle}>
-        {!isLogin && (
-          <FormField
-            label="이름"
-            type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            required
-          />
-        )}
-        <FormField
-          label="이메일"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <FormField
-          label="비밀번호"
-          type="password"
-          value={userPw}
-          onChange={(e) => setUserPw(e.target.value)}
-          required
-        />
-        <button type="submit" css={buttonStyle}>
-          {isLogin ? '로그인' : '회원가입'}
-        </button>
-      </form>
-      {!isLogin && (
-        <div css={socialLoginContainerStyle}>
-          <button onClick={() => handleSocialSignUp('google')} css={socialButtonStyle}>
-            Google로 회원가입
+    <div css={WrappedContainer}>
+      <div css={formContainerStyle}>
+        <h1 css={titleStyle}>{isLogin ? "로그인" : "회원가입"}</h1>
+        {error && <p css={errorMessageStyle}>{error}</p>}
+        {success && <p css={successMessageStyle}>{success}</p>}
+        <form onSubmit={isLogin ? handleSignIn : handleSignUp} css={formStyle}>
+          {!isLogin && (
+            <div css={socialLoginContainerStyle}>
+              <FormField
+                label="이름"
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
+              <FormField
+                label="이메일"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <FormField
+                label="비밀번호"
+                type="password"
+                value={userPw}
+                onChange={(e) => setUserPw(e.target.value)}
+                required
+              />
+              <button onClick={() => handleSocialSignUp("google")} css={socialButtonStyle}>
+                Google로 회원가입
+              </button>
+              <button onClick={() => handleSocialSignUp("github")} css={socialButtonStyle}>
+                GitHub로 회원가입
+              </button>
+            </div>
+          )}
+          <button type="submit" css={buttonStyle}>
+            {isLogin ? "로그인" : "회원가입"}
           </button>
-          <button onClick={() => handleSocialSignUp('github')} css={socialButtonStyle}>
-            GitHub로 회원가입
-          </button>
-          <button onClick={() => handleSocialSignUp('kakao')} css={socialButtonStyle}>
-            Kakao로 회원가입
+        </form>
+        <div css={toggleStyle}>
+          <p>{isLogin ? "계정이 없으신가요?" : "이미 계정이 있으신가요?"}</p>
+          <button onClick={() => setIsLogin(!isLogin)} css={toggleButtonStyle}>
+            {isLogin ? "회원가입" : "로그인"}
           </button>
         </div>
-      )}
-      <div css={toggleStyle}>
-        <p>{isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?'}</p>
-        <button onClick={() => setIsLogin(!isLogin)} css={toggleButtonStyle}>
-          {isLogin ? '회원가입' : '로그인'}
-        </button>
       </div>
     </div>
   );
 };
 
 // CSS styles
+const WrappedContainer = css`
+  width: 100%;
+  height: 900px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const formContainerStyle = css`
   max-width: 400px;
   margin: 0 auto;
@@ -166,7 +170,7 @@ const formStyle = css`
 
 const buttonStyle = css`
   padding: 10px;
-  background-color: #007bff;
+  background-color: #fea100;
   color: white;
   border: none;
   border-radius: 4px;
@@ -175,7 +179,7 @@ const buttonStyle = css`
   margin-top: 20px;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #855c17;
   }
 `;
 

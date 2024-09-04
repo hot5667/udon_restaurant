@@ -36,7 +36,7 @@ const RouterComponent = () => {
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/sign-up" element={<SignUp />} />
                         <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-complete" element={<SignupComplete />}></Route>
+                         {/* <Route path="/sign-complete" element={<SignupComplete />}></Route> */}
                     </Routes>
                 </PostContextProvider>
             </AuthProvider>
