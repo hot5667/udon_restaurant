@@ -26,7 +26,7 @@ const InputContainerStyle = styled.div`
 `;
 
 const SignUpInput = styled.input`
-  min-width: 37vh;
+  min-width: 360px;
   padding: 7px;
 `;
 

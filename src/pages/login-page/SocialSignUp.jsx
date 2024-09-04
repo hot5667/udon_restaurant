@@ -10,25 +10,30 @@ const SocialSignUp = () => {
   const [userCity, setUserCity] = useState("");
   const [userNickName, setUserNickName] = useState("");
   const [userProfile, setUserProfile] = useState([]); // 파일 배열로 관리
+  const [existingProfileUrls, setExistingProfileUrls] = useState([]); // 기존 프로필 URL 저장
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const cities = ["서울", "부산", "인천", "대구"];
+  const cities = ['서울',
+    '부산',
+    '강원도',
+    '경기도',
+    '경상도',
+    '전라도',
+    '제주도',
+    '충청도',
+  ];
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // 현재 세션 가져오기
-        const { data: sessionData, error: sessionError } =
-          await supabase.auth.getSession();
-        if (sessionError)
-          throw new Error("세션 정보를 가져오는 중 오류가 발생했습니다.");
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw new Error('세션 정보를 가져오는 중 오류가 발생했습니다.');
 
         const user = sessionData.session.user;
-        console.log("User ID:", user.id); // 로그 추가
+        console.log('User ID:', user.id);
 
-        // 사용자 정보 가져오기 (단일 행을 반환하도록 처리)
         const { data: existingUsers, error: fetchError } = await supabase
           .from("User")
           .select("*")
@@ -40,9 +45,11 @@ const SocialSignUp = () => {
         const existingUser = existingUsers.length ? existingUsers[0] : null;
 
         if (existingUser) {
-          setUserCity(existingUser.UserCity || "");
-          setUserNickName(existingUser.UserNickName || "");
-          setUserProfile(existingUser.UserProfile || []);
+          setUserCity(existingUser.UserCity || '');
+          setUserNickName(existingUser.UserNickName || '');
+          if (existingUser.UserProfile && Array.isArray(existingUser.UserProfile)) {
+            setExistingProfileUrls(existingUser.UserProfile);
+          }
         }
         setLoading(false);
       } catch (err) {
@@ -59,10 +66,9 @@ const SocialSignUp = () => {
 
     try {
       for (let i = 0; i < files.length; i++) {
-        const fileExt = files[i].name.split(".").pop();
-        const filePath = `${userID}/profile_${i}.${fileExt}`;
+        const fileExt = files[i].name.split('.').pop();
+        const filePath = `${userID}/profile_${Date.now()}_${i}.${fileExt}`;
 
-        // 파일 업로드
         const { error: uploadError } = await supabase.storage
           .from(STORAGE_NAME)
           .upload(filePath, files[i]);
@@ -75,9 +81,9 @@ const SocialSignUp = () => {
           error: publicURLError,
         } = supabase.storage.from(STORAGE_NAME).getPublicUrl(filePath);
 
-        if (publicURLError) throw publicURLError;
+        if (publicUrlError) throw publicUrlError;
 
-        fileUrls.push(publicURL);
+        fileUrls.push(publicUrl);
       }
     } catch (error) {
       console.error("Error uploading images:", error.message);
@@ -100,8 +106,7 @@ const SocialSignUp = () => {
       const user = sessionData.session.user;
       console.log("User ID for submission:", user.id); // 로그 추가
 
-      // 프로필 이미지 URL 업로드
-      let profileImageUrls = [];
+      let profileImageUrls = [...existingProfileUrls]; // 기존 URL 유지
       if (userProfile.length > 0) {
         profileImageUrls = await uploadImgs(user.id, userProfile);
         console.log("Uploaded Profile Image URLs:", profileImageUrls); // 로그 추가
@@ -121,8 +126,7 @@ const SocialSignUp = () => {
       if (updateError)
         throw new Error("사용자 정보를 업데이트하는 중 오류가 발생했습니다.");
 
-      // 프로필 페이지로 리다이렉트
-      navigate("/profile");
+      navigate('/profile');
     } catch (err) {
       setError(err.message);
     }
@@ -169,13 +173,21 @@ const SocialSignUp = () => {
             type="file"
             accept="image/*"
             multiple
-            onChange={(e) => setUserProfile(Array.from(e.target.files))} // 파일 배열 선택
+            onChange={e => setUserProfile(Array.from(e.target.files))}
             css={inputStyle}
           />
         </div>
-        <button type="submit" css={buttonStyle}>
-          정보 제출
-        </button>
+        {existingProfileUrls.length > 0 && (
+          <div css={formGroupStyle}>
+            <label css={labelStyle}>기존 프로필 이미지:</label>
+            <div css={imagePreviewStyle}>
+              {existingProfileUrls.map((url, index) => (
+                <img key={index} src={url} alt={`프로필 ${index + 1}`} css={previewImageStyle} />
+              ))}
+            </div>
+          </div>
+        )}
+        <button type="submit" css={buttonStyle}>정보 제출</button>
       </form>
     </div>
   );
@@ -186,7 +198,7 @@ export default SocialSignUp;
 // Emotion 스타일 정의
 const containerStyle = css`
   max-width: 400px;
-  margin: 0 auto;
+  margin: 300px auto;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -224,7 +236,7 @@ const inputStyle = css`
 const buttonStyle = css`
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
+  background-color: #fea100;
   color: white;
   border: none;
   border-radius: 4px;
@@ -233,7 +245,7 @@ const buttonStyle = css`
   margin-top: 10px;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #fea100;
   }
 `;
 
@@ -247,4 +259,17 @@ const errorMessageStyle = css`
   color: red;
   text-align: center;
   margin-bottom: 15px;
+`;
+
+const imagePreviewStyle = css`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+const previewImageStyle = css`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
 `;
