@@ -166,7 +166,7 @@ const Comment = () => {
                         setCommentContent(event.target.value);
                     }}
                 />
-                <button>입력</button>
+                <button>댓글등록</button>
             </CommentInput>
             <div>{commentList}</div>
         </CommentInputMain>
@@ -182,8 +182,30 @@ const CommentInput = styled.form`
 const CommentInputMain = styled.div`
     width: 100%;
 
+    margin-bottom: 20px;
+
     button {
-        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 110px;
+        height: 40px;
+
+        border: none;
+        border-radius: 30px;
+
+        margin-left: auto;
+
+        background-color: #fea100;
+        font-size: 14px;
+        font-weight: 700;
+
+        color: #fff;
+    }
+    button:hover {
+        background-color: #5043ff;
+        border: 2px solid #5043ff;
+        color: #fff;
     }
 `;
 
